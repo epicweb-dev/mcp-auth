@@ -1,0 +1,7 @@
+{
+  "name": "exercises_01.example_01.problem.hello",
+  "scripts": {
+    "dev": "echo hi",
+    "test": "echo 'no tests'"
+  }
+}
