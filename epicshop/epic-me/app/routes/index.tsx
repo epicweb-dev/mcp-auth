@@ -63,6 +63,8 @@ export async function loader({ context }: Route.LoaderArgs) {
 							year: 'numeric',
 							month: 'short',
 							day: 'numeric',
+							hour: '2-digit',
+							minute: '2-digit',
 						}),
 					}
 				}),
@@ -76,7 +78,37 @@ export async function loader({ context }: Route.LoaderArgs) {
 			return { ...user, entries: validEntries, tags: validTags }
 		}),
 	)
-	return { users: usersWithTheirData }
+
+	// Get KV data
+	const { cloudflare } = context
+	const { env } = cloudflare
+	const kvList = await env.OAUTH_KV.list()
+
+	// Get all KV entries with their data
+	const kvEntries = await Promise.all(
+		kvList.keys.map(async (key) => {
+			try {
+				const value = await env.OAUTH_KV.get(key.name, { type: 'json' })
+				return {
+					key: key.name,
+					value: value,
+					expiration: key.expiration,
+					metadata: key.metadata,
+				}
+			} catch {
+				// If JSON parsing fails, try to get as text
+				const value = await env.OAUTH_KV.get(key.name, { type: 'text' })
+				return {
+					key: key.name,
+					value: value,
+					expiration: key.expiration,
+					metadata: key.metadata,
+				}
+			}
+		}),
+	)
+
+	return { users: usersWithTheirData, kvEntries }
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
@@ -125,7 +157,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-	const { users } = loaderData
+	const { users, kvEntries } = loaderData
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8 dark:from-gray-900 dark:to-gray-800">
@@ -247,9 +279,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 													key={tag.id}
 													className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-700"
 												>
-													<span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-														{tag.name}
-													</span>
+													<div className="flex items-center gap-3">
+														<span className="text-xs text-gray-500 dark:text-gray-400">
+															ID: {tag.id}
+														</span>
+														<span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+															{tag.name}
+														</span>
+													</div>
 													<span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
 														<svg
 															className="h-3 w-3"
@@ -274,6 +311,95 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 							</div>
 						))}
 					</div>
+				</section>
+
+				<hr className="my-6" />
+
+				<section>
+					<h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+						KV Store Entries ({kvEntries.length})
+					</h2>
+					{kvEntries.length > 0 ? (
+						<div className="grid gap-6">
+							{kvEntries.map((kvEntry) => (
+								<div
+									key={kvEntry.key}
+									className="rounded-lg border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-900/50"
+								>
+									<div className="mb-4 flex items-center justify-between">
+										<h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+											{kvEntry.key}
+										</h3>
+										<span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+											KV Entry
+										</span>
+									</div>
+
+									<div className="space-y-3">
+										<div>
+											<h4 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+												Value
+											</h4>
+											<pre className="mt-1 rounded bg-gray-100 p-3 text-sm dark:bg-gray-700">
+												{JSON.stringify(kvEntry.value, null, 2)}
+											</pre>
+										</div>
+
+										<div className="grid grid-cols-2 gap-4 text-sm">
+											<div>
+												<span className="font-medium text-gray-600 dark:text-gray-400">
+													Expiration:
+												</span>
+												<span className="ml-2 text-gray-900 dark:text-white">
+													{kvEntry.expiration
+														? new Date(
+																kvEntry.expiration * 1000,
+															).toLocaleDateString('en-US', {
+																year: 'numeric',
+																month: 'short',
+																day: 'numeric',
+																hour: '2-digit',
+																minute: '2-digit',
+															})
+														: 'Never'}
+												</span>
+											</div>
+
+											{kvEntry.metadata && (
+												<div>
+													<span className="font-medium text-gray-600 dark:text-gray-400">
+														Metadata:
+													</span>
+													<span className="ml-2 text-gray-900 dark:text-white">
+														{JSON.stringify(kvEntry.metadata)}
+													</span>
+												</div>
+											)}
+										</div>
+									</div>
+								</div>
+							))}
+						</div>
+					) : (
+						<div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center dark:border-gray-600">
+							<svg
+								className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+								/>
+							</svg>
+							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+								No KV entries found
+							</p>
+						</div>
+					)}
 				</section>
 
 				<hr className="my-6" />
