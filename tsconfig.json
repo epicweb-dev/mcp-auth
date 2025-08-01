@@ -9,6 +9,9 @@
     },
     {
       "path": "exercises/01.example/01.solution.goodbye"
+    },
+    {
+      "path": "exercises/99.finished/99.solution"
     }
   ]
 }

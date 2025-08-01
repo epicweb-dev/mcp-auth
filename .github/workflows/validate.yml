@@ -77,8 +77,9 @@ jobs:
 
       - name: 🚀 Deploy
         run:
-          flyctl deploy --remote-only --build-arg EPICSHOP_COMMIT_SHA=${{
-          github.sha }}
+          flyctl deploy --remote-only --build-arg
+          EPICSHOP_GITHUB_REPO=https://github.com/${{ github.repository }}
+          --build-arg EPICSHOP_COMMIT_SHA=${{ github.sha }}
         working-directory: ./epicshop
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

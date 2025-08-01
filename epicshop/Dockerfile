@@ -2,7 +2,10 @@ FROM node:24-bookworm-slim as base
 
 RUN apt-get update && apt-get install -y git
 
-ENV EPICSHOP_GITHUB_REPO=https://github.com/epicweb-dev/mcp-auth
+# Build argument for GitHub repo URL
+ARG EPICSHOP_GITHUB_REPO
+ENV EPICSHOP_GITHUB_REPO=${EPICSHOP_GITHUB_REPO}
+
 ENV EPICSHOP_CONTEXT_CWD="/myapp/workshop-content"
 ENV EPICSHOP_HOME_DIR="/myapp/.epicshop"
 ENV EPICSHOP_DEPLOYED="true"

@@ -24,7 +24,7 @@
   },
   "type": "module",
   "scripts": {
-    "postinstall": "cd ./epicshop && npm install",
+    "postinstall": "cd ./epicshop && npm install && cd ./oauth && npm install",
     "start": "npx --prefix ./epicshop epicshop start",
     "dev": "npx --prefix ./epicshop epicshop start",
     "test": "npm run test --silent --prefix playground",
