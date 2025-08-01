@@ -34,8 +34,8 @@
 
 - JavaScript/TypeScript experience
 - Node.js experience
-- [Advanced MCP Features](https://www.epicai.pro/advanced-mcp-features) or equivalent
-  experience.
+- [Advanced MCP Features](https://www.epicai.pro/advanced-mcp-features) or
+  equivalent experience.
 
 ## Pre-workshop Resources
 
@@ -46,7 +46,8 @@ speed on some of the tools and concepts we'll be covering:
 - [MCP Introduction](https://modelcontextprotocol.io/introduction)
 - [Your AI Assistant Instructor: The EpicShop MCP Server](https://www.epicai.pro/your-ai-assistant-instructor-the-epicshop-mcp-server-0eazr)
 - [How to Debug Your MCP Server](https://www.epicai.pro/how-to-debug-your-mcp-server-38qyl)
-- [OAuth 2.0 and OpenID Connect (in plain English)](https://www.youtube.com/watch?v=996OiexHze0) - (1 hour video, but it's really great!)
+- [OAuth 2.0 and OpenID Connect (in plain English)](https://www.youtube.com/watch?v=996OiexHze0) -
+  (1 hour video, but it's really great!)
 
 ## System Requirements
 
