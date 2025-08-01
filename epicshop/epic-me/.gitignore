@@ -15,5 +15,3 @@
 !.dev.vars.example
 .env*
 !.env.example
-
-dist/
