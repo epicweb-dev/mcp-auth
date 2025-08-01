@@ -177,10 +177,65 @@ export const updateTagInputSchema = {
 	),
 }
 
-export type Entry = z.infer<typeof entrySchema>
-export type NewEntry = z.infer<typeof newEntrySchema>
-export type Tag = z.infer<typeof tagSchema>
-export type NewTag = z.infer<typeof newTagSchema>
-export type EntryTag = z.infer<typeof entryTagSchema>
-export type NewEntryTag = z.infer<typeof newEntryTagSchema>
-export type EntryWithTags = z.infer<typeof entryWithTagsSchema>
+export type Entry = {
+	id: number
+	userId: number
+	title: string
+	content: string
+	mood: string | null
+	location: string | null
+	weather: string | null
+	isPrivate: number
+	isFavorite: number
+	createdAt: number
+	updatedAt: number
+}
+
+export type NewEntry = {
+	title: string
+	content: string
+	mood?: string | null
+	location?: string | null
+	weather?: string | null
+	isPrivate?: number
+	isFavorite?: number
+}
+
+export type Tag = {
+	id: number
+	userId: number
+	name: string
+	description: string | null
+	createdAt: number
+	updatedAt: number
+}
+
+export type NewTag = {
+	name: string
+	description?: string
+}
+
+export type EntryTag = {
+	id: number
+	userId: number
+	entryId: number
+	tagId: number
+	createdAt: number
+	updatedAt: number
+}
+
+export type NewEntryTag = {
+	entryId: number
+	tagId: number
+}
+
+export type User = {
+	id: number
+	email: string
+	createdAt: number
+	updatedAt: number
+}
+
+export type EntryWithTags = Entry & {
+	tags: Array<{ id: number; name: string }>
+}

@@ -4,6 +4,9 @@
   "epicshop": {
     "title": "MCP Auth 🔐",
     "subtitle": "Build remote MCP servers with users",
+    "sidecarProcesses": {
+      "EpicMeApp": "npm run dev --prefix ./epicshop/epic-me -- --clearScreen=false --logLevel=error --strictPort"
+    },
     "githubRepo": "https://github.com/epicweb-dev/mcp-auth",
     "instructor": {
       "name": "Kent C. Dodds",
@@ -43,7 +46,8 @@
   "license": "GPL-3.0-only",
   "workspaces": [
     "exercises/*/*",
-    "examples/*"
+    "examples/*",
+    "epicshop/epic-me/workers/db/client"
   ],
   "engines": {
     "node": ">=22.13.0",

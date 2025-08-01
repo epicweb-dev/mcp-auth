@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.0.5",
+    "zod": "^3.25.67",
     "isbot": "^5.1.29",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

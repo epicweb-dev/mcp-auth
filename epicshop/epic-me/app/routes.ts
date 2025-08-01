@@ -5,4 +5,5 @@ export default [
 	route('/authorize', 'routes/authorize.tsx'),
 	route('/whoami', 'routes/whoami.tsx'),
 	route('/db-api', 'routes/db-api.tsx'),
+	route('/introspect', 'routes/introspect.tsx'),
 ] satisfies RouteConfig

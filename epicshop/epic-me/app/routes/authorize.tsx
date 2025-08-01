@@ -1,5 +1,6 @@
 import { Form } from 'react-router'
 import { type EpicExecutionContext } from 'workers/app.ts'
+import { z } from 'zod'
 import { type Route } from './+types/authorize'
 
 export function meta({}: Route.MetaArgs) {
@@ -13,6 +14,35 @@ export async function loader({ context }: Route.LoaderArgs) {
 	const users = await context.db.getAllUsers()
 	return { users }
 }
+
+const requestParamsSchema = z
+	.object({
+		response_type: z.string().default('code'),
+		client_id: z.string(),
+		code_challenge: z.string(),
+		code_challenge_method: z.string(),
+		redirect_uri: z.string(),
+		scope: z.string().array().optional().default([]),
+		state: z.string().optional().default(''),
+	})
+	.passthrough()
+	.transform(
+		({
+			response_type: responseType,
+			client_id: clientId,
+			code_challenge: codeChallenge,
+			code_challenge_method: codeChallengeMethod,
+			redirect_uri: redirectUri,
+			...val
+		}) => ({
+			responseType,
+			clientId,
+			codeChallenge,
+			codeChallengeMethod,
+			redirectUri,
+			...val,
+		}),
+	)
 
 export async function action({ request, context }: Route.ActionArgs) {
 	const formData = await request.formData()
@@ -28,30 +58,12 @@ export async function action({ request, context }: Route.ActionArgs) {
 			return { status: 'error', message: 'User not found' } as const
 		}
 
-		// Get the OAuth request info from the URL parameters
 		const url = new URL(request.url)
-		const oauthReqInfo = url.searchParams.get('oauth_req_info')
 
-		if (!oauthReqInfo) {
-			return {
-				status: 'error',
-				message: 'Missing OAuth request information',
-			} as const
-		}
+		const requestParams = requestParamsSchema.parse(
+			Object.fromEntries(url.searchParams),
+		)
 
-		// Parse the OAuth request info
-		let requestParams
-		try {
-			requestParams = JSON.parse(oauthReqInfo)
-		} catch (error) {
-			console.error('Invalid OAuth request information', error)
-			return {
-				status: 'error',
-				message: 'Invalid OAuth request information',
-			} as const
-		}
-
-		// Complete the authorization
 		const { redirectTo } =
 			await context.cloudflare.env.OAUTH_PROVIDER.completeAuthorization({
 				request: requestParams,
@@ -182,20 +194,7 @@ export default function Authorize({
 										href={actionData.redirectTo}
 										className="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-400"
 									>
-										<svg
-											className="mr-2 h-4 w-4"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-											/>
-										</svg>
-										Continue to Application
+										<small className="text-xs">{actionData.redirectTo}</small>
 									</a>
 								</div>
 							</div>

@@ -1,7 +1,6 @@
 /// <reference path="../../worker-configuration.d.ts" />
 
 import { z } from 'zod'
-import { migrate } from './migrations.ts'
 import {
 	type Entry,
 	type NewEntry,
@@ -16,7 +15,8 @@ import {
 	entryTagSchema,
 	newEntryTagSchema,
 	userSchema,
-} from './schema.ts'
+} from './client/schema.ts'
+import { migrate } from './migrations.ts'
 import { sql, snakeToCamel } from './utils.ts'
 
 export type { Entry, NewEntry, Tag, NewTag, EntryTag, NewEntryTag }

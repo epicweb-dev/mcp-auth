@@ -41,7 +41,7 @@ const defaultHandler = {
 } satisfies ExportedHandler<Env>
 
 export default new OAuthProvider({
-	apiRoute: ['/whoami', '/db-api'],
+	apiRoute: ['/whoami', '/db-api', '/introspect'],
 	// @ts-expect-error these types are wrong...
 	apiHandler: defaultHandler,
 	// @ts-expect-error these types are wrong...

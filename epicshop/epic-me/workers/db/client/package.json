@@ -1,0 +1,20 @@
+{
+  "name": "@epic-web/epicme-db-client",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "default": "./dist/schema.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc index.ts --declaration --skipLibCheck --module esnext --moduleResolution node --outDir dist"
+  }
+}

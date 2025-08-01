@@ -6,6 +6,14 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
+	server: {
+		port: 7788,
+	},
+	build: {
+		rollupOptions: {
+			external: ['cloudflare:workers'],
+		},
+	},
 	plugins: [
 		{
 			name: 'strip-typegen-imports',

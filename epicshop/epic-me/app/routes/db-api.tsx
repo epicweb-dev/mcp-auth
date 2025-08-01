@@ -59,6 +59,11 @@ const methodSchemas = {
 		id: z.number(),
 	}),
 
+	// User methods
+	getUserById: z.object({
+		id: z.number(),
+	}),
+
 	// Entry tag methods
 	addTagToEntry: z.object({
 		entryId: z.number(),
@@ -161,6 +166,12 @@ export async function action({ request, context }: Route.ActionArgs) {
 				break
 			}
 
+			case 'getUserById': {
+				const userParams = methodSchemas.getUserById.parse(params)
+				result = await context.db.getUserById(userParams.id)
+				break
+			}
+
 			case 'addTagToEntry': {
 				const entryTagParams = methodSchemas.addTagToEntry.parse(params)
 				result = await context.db.addTagToEntry(Number(userId), entryTagParams)
@@ -178,7 +189,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
 			default:
 				return Response.json(
-					{ error: `Method not implemented: ${method}` },
+					{ error: `epicme:db-api:Method not implemented: ${method}` },
 					{ status: 501 },
 				)
 		}
