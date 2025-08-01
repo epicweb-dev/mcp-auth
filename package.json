@@ -24,7 +24,7 @@
   },
   "type": "module",
   "scripts": {
-    "postinstall": "cd ./epicshop && npm install && cd ./oauth && npm install",
+    "postinstall": "cd ./epicshop && npm install && cd ./epic-me && npm install",
     "start": "npx --prefix ./epicshop epicshop start",
     "dev": "npx --prefix ./epicshop epicshop start",
     "test": "npm run test --silent --prefix playground",
@@ -51,7 +51,7 @@
     "git": ">=2.18.0"
   },
   "devDependencies": {
-    "@epic-web/config": "^1.21.1",
+    "@epic-web/config": "^1.21.2",
     "eslint": "^9.32.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"

@@ -1,0 +1,30 @@
+{
+	"extends": "./tsconfig.json",
+	"include": [
+		".react-router/types/**/*",
+		"app/**/*",
+		"app/**/.server/**/*",
+		"app/**/.client/**/*",
+		"tests/**/*",
+		"workers/**/*",
+		"worker-configuration.d.ts"
+	],
+	"compilerOptions": {
+		"composite": true,
+		"strict": true,
+		"lib": ["DOM", "DOM.Iterable", "ES2023"],
+		"types": ["vite/client"],
+		"target": "ES2023",
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"rootDirs": [".", "./.react-router/types"],
+		"paths": {
+			"#app/*": ["./app/*"],
+			"#tests/*": ["./tests/*"]
+		},
+		"esModuleInterop": true,
+		"resolveJsonModule": true
+	}
+}

@@ -1,3 +1,7 @@
 {
-  "name": "exercises_99.finished_99.solution"
+  "name": "exercises_99.finished_99.solution",
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "@epic-web/config": "^1.21.2"
+  }
 }

@@ -1,6 +1,6 @@
 npx npm-check-updates --dep prod,dev --upgrade --workspaces --root
 cd epicshop && npx npm-check-updates --dep prod,dev --upgrade --root
-cd oauth && npx npm-check-updates --dep prod,dev --upgrade --root
+cd epic-me && npx npm-check-updates --dep prod,dev --upgrade --root
 cd ../..
 rm -rf node_modules package-lock.json ./epicshop/package-lock.json ./epicshop/node_modules ./exercises/**/node_modules ./oauth/package-lock.json ./oauth/node_modules
 npm install
