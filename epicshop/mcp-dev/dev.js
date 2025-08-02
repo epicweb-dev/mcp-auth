@@ -288,7 +288,7 @@ function startProxyServer(server) {
 /**
  * Setup graceful shutdown
  */
-function setupGracefulShutdown() {
+function setupGracefulShutdown({ proxy, server }) {
 	const closeListeners = closeWithGrace(
 		{ delay: 500 },
 		async function ({ signal, err }) {
@@ -317,7 +317,7 @@ async function main() {
 		// Create and start proxy server
 		const { server, proxy } = createProxy()
 		startProxyServer(server)
-		setupGracefulShutdown(server, proxy)
+		setupGracefulShutdown({ server, proxy })
 	} catch (error) {
 		devServerProcess?.kill()
 		inspectorProcess?.kill()
