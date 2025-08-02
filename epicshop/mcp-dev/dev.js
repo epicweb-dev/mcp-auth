@@ -108,8 +108,8 @@ function startInspector() {
 /**
  * Wait for the dev server to be ready
  */
-async function waitForServerReady({ process, textMatch, name }) {
-	if (!process) return
+async function waitForServerReady({ process: childProcess, textMatch, name }) {
+	if (!childProcess) return
 
 	return new Promise((resolve, reject) => {
 		const timeout = setTimeout(() => {
@@ -121,18 +121,21 @@ async function waitForServerReady({ process, textMatch, name }) {
 			const str = data.toString()
 			if (str.includes(textMatch)) {
 				clearTimeout(timeout)
+				// Remove the listeners after finding the match
+				childProcess.stdout.removeListener('data', searchForMatch)
+				childProcess.stderr.removeListener('data', searchForMatch)
 				resolve()
 			}
 		}
-		process.stdout.on('data', searchForMatch)
-		process.stderr.on('data', searchForMatch)
+		childProcess.stdout.on('data', searchForMatch)
+		childProcess.stderr.on('data', searchForMatch)
 
-		process.on('error', (err) => {
+		childProcess.on('error', (err) => {
 			clearTimeout(timeout)
 			reject(err)
 		})
 
-		process.on('exit', (code) => {
+		childProcess.on('exit', (code) => {
 			if (code !== 0) {
 				clearTimeout(timeout)
 				reject(new Error(`${name} exited with code ${code}`))
@@ -141,15 +144,15 @@ async function waitForServerReady({ process, textMatch, name }) {
 	})
 }
 
-function pipeOutputToConsole({ process, name, color }) {
-	if (!process) return
+function pipeOutputToConsole({ process: childProcess, name, color }) {
+	if (!childProcess) return
 
-	process.stdout.on('data', (data) => {
+	childProcess.stdout.on('data', (data) => {
 		const str = data.toString()
 		process.stdout.write(styleText(color, `${name} `) + str)
 	})
 
-	process.stderr.on('data', (data) => {
+	childProcess.stderr.on('data', (data) => {
 		const str = data.toString()
 		process.stderr.write(styleText(color, `${name} `) + str)
 	})
@@ -285,7 +288,7 @@ function startProxyServer(server) {
 /**
  * Setup graceful shutdown
  */
-function setupGracefulShutdown(server, proxy) {
+function setupGracefulShutdown() {
 	const closeListeners = closeWithGrace(
 		{ delay: 500 },
 		async function ({ signal, err }) {
@@ -316,6 +319,9 @@ async function main() {
 		startProxyServer(server)
 		setupGracefulShutdown(server, proxy)
 	} catch (error) {
+		devServerProcess?.kill()
+		inspectorProcess?.kill()
+
 		console.error('Failed to start servers:', error.message)
 		process.exit(1)
 	}
