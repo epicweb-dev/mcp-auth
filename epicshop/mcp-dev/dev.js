@@ -38,30 +38,29 @@ let inspectorProcess = null
 /**
  * Start the dev server process
  */
-async function startDevServer() {
+function startDevServer() {
 	if (transport !== 'streamable-http') return null
+
+	console.log(
+		styleText(
+			'yellow',
+			`🔍 Starting mcp dev server on port ${mcpServerPort}...`,
+		),
+	)
 
 	devServerProcess = execa(
 		'npm',
 		['--silent', '--prefix', process.cwd(), 'run', 'dev:server'],
 		{
-			stdio: ['inherit', 'pipe', 'pipe'],
+			stdio: ['ignore', 'pipe', 'pipe'],
 			env: { ...process.env, PORT: mcpServerPort },
 		},
 	)
 
-	// Prefix dev server output
-	devServerProcess.stdout.on('data', (data) => {
-		const str = data.toString()
-		process.stdout.write(
-			styleText('blue', `[DEV-SERVER:${mcpServerPort}] `) + str,
-		)
-	})
-
-	devServerProcess.stderr.on('data', (data) => {
-		const str = data.toString()
-		process.stderr.write(
-			styleText('red', `[DEV-SERVER:${mcpServerPort}] `) + str,
+	process.on('error', (err) => {
+		console.error(
+			styleText('red', '❌ Dev server failed to start:'),
+			err.message,
 		)
 	})
 
@@ -89,11 +88,11 @@ function startInspector() {
 			ALLOWED_ORIGINS: [
 				`http://localhost:${inspectorClientPort}`,
 				`http://127.0.0.1:${inspectorClientPort}`,
-				`http://localhost:${process.env.PORT}`,
-				`http://127.0.0.1:${process.env.PORT}`,
+				`http://localhost:${proxyPort}`,
+				`http://127.0.0.1:${proxyPort}`,
 			].join(','),
 		},
-		stdio: ['inherit', 'pipe', 'pipe'], // capture both stdout and stderr
+		stdio: ['ignore', 'pipe', 'pipe'],
 	})
 
 	inspectorProcess.on('error', (err) => {
@@ -109,22 +108,24 @@ function startInspector() {
 /**
  * Wait for the dev server to be ready
  */
-async function waitForDevServerReady(process) {
+async function waitForServerReady({ process, textMatch, name }) {
 	if (!process) return
 
 	return new Promise((resolve, reject) => {
 		const timeout = setTimeout(() => {
 			process.kill()
-			reject(new Error('Dev server failed to start within 10 seconds'))
-		}, 10000)
+			reject(new Error(`${name} failed to start within 10 seconds`))
+		}, 10_000)
 
-		process.stdout.on('data', (data) => {
+		function searchForMatch(data) {
 			const str = data.toString()
-			if (str.includes(mcpServerPort.toString())) {
+			if (str.includes(textMatch)) {
 				clearTimeout(timeout)
 				resolve()
 			}
-		})
+		}
+		process.stdout.on('data', searchForMatch)
+		process.stderr.on('data', searchForMatch)
 
 		process.on('error', (err) => {
 			clearTimeout(timeout)
@@ -134,64 +135,23 @@ async function waitForDevServerReady(process) {
 		process.on('exit', (code) => {
 			if (code !== 0) {
 				clearTimeout(timeout)
-				reject(new Error(`Dev server exited with code ${code}`))
+				reject(new Error(`${name} exited with code ${code}`))
 			}
 		})
 	})
 }
 
-/**
- * Wait for the inspector to be ready
- */
-function waitForInspectorReady(process) {
-	return new Promise((resolve, reject) => {
-		const timeout = setTimeout(() => {
-			process.kill()
-			reject(new Error('Inspector failed to start within 10 seconds'))
-		}, 10000)
+function pipeOutputToConsole({ process, name, color }) {
+	if (!process) return
 
-		process.stdout.on('data', (data) => {
-			const str = data.toString()
+	process.stdout.on('data', (data) => {
+		const str = data.toString()
+		process.stdout.write(styleText(color, `${name} `) + str)
+	})
 
-			if (str.includes(inspectorClientPort.toString())) {
-				clearTimeout(timeout)
-				resolve()
-				return
-			}
-
-			// Suppress specific logs from inspector
-			if (
-				/server listening/i.test(str) ||
-				/inspector is up/i.test(str) ||
-				/session token/i.test(str) ||
-				/DANGEROUSLY_OMIT_AUTH/i.test(str) ||
-				/up and running/i.test(str) ||
-				/localhost/i.test(str) ||
-				/auto-open is disabled/i.test(str)
-			) {
-				return
-			}
-			process.stdout.write(str) // print all other inspector logs
-		})
-
-		process.stderr.on('data', (data) => {
-			const str = data.toString()
-			process.stderr.write(
-				styleText('red', `[INSPECTOR-ERROR:${inspectorServerPort}] `) + str,
-			)
-		})
-
-		process.on('error', (err) => {
-			clearTimeout(timeout)
-			reject(err)
-		})
-
-		process.on('exit', (code) => {
-			if (code !== 0) {
-				clearTimeout(timeout)
-				reject(new Error(`Inspector exited with code ${code}`))
-			}
-		})
+	process.stderr.on('data', (data) => {
+		const str = data.toString()
+		process.stderr.write(styleText(color, `${name} `) + str)
 	})
 }
 
@@ -202,18 +162,42 @@ async function startServers() {
 	console.log(styleText('cyan', '🚀 Starting servers...'))
 
 	// Start both servers at the same time
-	const [devServer, inspector] = await Promise.all([
-		startDevServer(),
-		startInspector(),
-	])
+	const devServer = startDevServer()
+	const inspector = startInspector()
 
 	// Wait for both to be ready
 	await Promise.all([
-		waitForDevServerReady(devServer),
-		waitForInspectorReady(inspector),
+		waitForServerReady({
+			process: devServer,
+			textMatch: mcpServerPort.toString(),
+			name: '[DEV-SERVER]',
+		}),
+		waitForServerReady({
+			process: inspector,
+			textMatch: inspectorClientPort.toString(),
+			name: '[INSPECTOR]',
+		}),
 	])
 
-	console.log(styleText('green', '✅ All servers ready!'))
+	pipeOutputToConsole({
+		process: devServer,
+		name: '[DEV-SERVER]',
+		color: 'blue',
+	})
+	pipeOutputToConsole({
+		process: inspector,
+		name: '[INSPECTOR]',
+		color: 'magenta',
+	})
+
+	const servers = [devServer, inspector].filter(Boolean)
+
+	console.log(
+		styleText(
+			'green',
+			servers.length > 1 ? '✅ All servers ready!' : '✅ Server ready!',
+		),
+	)
 }
 
 /**
