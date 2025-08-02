@@ -11,9 +11,9 @@ async function setupClient() {
 		{ capabilities: {} },
 	)
 
-	const transport = new StreamableHTTPClientTransport({
-		url: 'http://localhost:8787/mcp',
-	})
+	const transport = new StreamableHTTPClientTransport(
+		'http://localhost:8787/mcp',
+	)
 
 	await client.connect(transport)
 
@@ -28,7 +28,7 @@ async function setupClient() {
 test('ping works', async () => {
 	await using setup = await setupClient()
 	const { client } = setup
-	
+
 	const result = await client.ping()
 	expect(result).toEqual({})
 })
