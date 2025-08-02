@@ -1,5 +1,5 @@
 {
-  "name": "exercises_99.finished_99.solution",
+  "name": "exercises_02.start_01.problem",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +7,8 @@
     "pretypecheck": "wrangler types ./types/worker-configuration.d.ts",
     "typecheck": "tsc",
     "build": "wrangler build",
-    "dev": "cross-env wrangler dev --port ${PORT:-8787}",
+    "dev": "mcp-dev",
+    "dev:server": "cross-env wrangler dev --port ${PORT:-8787}",
     "inspect": "mcp-inspector"
   },
   "dependencies": {

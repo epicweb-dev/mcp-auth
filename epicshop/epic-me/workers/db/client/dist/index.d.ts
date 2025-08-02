@@ -1,8 +1,8 @@
 import { type Entry, type NewEntry, type Tag, type NewTag, type EntryTag, type NewEntryTag, type EntryWithTags, type User } from './schema.js';
 export declare class DBClient {
     private baseUrl;
-    private oauthToken;
-    constructor(baseUrl: string, oauthToken: string);
+    private oauthToken?;
+    constructor(baseUrl: string, oauthToken?: string);
     private makeRequest;
     createEntry(entry: NewEntry): Promise<EntryWithTags>;
     getEntry(id: number): Promise<EntryWithTags | null>;

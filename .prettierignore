@@ -5,3 +5,5 @@
 **/public/build/**
 **/package-lock.json
 **/playwright-report/**
+**/*.worker-configuration.d.ts
+**/.wrangler/**

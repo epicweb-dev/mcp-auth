@@ -1,0 +1,29 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "epic-me-mcp",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-17",
+	"compatibility_flags": ["nodejs_compat"],
+	"migrations": [
+		{
+			"new_sqlite_classes": ["EpicMeMCP"],
+			"tag": "v1",
+		},
+	],
+
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "EpicMeMCP",
+				"name": "EPIC_ME_MCP_OBJECT",
+			},
+		],
+	},
+	"observability": {
+		"enabled": true,
+	},
+}

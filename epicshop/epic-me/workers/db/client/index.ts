@@ -22,9 +22,9 @@ const errorResponseSchema = z.object({
 
 export class DBClient {
 	private baseUrl: string
-	private oauthToken: string
+	private oauthToken?: string
 
-	constructor(baseUrl: string, oauthToken: string) {
+	constructor(baseUrl: string, oauthToken?: string) {
 		this.baseUrl = baseUrl.replace(/\/$/, '') // Remove trailing slash
 		this.oauthToken = oauthToken
 	}
@@ -37,7 +37,7 @@ export class DBClient {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${this.oauthToken}`,
+				Authorization: this.oauthToken ? `Bearer ${this.oauthToken}` : '',
 			},
 			body: JSON.stringify({
 				method,

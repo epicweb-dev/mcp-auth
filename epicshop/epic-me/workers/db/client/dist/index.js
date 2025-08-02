@@ -69,7 +69,7 @@ var DBClient = /** @class */ (function () {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                Authorization: "Bearer ".concat(this.oauthToken),
+                                Authorization: this.oauthToken ? "Bearer ".concat(this.oauthToken) : '',
                             },
                             body: JSON.stringify({
                                 method: method,

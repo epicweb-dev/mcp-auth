@@ -189,7 +189,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
 								{user.entries.length > 0 ? (
 									<div className="space-y-3">
-										<h4 className="text-sm font-medium tracking-wide text-gray-600 uppercase dark:text-gray-400">
+										<h4 className="text-sm font-medium uppercase tracking-wide text-gray-600 dark:text-gray-400">
 											Entries ({user.entries.length})
 										</h4>
 										<div className="grid gap-3">
@@ -270,7 +270,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
 								{user.tags.length > 0 && (
 									<div className="mt-6">
-										<h4 className="mb-3 text-sm font-medium tracking-wide text-gray-600 uppercase dark:text-gray-400">
+										<h4 className="mb-3 text-sm font-medium uppercase tracking-wide text-gray-600 dark:text-gray-400">
 											Tags ({user.tags.length})
 										</h4>
 										<div className="grid gap-2">

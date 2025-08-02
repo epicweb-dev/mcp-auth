@@ -4,24 +4,6 @@ import { type EpicMeMCP } from './index.ts'
 
 export async function initializeResources(agent: EpicMeMCP) {
 	agent.server.registerResource(
-		'user',
-		'epicme://users/current',
-		{ description: 'The currently logged in user' },
-		async (uri: URL) => {
-			const user = await agent.requireUser()
-			return {
-				contents: [
-					{
-						mimeType: 'application/json',
-						text: JSON.stringify(user),
-						uri: uri.toString(),
-					},
-				],
-			}
-		},
-	)
-
-	agent.server.registerResource(
 		'tags',
 		'epicme://tags',
 		{

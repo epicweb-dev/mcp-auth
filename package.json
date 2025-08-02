@@ -47,6 +47,7 @@
   "workspaces": [
     "exercises/*/*",
     "examples/*",
+    "epicshop/mcp-dev",
     "epicshop/epic-me/workers/db/client"
   ],
   "engines": {
