@@ -1,15 +1,17 @@
 {
-	"files": [],
-	"exclude": ["node_modules"],
-	"references": [
-		{
-			"path": "exercises/01.start/01.problem"
-		},
-		{
-			"path": "exercises/02.start/01.problem"
-		},
-		{
-			"path": "exercises/99.finished/99.solution"
-		}
-	]
+  "files": [],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "exercises/01.start/01.solution"
+    },
+    {
+      "path": "exercises/02.start/01.solution"
+    },
+    {
+      "path": "exercises/99.finished/99.solution"
+    }
+  ]
 }
