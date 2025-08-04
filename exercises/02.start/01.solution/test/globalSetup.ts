@@ -121,6 +121,9 @@ export default async function setup(project: TestProject) {
 	async function startServers() {
 		console.log('Starting servers...')
 
+		// Start app server if necessary
+		await startAppServerIfNecessary()
+
 		// Start the MCP server from the exercise directory
 		console.log(`Starting MCP server on port ${mcpServerPort}...`)
 		mcpServerProcess = execa(
@@ -166,21 +169,68 @@ export default async function setup(project: TestProject) {
 	async function cleanup() {
 		console.log('Cleaning up servers...')
 
+		const cleanupPromises: Array<Promise<void>> = []
+
 		if (mcpServerProcess && !mcpServerProcess.killed) {
-			mcpServerProcess.kill('SIGTERM')
-			try {
-				await mcpServerProcess
-			} catch {
-				// Process was killed, which is expected
-			}
+			cleanupPromises.push(
+				(async () => {
+					mcpServerProcess.kill('SIGTERM')
+					// Give it 2 seconds to gracefully shutdown, then force kill
+					const timeout = setTimeout(() => {
+						if (!mcpServerProcess.killed) {
+							mcpServerProcess.kill('SIGKILL')
+						}
+					}, 2000)
+					
+					try {
+						await mcpServerProcess
+					} catch {
+						// Process was killed, which is expected
+					} finally {
+						clearTimeout(timeout)
+					}
+				})()
+			)
 		}
 
 		if (appServerProcess && !appServerProcess.killed) {
-			appServerProcess.kill('SIGTERM')
-			try {
-				await appServerProcess
-			} catch {
-				// Process was killed, which is expected
+			cleanupPromises.push(
+				(async () => {
+					appServerProcess.kill('SIGTERM')
+					// Give it 2 seconds to gracefully shutdown, then force kill
+					const timeout = setTimeout(() => {
+						if (!appServerProcess.killed) {
+							appServerProcess.kill('SIGKILL')
+						}
+					}, 2000)
+					
+					try {
+						await appServerProcess
+					} catch {
+						// Process was killed, which is expected
+					} finally {
+						clearTimeout(timeout)
+					}
+				})()
+			)
+		}
+
+		// Wait for all cleanup to complete, but with an overall timeout
+		try {
+			await Promise.race([
+				Promise.all(cleanupPromises),
+				new Promise((_, reject) => 
+					setTimeout(() => reject(new Error('Cleanup timeout')), 5000)
+				)
+			])
+		} catch (error) {
+			console.warn('Cleanup warning:', error.message)
+			// Force kill any remaining processes
+			if (mcpServerProcess && !mcpServerProcess.killed) {
+				mcpServerProcess.kill('SIGKILL')
+			}
+			if (appServerProcess && !appServerProcess.killed) {
+				appServerProcess.kill('SIGKILL')
 			}
 		}
 
