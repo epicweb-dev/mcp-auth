@@ -177,11 +177,11 @@ export default async function setup(project: TestProject) {
 					mcpServerProcess.kill('SIGTERM')
 					// Give it 2 seconds to gracefully shutdown, then force kill
 					const timeout = setTimeout(() => {
-						if (!mcpServerProcess.killed) {
+						if (mcpServerProcess && !mcpServerProcess.killed) {
 							mcpServerProcess.kill('SIGKILL')
 						}
 					}, 2000)
-					
+
 					try {
 						await mcpServerProcess
 					} catch {
@@ -189,7 +189,7 @@ export default async function setup(project: TestProject) {
 					} finally {
 						clearTimeout(timeout)
 					}
-				})()
+				})(),
 			)
 		}
 
@@ -199,11 +199,11 @@ export default async function setup(project: TestProject) {
 					appServerProcess.kill('SIGTERM')
 					// Give it 2 seconds to gracefully shutdown, then force kill
 					const timeout = setTimeout(() => {
-						if (!appServerProcess.killed) {
+						if (appServerProcess && !appServerProcess.killed) {
 							appServerProcess.kill('SIGKILL')
 						}
 					}, 2000)
-					
+
 					try {
 						await appServerProcess
 					} catch {
@@ -211,7 +211,7 @@ export default async function setup(project: TestProject) {
 					} finally {
 						clearTimeout(timeout)
 					}
-				})()
+				})(),
 			)
 		}
 
@@ -219,12 +219,15 @@ export default async function setup(project: TestProject) {
 		try {
 			await Promise.race([
 				Promise.all(cleanupPromises),
-				new Promise((_, reject) => 
-					setTimeout(() => reject(new Error('Cleanup timeout')), 5000)
-				)
+				new Promise((_, reject) =>
+					setTimeout(() => reject(new Error('Cleanup timeout')), 5000),
+				),
 			])
 		} catch (error) {
-			console.warn('Cleanup warning:', error.message)
+			console.warn(
+				'Cleanup warning:',
+				error instanceof Error ? error.message : String(error),
+			)
 			// Force kill any remaining processes
 			if (mcpServerProcess && !mcpServerProcess.killed) {
 				mcpServerProcess.kill('SIGKILL')
