@@ -1,6 +1,8 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
-import { test, expect } from 'vitest'
+import { test, expect, inject } from 'vitest'
+
+const mcpServerPort = inject('mcpServerPort')
 
 async function setupClient() {
 	const client = new Client(
@@ -12,7 +14,7 @@ async function setupClient() {
 	)
 
 	const transport = new StreamableHTTPClientTransport(
-		'http://localhost:8787/mcp',
+		new URL(`http://localhost:${mcpServerPort}/mcp`),
 	)
 
 	await client.connect(transport)
@@ -25,10 +27,10 @@ async function setupClient() {
 	}
 }
 
-test('ping works', async () => {
+test('listing tools works', async () => {
 	await using setup = await setupClient()
 	const { client } = setup
 
-	const result = await client.ping()
-	expect(result).toEqual({})
+	const result = await client.listTools()
+	expect(result.tools.length).toBeGreaterThan(0)
 })
