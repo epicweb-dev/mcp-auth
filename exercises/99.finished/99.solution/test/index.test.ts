@@ -72,63 +72,129 @@ test('OAuth integration flow works end-to-end', async () => {
 		}),
 	})
 
-	expect(unauthorizedResponse.status, '🚨 Expected 401 status for unauthorized request').toBe(401)
-	
+	expect(
+		unauthorizedResponse.status,
+		'🚨 Expected 401 status for unauthorized request',
+	).toBe(401)
+
 	const wwwAuthHeader = unauthorizedResponse.headers.get('WWW-Authenticate')
-	expect(wwwAuthHeader, '🚨 WWW-Authenticate header should be present').toBeTruthy()
-	expect(wwwAuthHeader, '🚨 WWW-Authenticate header should contain OAuth realm').toContain('OAuth realm="EpicMe"')
-	expect(wwwAuthHeader, '🚨 WWW-Authenticate header should contain authorization_url').toContain('authorization_url=')
-	
+	expect(
+		wwwAuthHeader,
+		'🚨 WWW-Authenticate header should be present',
+	).toBeTruthy()
+	expect(
+		wwwAuthHeader,
+		'🚨 WWW-Authenticate header should contain OAuth realm',
+	).toContain('OAuth realm="EpicMe"')
+	expect(
+		wwwAuthHeader,
+		'🚨 WWW-Authenticate header should contain authorization_url',
+	).toContain('authorization_url=')
+
 	// Extract the authorization URL from the header
 	const authUrlMatch = wwwAuthHeader?.match(/authorization_url="([^"]+)"/)
-	expect(authUrlMatch, '🚨 Could not extract authorization URL from WWW-Authenticate header').toBeTruthy()
+	expect(
+		authUrlMatch,
+		'🚨 Could not extract authorization URL from WWW-Authenticate header',
+	).toBeTruthy()
 	const authorizationUrl = authUrlMatch![1]
-	expect(authorizationUrl, '🚨 Authorization URL should not be empty').toBeTruthy()
+	expect(
+		authorizationUrl,
+		'🚨 Authorization URL should not be empty',
+	).toBeTruthy()
 
 	// Step 1: Metadata discovery
 	// Test OAuth Authorization Server discovery
-	const authServerDiscoveryResponse = await fetch(`${mcpServerUrl}/.well-known/oauth-authorization-server`)
-	expect(authServerDiscoveryResponse.ok, '🚨 OAuth authorization server discovery should succeed').toBe(true)
-	
-	const authServerConfig = await authServerDiscoveryResponse.json() as AuthServerConfig
-	expect(authServerConfig.authorization_endpoint, '🚨 Authorization endpoint should be present in discovery').toBeTruthy()
-	expect(authServerConfig.token_endpoint, '🚨 Token endpoint should be present in discovery').toBeTruthy()
+	const authServerDiscoveryResponse = await fetch(
+		`${mcpServerUrl}/.well-known/oauth-authorization-server`,
+	)
+	expect(
+		authServerDiscoveryResponse.ok,
+		'🚨 OAuth authorization server discovery should succeed',
+	).toBe(true)
+
+	const authServerConfig =
+		(await authServerDiscoveryResponse.json()) as AuthServerConfig
+	expect(
+		authServerConfig.authorization_endpoint,
+		'🚨 Authorization endpoint should be present in discovery',
+	).toBeTruthy()
+	expect(
+		authServerConfig.token_endpoint,
+		'🚨 Token endpoint should be present in discovery',
+	).toBeTruthy()
 
 	// Test OAuth Protected Resource discovery
-	const protectedResourceDiscoveryResponse = await fetch(`${mcpServerUrl}/.well-known/oauth-protected-resource/mcp`)
-	expect(protectedResourceDiscoveryResponse.ok, '🚨 OAuth protected resource discovery should succeed').toBe(true)
-	
-	const protectedResourceConfig = await protectedResourceDiscoveryResponse.json() as ProtectedResourceConfig
-	expect(protectedResourceConfig.resource, '🚨 Resource identifier should be present').toBe('epicme-mcp')
-	expect(protectedResourceConfig.scopes, '🚨 Scopes should be present').toContain('read')
-	expect(protectedResourceConfig.scopes, '🚨 Scopes should contain write').toContain('write')
+	const protectedResourceDiscoveryResponse = await fetch(
+		`${mcpServerUrl}/.well-known/oauth-protected-resource/mcp`,
+	)
+	expect(
+		protectedResourceDiscoveryResponse.ok,
+		'🚨 OAuth protected resource discovery should succeed',
+	).toBe(true)
+
+	const protectedResourceConfig =
+		(await protectedResourceDiscoveryResponse.json()) as ProtectedResourceConfig
+	expect(
+		protectedResourceConfig.resource,
+		'🚨 Resource identifier should be present',
+	).toBe('epicme-mcp')
+	expect(
+		protectedResourceConfig.scopes,
+		'🚨 Scopes should be present',
+	).toContain('read')
+	expect(
+		protectedResourceConfig.scopes,
+		'🚨 Scopes should contain write',
+	).toContain('write')
 
 	// Step 2: Dynamic client registration
-	const clientRegistrationResponse = await fetch(`${EPIC_ME_SERVER_URL}/register`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			client_name: 'Test MCP Client',
-			redirect_uris: [`${mcpServerUrl}/mcp`],
-			scope: 'read write',
-		}),
-	})
-	
-	expect(clientRegistrationResponse.ok, '🚨 Client registration should succeed').toBe(true)
-	const clientRegistration = await clientRegistrationResponse.json() as ClientRegistration
-	expect(clientRegistration.client_id, '🚨 Client ID should be returned from registration').toBeTruthy()
+	const clientRegistrationResponse = await fetch(
+		`${EPIC_ME_SERVER_URL}/register`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				client_name: 'Test MCP Client',
+				redirect_uris: [`${mcpServerUrl}/mcp`],
+				scope: 'read write',
+			}),
+		},
+	)
+
+	expect(
+		clientRegistrationResponse.ok,
+		'🚨 Client registration should succeed',
+	).toBe(true)
+	const clientRegistration =
+		(await clientRegistrationResponse.json()) as ClientRegistration
+	expect(
+		clientRegistration.client_id,
+		'🚨 Client ID should be returned from registration',
+	).toBeTruthy()
 
 	// Step 3: Preparing Authorization (getting the auth URL)
-	const { codeVerifier, codeChallenge, codeChallengeMethod } = generateCodeChallenge()
+	const { codeVerifier, codeChallenge, codeChallengeMethod } =
+		generateCodeChallenge()
 	const state = crypto.randomUUID()
 	const redirectUri = `${mcpServerUrl}/mcp`
 
 	const authUrl = new URL(authorizationUrl as string)
-	const originalParams = JSON.parse(authUrl.searchParams.get('oauth_req_info') || '{}') as OriginalParams
-	
-	expect(originalParams.client_id, '🚨 Client ID should be present in auth URL').toBeTruthy()
-	expect(originalParams.redirect_uri, '🚨 Redirect URI should be present in auth URL').toBeTruthy()
-	expect(originalParams.response_type, '🚨 Response type should be code').toBe('code')
+	const originalParams = JSON.parse(
+		authUrl.searchParams.get('oauth_req_info') || '{}',
+	) as OriginalParams
+
+	expect(
+		originalParams.client_id,
+		'🚨 Client ID should be present in auth URL',
+	).toBeTruthy()
+	expect(
+		originalParams.redirect_uri,
+		'🚨 Redirect URI should be present in auth URL',
+	).toBeTruthy()
+	expect(originalParams.response_type, '🚨 Response type should be code').toBe(
+		'code',
+	)
 
 	// Step 4: Requesting the auth code programmatically
 	const testAuthUrl = new URL(`${EPIC_ME_SERVER_URL}/test-auth`)
@@ -143,16 +209,22 @@ test('OAuth integration flow works end-to-end', async () => {
 
 	const authCodeResponse = await fetch(testAuthUrl.toString())
 	expect(authCodeResponse.ok, '🚨 Auth code request should succeed').toBe(true)
-	
-	const authResult = await authCodeResponse.json() as AuthResult
-	expect(authResult.redirectTo, '🚨 Redirect URL should be returned').toBeTruthy()
-	
+
+	const authResult = (await authCodeResponse.json()) as AuthResult
+	expect(
+		authResult.redirectTo,
+		'🚨 Redirect URL should be returned',
+	).toBeTruthy()
+
 	// Step 5: Supplying the auth code (extract from redirect URL)
 	const redirectUrl = new URL(authResult.redirectTo)
 	const authCode = redirectUrl.searchParams.get('code')
 	const returnedState = redirectUrl.searchParams.get('state')
-	
-	expect(authCode, '🚨 Auth code should be present in redirect URL').toBeTruthy()
+
+	expect(
+		authCode,
+		'🚨 Auth code should be present in redirect URL',
+	).toBeTruthy()
 	expect(returnedState, '🚨 State should be returned').toBe(state)
 
 	// Step 6: Requesting the token
@@ -163,27 +235,33 @@ test('OAuth integration flow works end-to-end', async () => {
 		client_id: clientRegistration.client_id, // Use registered client ID
 		code_verifier: codeVerifier,
 	})
-	
+
 	// Add client_secret if provided during registration
 	if (clientRegistration.client_secret) {
 		tokenParams.set('client_secret', clientRegistration.client_secret)
 	}
-	
+
 	const tokenResponse = await fetch(`${EPIC_ME_SERVER_URL}/token`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: tokenParams,
 	})
-	
+
 	if (!tokenResponse.ok) {
 		const errorText = await tokenResponse.text()
 		console.error('Token exchange failed:', tokenResponse.status, errorText)
 	}
-	
+
 	expect(tokenResponse.ok, '🚨 Token exchange should succeed').toBe(true)
-	const tokenResult = await tokenResponse.json() as TokenResult
-	expect(tokenResult.access_token, '🚨 Access token should be returned').toBeTruthy()
-	expect(tokenResult.token_type?.toLowerCase(), '🚨 Token type should be Bearer').toBe('bearer')
+	const tokenResult = (await tokenResponse.json()) as TokenResult
+	expect(
+		tokenResult.access_token,
+		'🚨 Access token should be returned',
+	).toBeTruthy()
+	expect(
+		tokenResult.token_type?.toLowerCase(),
+		'🚨 Token type should be Bearer',
+	).toBe('bearer')
 
 	// Step 7: Performing authenticated requests (listing tools)
 	// Verify the token works by making a simple authenticated request to the MCP server
@@ -192,7 +270,7 @@ test('OAuth integration flow works end-to-end', async () => {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json, text/event-stream',
+			Accept: 'application/json, text/event-stream',
 			Authorization: `Bearer ${tokenResult.access_token}`,
 		},
 		body: JSON.stringify({
@@ -209,6 +287,9 @@ test('OAuth integration flow works end-to-end', async () => {
 			},
 		}),
 	})
-	
-	expect(authTestResponse.status, '🚨 Should not get 401 Unauthorized with valid token').not.toBe(401)
+
+	expect(
+		authTestResponse.status,
+		'🚨 Should not get 401 Unauthorized with valid token',
+	).not.toBe(401)
 })

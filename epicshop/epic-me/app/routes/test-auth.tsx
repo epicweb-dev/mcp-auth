@@ -8,7 +8,11 @@ const requestParamsSchema = z
 		code_challenge: z.string(),
 		code_challenge_method: z.string(),
 		redirect_uri: z.string(),
-		scope: z.string().optional().default('').transform(s => s ? s.split(' ') : []),
+		scope: z
+			.string()
+			.optional()
+			.default('')
+			.transform((s) => (s ? s.split(' ') : [])),
 		state: z.string().optional().default(''),
 		user_id: z.string().optional(), // For programmatic testing
 	})
@@ -35,7 +39,7 @@ const requestParamsSchema = z
 
 export async function loader({ request, context }: Route.LoaderArgs) {
 	const url = new URL(request.url)
-	
+
 	try {
 		const requestParams = requestParamsSchema.parse(
 			Object.fromEntries(url.searchParams),
@@ -74,7 +78,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 	} catch (error) {
 		console.error('Error in test-auth:', error)
 		return Response.json(
-			{ error: 'Failed to complete authorization', details: error instanceof Error ? error.message : String(error) },
+			{
+				error: 'Failed to complete authorization',
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		)
 	}
