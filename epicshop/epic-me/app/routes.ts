@@ -6,4 +6,5 @@ export default [
 	route('/healthcheck', 'routes/healthcheck.tsx'),
 	route('/db-api', 'routes/db-api.tsx'),
 	route('/introspect', 'routes/introspect.tsx'),
+	route('/test-auth', 'routes/test-auth.tsx'),
 ] satisfies RouteConfig
