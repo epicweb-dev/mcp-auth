@@ -2,9 +2,15 @@
   "name": "epic-me",
   "private": true,
   "type": "module",
+  "imports": {
+    "#app/*": "./app/*",
+    "#tests/*": "./tests/*",
+    "#types/*": "./types/*",
+    "#workers/*": "./workers/*"
+  },
   "scripts": {
     "build": "react-router build",
-    "cf-typegen": "wrangler types",
+    "cf-typegen": "wrangler types ./types/worker-configuration.d.ts",
     "deploy": "npm run build && wrangler deploy",
     "dev": "react-router dev",
     "format": "prettier --write .",

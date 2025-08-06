@@ -1,30 +1,7 @@
-import OAuthProvider, {
-	type OAuthHelpers,
-} from '@cloudflare/workers-oauth-provider'
+import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { createRequestHandler } from 'react-router'
+import { type Env } from '#types/helpers'
 import { DB } from './db/index.ts'
-
-export interface Env extends Cloudflare.Env {
-	OAUTH_PROVIDER: OAuthHelpers
-}
-
-// Extend ExecutionContext to include OAuth props
-export interface EpicExecutionContext extends ExecutionContext {
-	props: {
-		userId?: string
-		userEmail?: string
-	}
-}
-
-declare module 'react-router' {
-	export interface AppLoadContext {
-		db: DB
-		cloudflare: {
-			env: Env
-			ctx: EpicExecutionContext
-		}
-	}
-}
 
 const requestHandler = createRequestHandler(
 	() => import('virtual:react-router/server-build'),

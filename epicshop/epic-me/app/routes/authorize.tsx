@@ -1,6 +1,6 @@
-import { Form } from 'react-router'
-import { type EpicExecutionContext } from 'workers/app.ts'
+import { Form, useSearchParams } from 'react-router'
 import { z } from 'zod'
+import { type EpicExecutionContext } from '#types/helpers'
 import { type Route } from './+types/authorize'
 
 export function meta({}: Route.MetaArgs) {
@@ -93,6 +93,7 @@ export default function Authorize({
 	actionData,
 }: Route.ComponentProps) {
 	const { users } = loaderData
+	const [searchParams] = useSearchParams()
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8 dark:from-gray-900 dark:to-gray-800">
@@ -384,6 +385,167 @@ export default function Authorize({
 						</li>
 					</ul>
 				</div>
+
+				{/* Search Parameters Form */}
+				<section className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+					<h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+						Update Search Parameters
+					</h2>
+					<p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
+						Modify the OAuth request parameters below:
+					</p>
+
+					<form method="get" className="space-y-4">
+						<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+							<div>
+								<label
+									htmlFor="response_type"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Response Type
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									The OAuth response type (e.g., "code" for authorization code
+									flow)
+								</p>
+								<input
+									type="text"
+									id="response_type"
+									name="response_type"
+									defaultValue={searchParams.get('response_type') ?? undefined}
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+
+							<div>
+								<label
+									htmlFor="client_id"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Client ID
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									The unique identifier for the OAuth client application
+								</p>
+								<input
+									type="text"
+									id="client_id"
+									name="client_id"
+									defaultValue={searchParams.get('client_id') ?? undefined}
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+
+							<div>
+								<label
+									htmlFor="code_challenge"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Code Challenge
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									The PKCE code challenge for enhanced security
+								</p>
+								<input
+									type="text"
+									id="code_challenge"
+									name="code_challenge"
+									defaultValue={searchParams.get('code_challenge') ?? undefined}
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+
+							<div>
+								<label
+									htmlFor="code_challenge_method"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Code Challenge Method
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									The method used for PKCE (e.g., "S256" for SHA256)
+								</p>
+								<input
+									type="text"
+									id="code_challenge_method"
+									name="code_challenge_method"
+									defaultValue={
+										searchParams.get('code_challenge_method') ?? undefined
+									}
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+
+							<div className="md:col-span-2">
+								<label
+									htmlFor="redirect_uri"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Redirect URI
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									The URI where the user will be redirected after authorization
+								</p>
+								<input
+									type="url"
+									id="redirect_uri"
+									name="redirect_uri"
+									defaultValue={searchParams.get('redirect_uri') ?? undefined}
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+
+							<div>
+								<label
+									htmlFor="scope"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Scope
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									Space-separated list of requested permissions
+								</p>
+								<input
+									type="text"
+									id="scope"
+									name="scope"
+									defaultValue={searchParams.get('scope') ?? undefined}
+									placeholder="e.g., read write"
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+
+							<div>
+								<label
+									htmlFor="state"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									State
+								</label>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									Optional parameter to maintain state between request and
+									callback
+								</p>
+								<input
+									type="text"
+									id="state"
+									name="state"
+									defaultValue={searchParams.get('state') ?? undefined}
+									className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+							</div>
+						</div>
+
+						<div className="flex gap-3">
+							<button
+								type="submit"
+								className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-400"
+							>
+								Update Parameters
+							</button>
+						</div>
+					</form>
+				</section>
 			</div>
 		</div>
 	)

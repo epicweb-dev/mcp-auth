@@ -1,6 +1,6 @@
 import { Form } from 'react-router'
-import { migrate } from '../../workers/db/migrations'
-import { sql } from '../../workers/db/utils'
+import { migrate } from '#workers/db/migrations'
+import { sql } from '#workers/db/utils'
 import { type Route } from './+types/index'
 
 export function meta({}: Route.MetaArgs) {

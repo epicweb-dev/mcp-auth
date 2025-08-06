@@ -1,4 +1,4 @@
-import { type Token } from '@cloudflare/workers-oauth-provider'
+import { type Token } from '#types/helpers'
 import { type Route } from './+types/introspect'
 
 export async function loader({ request, context }: Route.LoaderArgs) {
