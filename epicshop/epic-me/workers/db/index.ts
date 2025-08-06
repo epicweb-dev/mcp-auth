@@ -1,4 +1,4 @@
-/// <reference path="../../worker-configuration.d.ts" />
+/// <reference path="../../types/worker-configuration.d.ts" />
 
 import { z } from 'zod'
 import {
