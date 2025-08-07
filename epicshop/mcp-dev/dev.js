@@ -114,8 +114,8 @@ async function waitForServerReady({ process: childProcess, textMatch, name }) {
 	return new Promise((resolve, reject) => {
 		const timeout = setTimeout(() => {
 			process.kill()
-			reject(new Error(`${name} failed to start within 10 seconds`))
-		}, 10_000)
+			reject(new Error(`${name} failed to start within 20 seconds`))
+		}, 20_000)
 
 		function searchForMatch(data) {
 			const str = data.toString()

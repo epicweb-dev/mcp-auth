@@ -39,8 +39,8 @@ export default async function setup(project: TestProject) {
 		return new Promise<void>((resolve, reject) => {
 			const timeout = setTimeout(() => {
 				childProcess?.kill()
-				reject(new Error(`${name} failed to start within 10 seconds`))
-			}, 10_000)
+				reject(new Error(`${name} failed to start within 20 seconds`))
+			}, 20_000)
 
 			function searchForMatch(data: Buffer) {
 				const str = data.toString()
