@@ -1,1 +1,3 @@
 worker-configuration.d.ts
+**/test/**
+vitest.config.ts
