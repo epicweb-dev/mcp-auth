@@ -39,8 +39,8 @@ export default async function setup(project: TestProject) {
 		return new Promise<void>((resolve, reject) => {
 			const timeout = setTimeout(() => {
 				childProcess?.kill()
-				reject(new Error(`${name} failed to start within 20 seconds`))
-			}, 20_000)
+				reject(new Error(`${name} failed to start within 10 seconds`))
+			}, 10_000)
 
 			function searchForMatch(data: Buffer) {
 				const str = data.toString()
@@ -145,14 +145,14 @@ export default async function setup(project: TestProject) {
 				appServerProcess
 					? waitForServerReady({
 							process: appServerProcess,
-							textMatch: ':7788',
+							textMatch: '7788',
 							name: '[APP-SERVER]',
 							outputBuffer: appServerOutput,
 						})
 					: Promise.resolve(),
 				waitForServerReady({
 					process: mcpServerProcess,
-					textMatch: `:${mcpServerPort.toString()}`,
+					textMatch: mcpServerPort.toString(),
 					name: '[MCP-SERVER]',
 					outputBuffer: mcpServerOutput,
 				}),
