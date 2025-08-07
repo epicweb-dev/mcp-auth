@@ -13,7 +13,7 @@
 <div align="center">
   <a
     alt="Epic Web logo with the words Deployed Version"
-    href="https://epicweb-dev-mcp-auth.fly.dev/"
+    href="https://mcp-auth.epicai.pro/"
   >
     <img
       width="300px"
