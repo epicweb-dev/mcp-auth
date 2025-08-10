@@ -28,7 +28,7 @@
     "react-router": "^7.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.11.0",
+    "@cloudflare/vite-plugin": "^1.11.2",
     "@epic-web/config": "^1.21.3",
     "@react-router/dev": "^7.7.1",
     "@tailwindcss/vite": "^4.1.11",
@@ -43,7 +43,7 @@
     "vite": "^7.0.6",
     "vite-plugin-devtools-json": "^0.4.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "wrangler": "^4.27.0"
+    "wrangler": "^4.28.1"
   },
   "prettier": "@epic-web/config/prettier"
 }

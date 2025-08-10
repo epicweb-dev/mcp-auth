@@ -33,6 +33,18 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
+> Note: Wrangler and the Cloudflare Vite plugin now support dotenv files for local development.
+> Create a `.env` in this app's root (alongside `wrangler.jsonc`) to define local `vars`.
+> For example:
+>
+> ```dotenv
+> TITLE="My Worker"
+> API_TOKEN="dev-token"
+> ```
+>
+> These will be available on `context.cloudflare.env.TITLE` / `env.API_TOKEN` in worker code during `wrangler dev`.
+> You can also add `.env.<environment>` files (e.g. `.env.staging`) and run `wrangler dev --env staging`.
+
 ## Previewing the Production Build
 
 Preview the production build locally:

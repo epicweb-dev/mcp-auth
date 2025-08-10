@@ -29,7 +29,7 @@
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
-    "wrangler": "^4.26.0"
+    "wrangler": "^4.28.1"
   },
   "prettier": "@epic-web/config/prettier",
   "license": "GPL-3.0-only"
