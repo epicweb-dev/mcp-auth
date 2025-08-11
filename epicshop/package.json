@@ -7,7 +7,7 @@
     "chokidar": "^4.0.3",
     "enquirer": "^2.4.1",
     "execa": "^9.6.0",
-    "fs-extra": "^11.3.0",
+    "fs-extra": "^11.3.1",
     "match-sorter": "^8.1.0",
     "p-limit": "^6.2.0"
   }
