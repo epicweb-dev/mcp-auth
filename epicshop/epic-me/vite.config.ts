@@ -11,7 +11,7 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-			external: ['cloudflare:workers'],
+			external: [/cloudflare:.*/],
 		},
 	},
 	plugins: [
