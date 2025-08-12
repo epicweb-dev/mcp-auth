@@ -34,7 +34,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 			const user = await agent.requireUser()
 			return {
 				structuredContent: { user },
-				content: [createText(JSON.stringify({ user }, null, 2))],
+				content: [createText(user)],
 			}
 		},
 	)

@@ -18,7 +18,7 @@
     "@epic-web/config": "^1.21.3",
     "@epic-web/mcp-dev": "*",
     "@faker-js/faker": "^9.9.0",
-    "@modelcontextprotocol/inspector": "^0.16.3",
+    "@modelcontextprotocol/inspector": "0.16.2",
     "@types/node": "^24.2.1",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2",

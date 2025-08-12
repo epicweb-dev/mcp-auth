@@ -21,7 +21,7 @@
   "devDependencies": {
     "@epic-web/config": "^1.21.3",
     "@faker-js/faker": "^9.9.0",
-    "@modelcontextprotocol/inspector": "^0.16.3",
+    "@modelcontextprotocol/inspector": "0.16.2",
     "@types/node": "^24.2.1",
     "cross-env": "^10.0.0",
     "eslint": "^9.33.0",

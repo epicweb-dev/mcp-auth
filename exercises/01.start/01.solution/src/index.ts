@@ -1,6 +1,7 @@
 import { type DBClient } from '@epic-web/epicme-db-client'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { SetLevelRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
 import { initializeResources } from './resources.ts'
@@ -8,6 +9,7 @@ import { initializeTools } from './tools.ts'
 
 export class EpicMeMCP {
 	db!: DBClient
+	state = { loggingLevel: 'info' }
 	server = new McpServer(
 		{
 			name: 'epicme',
@@ -34,6 +36,13 @@ You can also help users add tags to their entries and get all tags for an entry.
 
 	async init() {
 		this.db = getClient()
+		this.server.server.setRequestHandler(
+			SetLevelRequestSchema,
+			async (request) => {
+				this.state.loggingLevel = request.params.level
+				return {}
+			},
+		)
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)

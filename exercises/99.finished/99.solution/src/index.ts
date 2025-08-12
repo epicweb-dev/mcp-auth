@@ -1,6 +1,10 @@
 import { type DBClient } from '@epic-web/epicme-db-client'
 import { invariant } from '@epic-web/invariant'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import {
+	SetLevelRequestSchema,
+	type LoggingLevel,
+} from '@modelcontextprotocol/sdk/types.js'
 import { McpAgent } from 'agents/mcp'
 import {
 	type AuthInfo,
@@ -15,8 +19,12 @@ import { initializeResources } from './resources.ts'
 import { initializeTools } from './tools.ts'
 import { withCors } from './utils.ts'
 
-export class EpicMeMCP extends McpAgent<Env, {}, { authInfo: AuthInfo }> {
+type State = { loggingLevel: LoggingLevel }
+type Props = { authInfo: AuthInfo }
+
+export class EpicMeMCP extends McpAgent<Env, State, Props> {
 	db!: DBClient
+	initialState: State = { loggingLevel: 'info' }
 	server = new McpServer(
 		{
 			name: 'epicme',
@@ -45,6 +53,15 @@ You can also help users add tags to their entries and get all tags for an entry.
 		const authInfo = this.props.authInfo
 		invariant(authInfo, 'Auth info not found')
 		this.db = getClient(authInfo.token)
+
+		this.server.server.setRequestHandler(
+			SetLevelRequestSchema,
+			async (request) => {
+				this.setState({ ...this.state, loggingLevel: request.params.level })
+				return {}
+			},
+		)
+
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)
