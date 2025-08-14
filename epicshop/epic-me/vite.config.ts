@@ -9,11 +9,6 @@ export default defineConfig({
 	server: {
 		port: 7788,
 	},
-	build: {
-		rollupOptions: {
-			external: [/cloudflare:.*/],
-		},
-	},
 	plugins: [
 		{
 			name: 'strip-typegen-imports',
