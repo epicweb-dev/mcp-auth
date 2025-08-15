@@ -82,10 +82,13 @@ export async function getOAuthAuthorizationServerConfig() {
 	return result.json()
 }
 
-export async function getOAuthProtectedResourceConfig() {
+export async function getOAuthProtectedResourceConfig(request: Request) {
 	// This server is the protected resource server, so we return our own configuration
+	const resourceServerUrl = new URL(request.url)
+	resourceServerUrl.pathname = '/mcp' // Point to the MCP endpoint
+
 	return {
-		resource: `${EPIC_ME_SERVER_URL}/mcp`,
+		resource: resourceServerUrl.toString(),
 		scopes: ['read', 'write'],
 		resource_owner: 'epicme',
 		resource_server: {

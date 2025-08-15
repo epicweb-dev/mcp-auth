@@ -86,7 +86,7 @@ export default {
 		}
 
 		if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
-			const config = await getOAuthProtectedResourceConfig()
+			const config = await getOAuthProtectedResourceConfig(request)
 			return Response.json(config)
 		}
 

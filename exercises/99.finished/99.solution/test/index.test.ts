@@ -134,7 +134,7 @@ test('OAuth integration flow works end-to-end', async () => {
 	expect(
 		protectedResourceConfig.resource,
 		'🚨 Resource identifier should be present',
-	).toBe(`${EPIC_ME_SERVER_URL}/mcp`)
+	).toBe(`${mcpServerUrl}/mcp`)
 	expect(
 		protectedResourceConfig.scopes,
 		'🚨 Scopes should be present',
