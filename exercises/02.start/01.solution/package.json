@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest --watch",
     "pretypecheck": "wrangler types ./types/worker-configuration.d.ts",
     "typecheck": "tsc",
     "build": "wrangler build",

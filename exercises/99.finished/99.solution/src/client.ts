@@ -67,7 +67,8 @@ export function initiateOAuthFlow(request: Request) {
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
-			'WWW-Authenticate': `OAuth realm="EpicMe", authorization_url="${authUrl.toString()}"`,
+			'WWW-Authenticate': 'OAuth realm="EpicMe"',
+			Location: authUrl.toString(),
 		},
 	})
 }
@@ -84,7 +85,7 @@ export async function getOAuthAuthorizationServerConfig() {
 export async function getOAuthProtectedResourceConfig() {
 	// This server is the protected resource server, so we return our own configuration
 	return {
-		resource: 'epicme-mcp',
+		resource: `${EPIC_ME_SERVER_URL}/mcp`,
 		scopes: ['read', 'write'],
 		resource_owner: 'epicme',
 		resource_server: {

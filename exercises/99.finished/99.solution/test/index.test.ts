@@ -86,18 +86,14 @@ test('OAuth integration flow works end-to-end', async () => {
 		wwwAuthHeader,
 		'🚨 WWW-Authenticate header should contain OAuth realm',
 	).toContain('OAuth realm="EpicMe"')
-	expect(
-		wwwAuthHeader,
-		'🚨 WWW-Authenticate header should contain authorization_url',
-	).toContain('authorization_url=')
 
-	// Extract the authorization URL from the header
-	const authUrlMatch = wwwAuthHeader?.match(/authorization_url="([^"]+)"/)
+	// Extract the authorization URL from the Location header
+	const locationHeader = unauthorizedResponse.headers.get('Location')
 	expect(
-		authUrlMatch,
-		'🚨 Could not extract authorization URL from WWW-Authenticate header',
+		locationHeader,
+		'🚨 Location header should be present with authorization URL',
 	).toBeTruthy()
-	const authorizationUrl = authUrlMatch![1]
+	const authorizationUrl = locationHeader
 	expect(
 		authorizationUrl,
 		'🚨 Authorization URL should not be empty',
@@ -138,7 +134,7 @@ test('OAuth integration flow works end-to-end', async () => {
 	expect(
 		protectedResourceConfig.resource,
 		'🚨 Resource identifier should be present',
-	).toBe('epicme-mcp')
+	).toBe(`${EPIC_ME_SERVER_URL}/mcp`)
 	expect(
 		protectedResourceConfig.scopes,
 		'🚨 Scopes should be present',

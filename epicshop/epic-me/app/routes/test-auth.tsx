@@ -52,7 +52,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 			if (users.length === 0) {
 				return Response.json({ error: 'No users available' }, { status: 400 })
 			}
-			userId = String(users[0].id)
+			userId = String(users[0]?.id)
 		}
 
 		const user = await context.db.getUserById(Number(userId))

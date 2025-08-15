@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "mcp-dev stdio",
     "dev:mcp": "tsx src/index.ts",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest --watch",
     "typecheck": "tsc",
     "inspect": "mcp-inspector"
   },

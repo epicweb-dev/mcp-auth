@@ -9,6 +9,7 @@
 		"workers/**/*",
 		"types/**/*"
 	],
+	"exclude": ["**/node_modules/**/*", "**/dist/**/*"],
 	"compilerOptions": {
 		"composite": true,
 		"strict": true,
