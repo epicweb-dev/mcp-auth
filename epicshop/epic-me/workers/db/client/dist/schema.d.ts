@@ -52,6 +52,31 @@ export declare const entrySchema: z.ZodObject<{
     isPrivate?: number;
     isFavorite?: number;
 }>;
+export declare const entryListItemSchema: z.ZodIntersection<z.ZodObject<Pick<{
+    id: z.ZodNumber;
+    userId: z.ZodNumber;
+    title: z.ZodString;
+    content: z.ZodString;
+    mood: z.ZodNullable<z.ZodString>;
+    location: z.ZodNullable<z.ZodString>;
+    weather: z.ZodNullable<z.ZodString>;
+    isPrivate: z.ZodNumber;
+    isFavorite: z.ZodNumber;
+    createdAt: z.ZodEffects<z.ZodNumber, number, unknown>;
+    updatedAt: z.ZodEffects<z.ZodNumber, number, unknown>;
+}, "id" | "title">, "strip", z.ZodTypeAny, {
+    id?: number;
+    title?: string;
+}, {
+    id?: number;
+    title?: string;
+}>, z.ZodObject<{
+    tagCount: z.ZodNumber;
+}, "strip", z.ZodTypeAny, {
+    tagCount?: number;
+}, {
+    tagCount?: number;
+}>>;
 export declare const entryWithTagsSchema: z.ZodObject<{
     id: z.ZodNumber;
     userId: z.ZodNumber;
@@ -154,6 +179,20 @@ export declare const tagSchema: z.ZodObject<{
     userId?: number;
     name?: string;
     description?: string;
+}>;
+export declare const tagListItemSchema: z.ZodObject<Pick<{
+    id: z.ZodNumber;
+    userId: z.ZodNumber;
+    name: z.ZodString;
+    description: z.ZodNullable<z.ZodString>;
+    createdAt: z.ZodEffects<z.ZodNumber, number, unknown>;
+    updatedAt: z.ZodEffects<z.ZodNumber, number, unknown>;
+}, "id" | "name">, "strip", z.ZodTypeAny, {
+    id?: number;
+    name?: string;
+}, {
+    id?: number;
+    name?: string;
 }>;
 export declare const newTagSchema: z.ZodObject<{
     name: z.ZodString;

@@ -11,6 +11,6 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"noEmit": true,
-		"types": ["./worker-configuration.d.ts"]
+		"types": ["./types/worker-configuration.d.ts"]
 	}
 }

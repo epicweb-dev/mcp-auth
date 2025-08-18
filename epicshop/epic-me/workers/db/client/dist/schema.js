@@ -40,6 +40,12 @@ export var entrySchema = z.object({
     createdAt: timestampSchema,
     updatedAt: timestampSchema,
 });
+export var entryListItemSchema = entrySchema
+    .pick({
+    id: true,
+    title: true,
+})
+    .and(z.object({ tagCount: z.number() }));
 export var entryWithTagsSchema = entrySchema.extend({
     tags: z.array(z.object({ id: z.number(), name: z.string() })),
 });
@@ -59,6 +65,10 @@ export var tagSchema = z.object({
     description: z.string().nullable(),
     createdAt: timestampSchema,
     updatedAt: timestampSchema,
+});
+export var tagListItemSchema = tagSchema.pick({
+    id: true,
+    name: true,
 });
 export var newTagSchema = z.object({
     name: z.string(),

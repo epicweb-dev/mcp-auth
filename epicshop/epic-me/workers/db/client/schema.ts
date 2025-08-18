@@ -33,6 +33,13 @@ export const entrySchema = z.object({
 	updatedAt: timestampSchema,
 })
 
+export const entryListItemSchema = entrySchema
+	.pick({
+		id: true,
+		title: true,
+	})
+	.and(z.object({ tagCount: z.number() }))
+
 export const entryWithTagsSchema = entrySchema.extend({
 	tags: z.array(z.object({ id: z.number(), name: z.string() })),
 })
@@ -54,6 +61,11 @@ export const tagSchema = z.object({
 	description: z.string().nullable(),
 	createdAt: timestampSchema,
 	updatedAt: timestampSchema,
+})
+
+export const tagListItemSchema = tagSchema.pick({
+	id: true,
+	name: true,
 })
 
 export const newTagSchema = z.object({

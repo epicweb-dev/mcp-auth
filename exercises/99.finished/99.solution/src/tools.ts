@@ -2,11 +2,12 @@ import {
 	createEntryInputSchema,
 	createTagInputSchema,
 	entryIdSchema,
-	entrySchema,
+	entryListItemSchema,
 	entryTagIdSchema,
 	entryTagSchema,
 	entryWithTagsSchema,
 	tagIdSchema,
+	tagListItemSchema,
 	tagSchema,
 	updateEntryInputSchema,
 	updateTagInputSchema,
@@ -113,7 +114,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 				readOnlyHint: true,
 				openWorldHint: false,
 			},
-			outputSchema: { entries: z.array(entrySchema) },
+			outputSchema: { entries: z.array(entryListItemSchema) },
 		},
 		async () => {
 			const entries = await agent.db.getEntries()
@@ -273,7 +274,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 				readOnlyHint: true,
 				openWorldHint: false,
 			},
-			outputSchema: { tags: z.array(tagSchema) },
+			outputSchema: { tags: z.array(tagListItemSchema) },
 		},
 		async () => {
 			const tags = await agent.db.getTags()
