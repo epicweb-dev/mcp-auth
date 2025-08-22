@@ -3,6 +3,10 @@ import { z } from 'zod'
 
 const EPIC_ME_SERVER_URL = 'http://localhost:7788'
 
+export function getClient(oauthToken: string) {
+	return new DBClient(EPIC_ME_SERVER_URL, oauthToken)
+}
+
 export type AuthInfo = Exclude<
 	Awaited<ReturnType<typeof getAuthInfoFromOAuthFromRequest>>,
 	undefined
@@ -38,10 +42,6 @@ export async function getAuthInfoFromOAuthFromRequest(request: Request) {
 		expiresAt,
 		extra: { userId },
 	}
-}
-
-export function getClient(oauthToken: string) {
-	return new DBClient(EPIC_ME_SERVER_URL, oauthToken)
 }
 
 export function initiateOAuthFlow(request: Request) {

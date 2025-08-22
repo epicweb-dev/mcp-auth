@@ -1,15 +1,19 @@
 import { type DBClient } from '@epic-web/epicme-db-client'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { SetLevelRequestSchema } from '@modelcontextprotocol/sdk/types.js'
+import {
+	SetLevelRequestSchema,
+	type LoggingLevel,
+} from '@modelcontextprotocol/sdk/types.js'
+import { McpAgent } from 'agents/mcp'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
 import { initializeResources } from './resources.ts'
 import { initializeTools } from './tools.ts'
 
-export class EpicMeMCP {
+type State = { loggingLevel: LoggingLevel }
+export class EpicMeMCP extends McpAgent<Env, State> {
 	db!: DBClient
-	state = { loggingLevel: 'info' }
+	initialState: State = { loggingLevel: 'info' }
 	server = new McpServer(
 		{
 			name: 'epicme',
@@ -39,7 +43,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 		this.server.server.setRequestHandler(
 			SetLevelRequestSchema,
 			async (request) => {
-				this.state.loggingLevel = request.params.level
+				this.setState({ ...this.state, loggingLevel: request.params.level })
 				return {}
 			},
 		)
@@ -49,15 +53,17 @@ You can also help users add tags to their entries and get all tags for an entry.
 	}
 }
 
-async function main() {
-	const agent = new EpicMeMCP()
-	await agent.init()
-	const transport = new StdioServerTransport()
-	await agent.server.connect(transport)
-	console.error('EpicMe MCP Server running on stdio')
-}
+export default {
+	fetch: async (request, env, ctx) => {
+		const url = new URL(request.url)
 
-main().catch((error) => {
-	console.error('Fatal error in main():', error)
-	process.exit(1)
-})
+		if (url.pathname === '/mcp') {
+			const mcp = EpicMeMCP.serve('/mcp', {
+				binding: 'EPIC_ME_MCP_OBJECT',
+			})
+			return mcp.fetch(request, env, ctx)
+		}
+
+		return new Response('Not found', { status: 404 })
+	},
+} satisfies ExportedHandler<Env>

@@ -1,18 +1,22 @@
 {
-  "name": "exercises_01.start_01.solution",
+  "name": "exercises_02.start_01.solution",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "mcp-dev stdio",
-    "dev:mcp": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest --watch",
+    "pretypecheck": "wrangler types ./types/worker-configuration.d.ts",
     "typecheck": "tsc",
+    "build": "wrangler build",
+    "dev": "mcp-dev",
+    "dev:server": "cross-env wrangler dev --port ${PORT:-8787}",
     "inspect": "mcp-inspector"
   },
   "dependencies": {
+    "@epic-web/epicme-db-client": "*",
     "@epic-web/invariant": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.17.2",
+    "agents": "^0.0.111",
     "zod": "^3.25.67"
   },
   "devDependencies": {
@@ -21,9 +25,14 @@
     "@faker-js/faker": "^9.9.0",
     "@modelcontextprotocol/inspector": "0.16.2",
     "@types/node": "^24.2.1",
-    "tsx": "^4.20.3",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.33.0",
+    "execa": "^9.6.0",
+    "prettier": "^3.6.2",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.28.1"
   },
+  "prettier": "@epic-web/config/prettier",
   "license": "GPL-3.0-only"
 }
