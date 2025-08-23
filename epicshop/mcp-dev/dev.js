@@ -13,17 +13,17 @@ const { createProxyServer } = httpProxy
 const [, , ...args] = process.argv
 const [transport = 'streamable-http'] = args
 
-const proxyPort = process.env.PORT || 3000
+const proxyPort = Number(process.env.PORT || 3000)
 const inspectorServerPort = await getPort({
-	port: Array.from({ length: 1000 }, (_, i) => i + 10000),
+	port: Array.from({ length: 100 }, (_, i) => proxyPort + i + 50000),
 	exclude: [process.env.PORT].filter(Boolean).map(Number),
 })
 const inspectorClientPort = await getPort({
-	port: Array.from({ length: 1000 }, (_, i) => i + 9000),
+	port: Array.from({ length: 100 }, (_, i) => proxyPort + i + 51000),
 	exclude: [process.env.PORT, inspectorServerPort].filter(Boolean).map(Number),
 })
 const mcpServerPort = await getPort({
-	port: Array.from({ length: 1000 }, (_, i) => i + 11000),
+	port: Array.from({ length: 100 }, (_, i) => proxyPort + i + 52000),
 	exclude: [process.env.PORT, inspectorServerPort, inspectorClientPort]
 		.filter(Boolean)
 		.map(Number),

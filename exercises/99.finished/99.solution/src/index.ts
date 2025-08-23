@@ -9,11 +9,11 @@ import { McpAgent } from 'agents/mcp'
 import {
 	type AuthInfo,
 	getAuthInfoFromOAuthFromRequest,
-	getClient,
-	getOAuthAuthorizationServerConfig,
-	getOAuthProtectedResourceConfig,
+	handleOAuthAuthorizationServerRequest,
+	handleOAuthProtectedResourceRequest,
 	initiateOAuthFlow,
-} from './client.ts'
+} from './auth.ts'
+import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
 import { initializeResources } from './resources.ts'
 import { initializeTools } from './tools.ts'
@@ -77,31 +77,40 @@ You can also help users add tags to their entries and get all tags for an entry.
 }
 
 export default {
-	fetch: withCors(async (request, env, ctx) => {
-		const url = new URL(request.url)
+	fetch: withCors({
+		getCorsHeaders: (request) => {
+			if (request.url.includes('/.well-known')) {
+				return {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+					'Cross-Origin-Resource-Policy': 'cross-origin',
+				}
+			}
+		},
+		handler: async (request, env, ctx) => {
+			const url = new URL(request.url)
 
-		if (url.pathname === '/.well-known/oauth-authorization-server') {
-			const config = await getOAuthAuthorizationServerConfig()
-			return Response.json(config)
-		}
+			if (url.pathname === '/.well-known/oauth-authorization-server') {
+				return handleOAuthAuthorizationServerRequest()
+			}
 
-		if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
-			const config = await getOAuthProtectedResourceConfig(request)
-			return Response.json(config)
-		}
+			if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
+				return handleOAuthProtectedResourceRequest(request)
+			}
 
-		const authInfo = await getAuthInfoFromOAuthFromRequest(request)
+			const authInfo = await getAuthInfoFromOAuthFromRequest(request)
 
-		if (!authInfo) return initiateOAuthFlow(request)
+			if (!authInfo) return initiateOAuthFlow(request)
 
-		if (url.pathname === '/mcp') {
-			const mcp = EpicMeMCP.serve('/mcp', {
-				binding: 'EPIC_ME_MCP_OBJECT',
-			})
-			ctx.props.authInfo = authInfo
-			return mcp.fetch(request, env, ctx)
-		}
+			if (url.pathname === '/mcp') {
+				const mcp = EpicMeMCP.serve('/mcp', {
+					binding: 'EPIC_ME_MCP_OBJECT',
+				})
+				ctx.props.authInfo = authInfo
+				return mcp.fetch(request, env, ctx)
+			}
 
-		return new Response('Not found', { status: 404 })
+			return new Response('Not found', { status: 404 })
+		},
 	}),
 } satisfies ExportedHandler<Env>

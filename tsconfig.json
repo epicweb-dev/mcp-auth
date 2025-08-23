@@ -8,6 +8,12 @@
       "path": "exercises/01.start/01.solution"
     },
     {
+      "path": "exercises/03.initialize-flow/01.problem"
+    },
+    {
+      "path": "exercises/04.auth-requests/01.problem"
+    },
+    {
       "path": "exercises/99.finished/99.solution"
     }
   ]

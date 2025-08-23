@@ -5,10 +5,15 @@ import {
 	type LoggingLevel,
 } from '@modelcontextprotocol/sdk/types.js'
 import { McpAgent } from 'agents/mcp'
+import {
+	handleOAuthAuthorizationServerRequest,
+	handleOAuthProtectedResourceRequest,
+} from './auth.ts'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
 import { initializeResources } from './resources.ts'
 import { initializeTools } from './tools.ts'
+import { withCors } from './utils.ts'
 
 type State = { loggingLevel: LoggingLevel }
 
@@ -41,6 +46,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 
 	async init() {
 		this.db = getClient()
+
 		this.server.server.setRequestHandler(
 			SetLevelRequestSchema,
 			async (request) => {
@@ -48,6 +54,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 				return {}
 			},
 		)
+
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)
@@ -55,16 +62,35 @@ You can also help users add tags to their entries and get all tags for an entry.
 }
 
 export default {
-	fetch: async (request, env, ctx) => {
-		const url = new URL(request.url)
+	fetch: withCors({
+		getCorsHeaders: (request) => {
+			if (request.url.includes('/.well-known')) {
+				return {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+					'Cross-Origin-Resource-Policy': 'cross-origin',
+				}
+			}
+		},
+		handler: async (request, env, ctx) => {
+			const url = new URL(request.url)
 
-		if (url.pathname === '/mcp') {
-			const mcp = EpicMeMCP.serve('/mcp', {
-				binding: 'EPIC_ME_MCP_OBJECT',
-			})
-			return mcp.fetch(request, env, ctx)
-		}
+			if (url.pathname === '/.well-known/oauth-authorization-server') {
+				return handleOAuthAuthorizationServerRequest()
+			}
 
-		return new Response('Not found', { status: 404 })
-	},
+			if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
+				return handleOAuthProtectedResourceRequest(request)
+			}
+
+			if (url.pathname === '/mcp') {
+				const mcp = EpicMeMCP.serve('/mcp', {
+					binding: 'EPIC_ME_MCP_OBJECT',
+				})
+				return mcp.fetch(request, env, ctx)
+			}
+
+			return new Response('Not found', { status: 404 })
+		},
+	}),
 } satisfies ExportedHandler<Env>
