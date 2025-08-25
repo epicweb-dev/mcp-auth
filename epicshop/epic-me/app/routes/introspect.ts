@@ -1,25 +1,26 @@
+import { invariantResponse } from '@epic-web/invariant'
 import { type Token } from '#types/helpers'
 import { type Route } from './+types/introspect'
 
-export async function loader({ request, context }: Route.LoaderArgs) {
-	const tokenInfo = await getTokenInfo(request, context.cloudflare.env)
-	if (!tokenInfo) return new Response('Unauthorized', { status: 401 })
+export async function introspectLoader({ request, context }: Route.LoaderArgs) {
+	const token = (await request.formData()).get('token')?.toString()
+	console.log({ token })
+	invariantResponse(token, 'invalid_request')
 
-	return Response.json({
-		userId: tokenInfo.userId,
-		clientId: tokenInfo.grant.clientId,
-		scopes: tokenInfo.grant.scope,
-		expiresAt: tokenInfo.expiresAt,
-	})
-}
+	const info = await resolveTokenInfo(token, context.cloudflare.env).catch(
+		() => undefined,
+	)
 
-async function getTokenInfo(
-	request: Request,
-	env: Env,
-): Promise<Token | undefined> {
-	const token = request.headers.get('authorization')?.slice('Bearer '.length)
-	if (!token) return undefined
-	return resolveTokenInfo(token, env)
+	if (!info) return { active: false }
+
+	return {
+		active: true,
+		client_id: info.grant.clientId,
+		scope: info.grant.scope.join(' '),
+		sub: info.userId,
+		exp: Math.floor(info.expiresAt / 1000), // if you store ms
+		// aud, iss, token_type, iat ... add as useful
+	}
 }
 
 async function resolveTokenInfo(

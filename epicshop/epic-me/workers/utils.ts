@@ -15,12 +15,11 @@ export function withCors({
 
 		// Handle CORS preflight requests
 		if (request.method === 'OPTIONS') {
-			return new Response(null, {
-				status: 200,
-				headers: mergeHeaders(corsHeaders, {
-					'Access-Control-Max-Age': '86400',
-				}),
+			const headers = mergeHeaders(corsHeaders, {
+				'Access-Control-Max-Age': '86400',
 			})
+
+			return new Response(null, { status: 204, headers })
 		}
 
 		// Call the original handler

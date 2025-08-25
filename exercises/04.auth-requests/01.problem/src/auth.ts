@@ -2,11 +2,11 @@ import { z } from 'zod'
 import { EPIC_ME_SERVER_URL } from './client.ts'
 
 export type AuthInfo = Exclude<
-	Awaited<ReturnType<typeof getAuthInfoFromOAuthFromRequest>>,
+	Awaited<ReturnType<typeof getAuthInfo>>,
 	undefined
 >
 
-export async function getAuthInfoFromOAuthFromRequest(request: Request) {
+export async function getAuthInfo(request: Request) {
 	const authHeader = request.headers.get('authorization')
 	if (!authHeader?.startsWith('Bearer ')) return undefined
 

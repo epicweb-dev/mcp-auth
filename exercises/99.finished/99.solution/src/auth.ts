@@ -1,80 +1,89 @@
 import { z } from 'zod'
-import { EPIC_ME_SERVER_URL } from './client.ts'
+import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
-export type AuthInfo = Exclude<
-	Awaited<ReturnType<typeof getAuthInfoFromOAuthFromRequest>>,
-	undefined
->
+export type AuthInfo = NonNullable<Awaited<ReturnType<typeof getAuthInfo>>>
 
-export async function getAuthInfoFromOAuthFromRequest(request: Request) {
-	const authHeader = request.headers.get('authorization')
-	if (!authHeader?.startsWith('Bearer ')) return undefined
+export async function getAuthInfo(request: Request) {
+	const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+	if (!token) return undefined
 
-	const token = authHeader.slice('Bearer '.length)
-
-	const validateUrl = new URL('/introspect', EPIC_ME_SERVER_URL).toString()
+	const validateUrl = new URL('/introspect', EPIC_ME_AUTH_SERVER_URL).toString()
 	const resp = await fetch(validateUrl, {
-		headers: { authorization: authHeader },
+		method: 'POST',
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		body: new URLSearchParams({ token }),
 	})
 	if (!resp.ok) return undefined
 
+	const rawData = await resp.json()
+
 	const data = z
 		.object({
-			userId: z.string(),
-			clientId: z.string().default(''),
-			scopes: z.array(z.string()).default([]),
-			expiresAt: z.number().optional(),
+			active: z.boolean(),
+			client_id: z.string(),
+			scope: z.string(),
+			sub: z.string(),
+			exp: z.number(),
 		})
-		.parse(await resp.json())
+		.parse(rawData)
 
-	const { userId, clientId, scopes, expiresAt } = data
+	const { sub, client_id, scope, exp } = data
 
 	return {
 		token,
-		clientId,
-		scopes,
-		expiresAt,
-		extra: { userId },
+		clientId: client_id,
+		scopes: scope.split(' '),
+		expiresAtMs: exp * 1000,
+		extra: { userId: sub },
 	}
 }
 
-export function initiateOAuthFlow(request: Request) {
+const requiredScopes = ['read', 'write']
+
+export function validateScopes(authInfo: AuthInfo) {
+	return requiredScopes.every((scope) => authInfo.scopes.includes(scope))
+}
+
+export function handleUnauthorized(request: Request) {
+	const hasAuthHeader = request.headers.has('authorization')
+
 	const url = new URL(request.url)
-	const currentUrl = url.toString()
-
-	// Create the OAuth authorization URL
-	const authUrl = new URL('/authorize', EPIC_ME_SERVER_URL)
-
-	// Add the current URL as the redirect target
-	authUrl.searchParams.set('redirect_uri', currentUrl)
-
-	// Add OAuth request info as a parameter
-	const oauthReqInfo = {
-		client_id: 'epicme-mcp',
-		redirect_uri: currentUrl,
-		response_type: 'code',
-		scope: ['read', 'write'],
-		state: crypto.randomUUID(),
-	}
-	authUrl.searchParams.set('oauth_req_info', JSON.stringify(oauthReqInfo))
-
+	url.pathname = '/.well-known/oauth-protected-resource/mcp'
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
-			'WWW-Authenticate': 'OAuth realm="EpicMe"',
-			Location: authUrl.toString(),
+			'WWW-Authenticate': [
+				`Bearer realm="EpicMe"`,
+				hasAuthHeader ? `error="invalid_token"` : null,
+				`resource_metadata=${url.toString()}`,
+				`scope=${requiredScopes.join(' ')}`,
+			]
+				.filter(Boolean)
+				.join(', '),
 		},
 	})
 }
 
-export async function handleOAuthAuthorizationServerRequest() {
-	const authUrl = new URL(
-		'/.well-known/oauth-authorization-server',
-		EPIC_ME_SERVER_URL,
-	)
-	return Response.redirect(authUrl.toString(), 302)
+export function handleInsufficientScope(request: Request) {
+	const url = new URL(request.url)
+	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+	return new Response('Forbidden', {
+		status: 403,
+		headers: {
+			'WWW-Authenticate': [
+				`Bearer realm="EpicMe"`,
+				`error="insufficient_scope"`,
+				`scope=${requiredScopes.join(' ')}`,
+				`resource_metadata=${url.toString()}`,
+			].join(', '),
+		},
+	})
 }
 
+/**
+ * This retrieves the protected resource configuration from the EpicMe server.
+ * This is how the client knows where to request authorization from.
+ */
 export async function handleOAuthProtectedResourceRequest(request: Request) {
 	// This server is the protected resource server, so we return our own configuration
 	const resourceServerUrl = new URL(request.url)
@@ -82,19 +91,7 @@ export async function handleOAuthProtectedResourceRequest(request: Request) {
 
 	return Response.json({
 		resource: resourceServerUrl.toString(),
-		scopes: ['read', 'write'],
-		resource_owner: 'epicme',
-		resource_server: {
-			name: 'EpicMe MCP Server',
-			version: '1.0.0',
-		},
-		authorization_servers: [
-			{
-				issuer: EPIC_ME_SERVER_URL,
-				authorization_endpoint: `${EPIC_ME_SERVER_URL}/authorize`,
-				token_endpoint: `${EPIC_ME_SERVER_URL}/token`,
-				introspection_endpoint: `${EPIC_ME_SERVER_URL}/introspect`,
-			},
-		],
+		authorization_servers: [EPIC_ME_AUTH_SERVER_URL],
+		scopes_supported: ['read', 'write'],
 	})
 }

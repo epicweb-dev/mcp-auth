@@ -22,7 +22,10 @@ const requestParamsSchema = z
 		code_challenge: z.string(),
 		code_challenge_method: z.string(),
 		redirect_uri: z.string(),
-		scope: z.string().array().optional().default([]),
+		scope: z
+			.string()
+			.default('')
+			.transform((s) => s.split(' ')),
 		state: z.string().optional().default(''),
 	})
 	.passthrough()

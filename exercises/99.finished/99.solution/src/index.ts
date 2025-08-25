@@ -8,10 +8,11 @@ import {
 import { McpAgent } from 'agents/mcp'
 import {
 	type AuthInfo,
-	getAuthInfoFromOAuthFromRequest,
-	handleOAuthAuthorizationServerRequest,
+	getAuthInfo,
+	handleInsufficientScope,
 	handleOAuthProtectedResourceRequest,
-	initiateOAuthFlow,
+	handleUnauthorized,
+	validateScopes,
 } from './auth.ts'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
@@ -83,6 +84,7 @@ export default {
 				return {
 					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+					'Access-Control-Allow-Headers': 'mcp-protocol-version',
 					'Cross-Origin-Resource-Policy': 'cross-origin',
 				}
 			}
@@ -90,19 +92,19 @@ export default {
 		handler: async (request, env, ctx) => {
 			const url = new URL(request.url)
 
-			if (url.pathname === '/.well-known/oauth-authorization-server') {
-				return handleOAuthAuthorizationServerRequest()
-			}
-
 			if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
 				return handleOAuthProtectedResourceRequest(request)
 			}
 
-			const authInfo = await getAuthInfoFromOAuthFromRequest(request)
-
-			if (!authInfo) return initiateOAuthFlow(request)
-
 			if (url.pathname === '/mcp') {
+				const authInfo = await getAuthInfo(request)
+				if (!authInfo) return handleUnauthorized(request)
+
+				const hasRequiredScopes = validateScopes(authInfo)
+				if (!hasRequiredScopes) {
+					return handleInsufficientScope(request)
+				}
+
 				const mcp = EpicMeMCP.serve('/mcp', {
 					binding: 'EPIC_ME_MCP_OBJECT',
 				})

@@ -1,4 +1,5 @@
 import { test, expect, inject } from 'vitest'
+import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
 const EPIC_ME_SERVER_URL = 'http://localhost:7788'
@@ -12,8 +13,8 @@ interface AuthServerConfig {
 
 interface ProtectedResourceConfig {
 	resource: string
-	scopes: string[]
-	[key: string]: unknown
+	scopes_supported: string[]
+	authorization_servers: string[]
 }
 
 interface ClientRegistration {
@@ -82,25 +83,50 @@ test('OAuth integration flow works end-to-end', async () => {
 	).toBeTruthy()
 	expect(
 		wwwAuthHeader,
-		'🚨 WWW-Authenticate header should contain OAuth realm',
-	).toContain('OAuth realm="EpicMe"')
+		'🚨 WWW-Authenticate header should contain Bearer realm',
+	).toContain('Bearer realm="EpicMe"')
+	expect(
+		wwwAuthHeader,
+		'🚨 WWW-Authenticate header should contain scope',
+	).toContain('scope=read write')
 
-	// Extract the authorization URL from the Location header
-	const locationHeader = unauthorizedResponse.headers.get('Location')
+	// Extract the resource_metadata url from the WWW-Authenticate header
+	const resourceMetadataUrl = wwwAuthHeader
+		?.split(',')
+		.find((h) => h.includes('resource_metadata='))
+		?.split('=')[1]
+
 	expect(
-		locationHeader,
-		'🚨 Location header should be present with authorization URL',
+		resourceMetadataUrl,
+		'🚨 Resource metadata URL should be present in WWW-Authenticate header',
 	).toBeTruthy()
-	const authorizationUrl = locationHeader
+
+	const resourceMetadataResponse = await fetch(resourceMetadataUrl!)
 	expect(
-		authorizationUrl,
-		'🚨 Authorization URL should not be empty',
-	).toBeTruthy()
+		resourceMetadataResponse.ok,
+		'🚨 fetching resource metadata should succeed',
+	).toBe(true)
+
+	const resourceMetadataResult = z
+		.object({
+			resource: z.string(),
+			authorization_servers: z.array(z.string()).length(1),
+			scopes_supported: z.array(z.string()),
+		})
+		.safeParse(await resourceMetadataResponse.json())
+	if (!resourceMetadataResult.success) {
+		throw new Error(
+			'🚨 Invalid resource metadata: ' + resourceMetadataResult.error.message,
+		)
+	}
+	const resourceMetadata = resourceMetadataResult.data
+
+	const authorizationUrl = resourceMetadata.authorization_servers[0]!
 
 	// Step 1: Metadata discovery
 	// Test OAuth Authorization Server discovery
 	const authServerDiscoveryResponse = await fetch(
-		`${mcpServerUrl}/.well-known/oauth-authorization-server`,
+		`${authorizationUrl}/.well-known/oauth-authorization-server`,
 	)
 	expect(
 		authServerDiscoveryResponse.ok,
@@ -117,30 +143,6 @@ test('OAuth integration flow works end-to-end', async () => {
 		authServerConfig.token_endpoint,
 		'🚨 Token endpoint should be present in discovery',
 	).toBeTruthy()
-
-	// Test OAuth Protected Resource discovery
-	const protectedResourceDiscoveryResponse = await fetch(
-		`${mcpServerUrl}/.well-known/oauth-protected-resource/mcp`,
-	)
-	expect(
-		protectedResourceDiscoveryResponse.ok,
-		'🚨 OAuth protected resource discovery should succeed',
-	).toBe(true)
-
-	const protectedResourceConfig =
-		(await protectedResourceDiscoveryResponse.json()) as ProtectedResourceConfig
-	expect(
-		protectedResourceConfig.resource,
-		'🚨 Resource identifier should be present',
-	).toBe(`${mcpServerUrl}/mcp`)
-	expect(
-		protectedResourceConfig.scopes,
-		'🚨 Scopes should be present',
-	).toContain('read')
-	expect(
-		protectedResourceConfig.scopes,
-		'🚨 Scopes should contain write',
-	).toContain('write')
 
 	// Step 2: Dynamic client registration
 	const clientRegistrationResponse = await fetch(
@@ -172,23 +174,6 @@ test('OAuth integration flow works end-to-end', async () => {
 		generateCodeChallenge()
 	const state = crypto.randomUUID()
 	const redirectUri = `${mcpServerUrl}/mcp`
-
-	const authUrl = new URL(authorizationUrl as string)
-	const originalParams = JSON.parse(
-		authUrl.searchParams.get('oauth_req_info') || '{}',
-	) as OriginalParams
-
-	expect(
-		originalParams.client_id,
-		'🚨 Client ID should be present in auth URL',
-	).toBeTruthy()
-	expect(
-		originalParams.redirect_uri,
-		'🚨 Redirect URI should be present in auth URL',
-	).toBeTruthy()
-	expect(originalParams.response_type, '🚨 Response type should be code').toBe(
-		'code',
-	)
 
 	// Step 4: Requesting the auth code programmatically
 	const testAuthUrl = new URL(`${EPIC_ME_SERVER_URL}/test-auth`)

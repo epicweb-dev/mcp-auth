@@ -8,7 +8,7 @@ import {
 import { McpAgent } from 'agents/mcp'
 import {
 	type AuthInfo,
-	getAuthInfoFromOAuthFromRequest,
+	getAuthInfo,
 	handleOAuthAuthorizationServerRequest,
 	handleOAuthProtectedResourceRequest,
 	initiateOAuthFlow,
@@ -87,7 +87,7 @@ export default {
 				return handleOAuthProtectedResourceRequest(request)
 			}
 
-			const authInfo = await getAuthInfoFromOAuthFromRequest(request)
+			const authInfo = await getAuthInfo(request)
 
 			if (!authInfo) return initiateOAuthFlow(request)
 

@@ -21,11 +21,12 @@
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.0.6",
-    "zod": "^3.25.67",
+    "@epic-web/invariant": "^1.0.0",
     "isbot": "^5.1.29",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router": "^7.8.0"
+    "react-router": "^7.8.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.11.2",
