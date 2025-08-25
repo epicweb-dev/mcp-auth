@@ -3,6 +3,19 @@ import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
 export type AuthInfo = NonNullable<Awaited<ReturnType<typeof getAuthInfo>>>
 
+const introspectResponseSchema = z.discriminatedUnion('active', [
+	z.object({
+		active: z.literal(true),
+		client_id: z.string(),
+		scope: z.string(),
+		sub: z.string(),
+		exp: z.number(),
+	}),
+	z.object({
+		active: z.literal(false),
+	}),
+])
+
 export async function getAuthInfo(request: Request) {
 	const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
 	if (!token) return undefined
@@ -17,15 +30,9 @@ export async function getAuthInfo(request: Request) {
 
 	const rawData = await resp.json()
 
-	const data = z
-		.object({
-			active: z.boolean(),
-			client_id: z.string(),
-			scope: z.string(),
-			sub: z.string(),
-			exp: z.number(),
-		})
-		.parse(rawData)
+	const data = introspectResponseSchema.parse(rawData)
+
+	if (!data.active) return undefined
 
 	const { sub, client_id, scope, exp } = data
 

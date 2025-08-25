@@ -21,15 +21,17 @@ export async function action({ request, context }: Route.LoaderArgs) {
 
 	const info = tokenData as Token
 
-	if (info.expiresAt < Date.now()) return { active: false }
+	if (info.expiresAt * 1000 < Date.now()) {
+		return { active: false }
+	}
 
 	return {
 		active: true,
 		client_id: info.grant.clientId,
 		scope: info.grant.scope.join(' '),
 		sub: info.userId,
-		exp: Math.floor(info.expiresAt / 1000),
-		iat: Math.floor(info.createdAt / 1000),
+		exp: info.expiresAt,
+		iat: info.createdAt,
 	}
 }
 
