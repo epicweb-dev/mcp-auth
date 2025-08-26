@@ -10,6 +10,7 @@ import {
 	type AuthInfo,
 	getAuthInfo,
 	handleInsufficientScope,
+	handleOAuthAuthorizationServerRequest,
 	handleOAuthProtectedResourceRequest,
 	handleUnauthorized,
 	validateScopes,
@@ -94,6 +95,11 @@ export default {
 
 			if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
 				return handleOAuthProtectedResourceRequest(request)
+			}
+
+			// for backwards compatibility with old clients that think we're the authorization server
+			if (url.pathname === '/.well-known/oauth-authorization-server') {
+				return handleOAuthAuthorizationServerRequest()
 			}
 
 			if (url.pathname === '/mcp') {
