@@ -1,9 +1,9 @@
-import { EPIC_ME_SERVER_URL } from './client.ts'
+import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
 export async function handleOAuthAuthorizationServerRequest() {
 	const authUrl = new URL(
 		'/.well-known/oauth-authorization-server',
-		EPIC_ME_SERVER_URL,
+		EPIC_ME_AUTH_SERVER_URL,
 	)
 	return Response.redirect(authUrl.toString(), 302)
 }
@@ -23,10 +23,10 @@ export async function handleOAuthProtectedResourceRequest(request: Request) {
 		},
 		authorization_servers: [
 			{
-				issuer: EPIC_ME_SERVER_URL,
-				authorization_endpoint: `${EPIC_ME_SERVER_URL}/authorize`,
-				token_endpoint: `${EPIC_ME_SERVER_URL}/token`,
-				introspection_endpoint: `${EPIC_ME_SERVER_URL}/introspect`,
+				issuer: EPIC_ME_AUTH_SERVER_URL,
+				authorization_endpoint: `${EPIC_ME_AUTH_SERVER_URL}/authorize`,
+				token_endpoint: `${EPIC_ME_AUTH_SERVER_URL}/token`,
+				introspection_endpoint: `${EPIC_ME_AUTH_SERVER_URL}/introspect`,
 			},
 		],
 	})

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { EPIC_ME_SERVER_URL } from './client.ts'
+import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
 export type AuthInfo = Exclude<
 	Awaited<ReturnType<typeof getAuthInfo>>,
@@ -12,7 +12,7 @@ export async function getAuthInfo(request: Request) {
 
 	const token = authHeader.slice('Bearer '.length)
 
-	const validateUrl = new URL('/introspect', EPIC_ME_SERVER_URL).toString()
+	const validateUrl = new URL('/introspect', EPIC_ME_AUTH_SERVER_URL).toString()
 	const resp = await fetch(validateUrl, {
 		headers: { authorization: authHeader },
 	})
@@ -43,7 +43,7 @@ export function initiateOAuthFlow(request: Request) {
 	const currentUrl = url.toString()
 
 	// Create the OAuth authorization URL
-	const authUrl = new URL('/authorize', EPIC_ME_SERVER_URL)
+	const authUrl = new URL('/authorize', EPIC_ME_AUTH_SERVER_URL)
 
 	// Add the current URL as the redirect target
 	authUrl.searchParams.set('redirect_uri', currentUrl)
@@ -70,7 +70,7 @@ export function initiateOAuthFlow(request: Request) {
 export async function handleOAuthAuthorizationServerRequest() {
 	const authUrl = new URL(
 		'/.well-known/oauth-authorization-server',
-		EPIC_ME_SERVER_URL,
+		EPIC_ME_AUTH_SERVER_URL,
 	)
 	return Response.redirect(authUrl.toString(), 302)
 }
@@ -90,10 +90,10 @@ export async function handleOAuthProtectedResourceRequest(request: Request) {
 		},
 		authorization_servers: [
 			{
-				issuer: EPIC_ME_SERVER_URL,
-				authorization_endpoint: `${EPIC_ME_SERVER_URL}/authorize`,
-				token_endpoint: `${EPIC_ME_SERVER_URL}/token`,
-				introspection_endpoint: `${EPIC_ME_SERVER_URL}/introspect`,
+				issuer: EPIC_ME_AUTH_SERVER_URL,
+				authorization_endpoint: `${EPIC_ME_AUTH_SERVER_URL}/authorize`,
+				token_endpoint: `${EPIC_ME_AUTH_SERVER_URL}/token`,
+				introspection_endpoint: `${EPIC_ME_AUTH_SERVER_URL}/introspect`,
 			},
 		],
 	})

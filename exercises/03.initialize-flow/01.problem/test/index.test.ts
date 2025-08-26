@@ -1,7 +1,7 @@
 import { test, expect, inject } from 'vitest'
 
 const mcpServerPort = inject('mcpServerPort')
-const EPIC_ME_SERVER_URL = 'http://localhost:7788'
+const EPIC_ME_AUTH_SERVER_URL = 'http://localhost:7788'
 
 // TypeScript interfaces for API responses
 interface AuthServerConfig {
@@ -144,7 +144,7 @@ test('OAuth integration flow works end-to-end', async () => {
 
 	// Step 2: Dynamic client registration
 	const clientRegistrationResponse = await fetch(
-		`${EPIC_ME_SERVER_URL}/register`,
+		`${EPIC_ME_AUTH_SERVER_URL}/register`,
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -191,7 +191,7 @@ test('OAuth integration flow works end-to-end', async () => {
 	)
 
 	// Step 4: Requesting the auth code programmatically
-	const testAuthUrl = new URL(`${EPIC_ME_SERVER_URL}/test-auth`)
+	const testAuthUrl = new URL(`${EPIC_ME_AUTH_SERVER_URL}/test-auth`)
 	// Use the registered client ID instead of the one from the auth URL
 	testAuthUrl.searchParams.set('client_id', clientRegistration.client_id)
 	testAuthUrl.searchParams.set('redirect_uri', redirectUri)
@@ -235,7 +235,7 @@ test('OAuth integration flow works end-to-end', async () => {
 		tokenParams.set('client_secret', clientRegistration.client_secret)
 	}
 
-	const tokenResponse = await fetch(`${EPIC_ME_SERVER_URL}/token`, {
+	const tokenResponse = await fetch(`${EPIC_ME_AUTH_SERVER_URL}/token`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: tokenParams,
