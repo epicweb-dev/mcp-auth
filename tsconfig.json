@@ -5,13 +5,22 @@
   ],
   "references": [
     {
-      "path": "exercises/01.start/01.solution"
+      "path": "exercises/01.discovery/01.problem.cors"
     },
     {
-      "path": "exercises/03.initialize-flow/01.problem"
+      "path": "exercises/01.discovery/01.solution.cors"
     },
     {
-      "path": "exercises/04.auth-requests/01.problem"
+      "path": "exercises/01.discovery/02.problem.as"
+    },
+    {
+      "path": "exercises/01.discovery/02.solution.as"
+    },
+    {
+      "path": "exercises/01.discovery/03.problem.pr"
+    },
+    {
+      "path": "exercises/01.discovery/03.solution.pr"
     },
     {
       "path": "exercises/99.finished/99.solution"

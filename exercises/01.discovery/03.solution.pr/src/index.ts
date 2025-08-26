@@ -1,5 +1,4 @@
 import { type DBClient } from '@epic-web/epicme-db-client'
-import { invariant } from '@epic-web/invariant'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import {
 	SetLevelRequestSchema,
@@ -7,13 +6,8 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { McpAgent } from 'agents/mcp'
 import {
-	type AuthInfo,
-	getAuthInfo,
-	handleInsufficientScope,
 	handleOAuthAuthorizationServerRequest,
 	handleOAuthProtectedResourceRequest,
-	handleUnauthorized,
-	validateScopes,
 } from './auth.ts'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
@@ -22,9 +16,8 @@ import { initializeTools } from './tools.ts'
 import { withCors } from './utils.ts'
 
 type State = { loggingLevel: LoggingLevel }
-type Props = { authInfo: AuthInfo }
 
-export class EpicMeMCP extends McpAgent<Env, State, Props> {
+export class EpicMeMCP extends McpAgent<Env, State> {
 	db!: DBClient
 	initialState: State = { loggingLevel: 'info' }
 	server = new McpServer(
@@ -52,10 +45,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 	)
 
 	async init() {
-		const authInfo = this.props.authInfo
-		invariant(authInfo, 'Auth info not found')
-		this.db = getClient(authInfo.token)
-
+		this.db = getClient()
 		this.server.server.setRequestHandler(
 			SetLevelRequestSchema,
 			async (request) => {
@@ -63,18 +53,9 @@ You can also help users add tags to their entries and get all tags for an entry.
 				return {}
 			},
 		)
-
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)
-	}
-
-	async requireUser() {
-		const user = await this.db.getUserById(
-			Number(this.props.authInfo.extra.userId),
-		)
-		invariant(user, 'User not found')
-		return user
 	}
 }
 
@@ -103,18 +84,9 @@ export default {
 			}
 
 			if (url.pathname === '/mcp') {
-				const authInfo = await getAuthInfo(request)
-				if (!authInfo) return handleUnauthorized(request)
-
-				const hasRequiredScopes = validateScopes(authInfo)
-				if (!hasRequiredScopes) {
-					return handleInsufficientScope(request)
-				}
-
 				const mcp = EpicMeMCP.serve('/mcp', {
 					binding: 'EPIC_ME_MCP_OBJECT',
 				})
-				ctx.props.authInfo = authInfo
 				return mcp.fetch(request, env, ctx)
 			}
 
