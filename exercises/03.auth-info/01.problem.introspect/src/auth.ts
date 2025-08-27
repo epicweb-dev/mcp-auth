@@ -11,7 +11,7 @@ import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 // 🐨 export an async function called getAuthInfo that accepts the request
 //   🐨 if the request has an Authorization header, get the token from it
 //      if it doesn't, return null
-//   🐨 construct a URL pointing to `/introspect` on the auth server
+//   🐨 construct a URL pointing to `/oauth/introspection` on the auth server
 //   🐨 make a POST request to the auth server with the token in the body
 //   💰 just gonna give this to you since it's not critical to your understanding of the topic to write yourself...
 //   💰 const resp = await fetch(validateUrl, {

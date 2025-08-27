@@ -1,6 +1,6 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type Token } from '#types/helpers'
-import { type Route } from './+types/introspect'
+import { type Route } from './+types/introspection.ts'
 
 export async function action({ request, context }: Route.LoaderArgs) {
 	const token = (await request.formData()).get('token')?.toString()

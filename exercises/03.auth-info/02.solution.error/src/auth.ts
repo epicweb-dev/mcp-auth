@@ -14,7 +14,10 @@ export async function getAuthInfo(request: Request): Promise<AuthInfo | null> {
 	const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
 	if (!token) return null
 
-	const validateUrl = new URL('/introspect', EPIC_ME_AUTH_SERVER_URL).toString()
+	const validateUrl = new URL(
+		'/oauth/introspection',
+		EPIC_ME_AUTH_SERVER_URL,
+	).toString()
 	const resp = await fetch(validateUrl, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
