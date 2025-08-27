@@ -71,7 +71,6 @@ export default {
 		handler: async (request, env, ctx) => {
 			const url = new URL(request.url)
 
-			// for backwards compatibility with old clients that think we're the authorization server
 			if (url.pathname === '/.well-known/oauth-authorization-server') {
 				return handleOAuthAuthorizationServerRequest()
 			}

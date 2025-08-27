@@ -1,9 +1,8 @@
 import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
 export async function handleOAuthProtectedResourceRequest(request: Request) {
-	// This server is the protected resource server, so we return our own configuration
 	const resourceServerUrl = new URL(request.url)
-	resourceServerUrl.pathname = '/mcp' // Point to the MCP endpoint
+	resourceServerUrl.pathname = '/mcp'
 
 	return Response.json({
 		resource: resourceServerUrl.toString(),
