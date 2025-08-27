@@ -5,7 +5,11 @@ import {
 	type LoggingLevel,
 } from '@modelcontextprotocol/sdk/types.js'
 import { McpAgent } from 'agents/mcp'
-import { handleOAuthAuthorizationServerRequest } from './auth.ts'
+import {
+	handleOAuthAuthorizationServerRequest,
+	// 💰 you'll need this:
+	// handleOAuthProtectedResourceRequest
+} from './auth.ts'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
 import { initializeResources } from './resources.ts'
@@ -64,7 +68,6 @@ export default {
 					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
 					'Access-Control-Allow-Headers': 'mcp-protocol-version',
-					'Cross-Origin-Resource-Policy': 'cross-origin',
 				}
 			}
 		},
@@ -75,6 +78,9 @@ export default {
 			if (url.pathname === '/.well-known/oauth-authorization-server') {
 				return handleOAuthAuthorizationServerRequest()
 			}
+
+			// 🐨 if the url.pathname is '/.well-known/oauth-protected-resource/mcp'
+			// then call and return the result of handleOAuthProtectedResourceRequest
 
 			if (url.pathname === '/mcp') {
 				const mcp = EpicMeMCP.serve('/mcp', {

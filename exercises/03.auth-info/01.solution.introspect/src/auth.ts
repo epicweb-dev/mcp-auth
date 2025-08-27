@@ -10,11 +10,9 @@ const introspectResponseSchema = z.object({
 	sub: z.string(),
 })
 
-export async function getAuthInfo(
-	request: Request,
-): Promise<AuthInfo | undefined> {
+export async function getAuthInfo(request: Request): Promise<AuthInfo | null> {
 	const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
-	if (!token) return undefined
+	if (!token) return null
 
 	const validateUrl = new URL('/introspect', EPIC_ME_AUTH_SERVER_URL).toString()
 	const resp = await fetch(validateUrl, {
@@ -22,7 +20,7 @@ export async function getAuthInfo(
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: new URLSearchParams({ token }),
 	})
-	if (!resp.ok) return undefined
+	if (!resp.ok) return null
 
 	const rawData = await resp.json()
 
@@ -39,20 +37,13 @@ export async function getAuthInfo(
 }
 
 export function handleUnauthorized(request: Request) {
-	const hasAuthHeader = request.headers.has('authorization')
-
 	const url = new URL(request.url)
 	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
-			'WWW-Authenticate': [
-				`Bearer realm="EpicMe"`,
-				hasAuthHeader ? `error="invalid_token"` : null,
-				`resource_metadata=${url.toString()}`,
-			]
-				.filter(Boolean)
-				.join(', '),
+			'WWW-Authenticate': `Bearer realm="EpicMe", resource_metadata=${url.toString()}`,
 		},
 	})
 }

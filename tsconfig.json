@@ -41,10 +41,16 @@
       "path": "exercises/03.auth-info/01.solution.introspect"
     },
     {
-      "path": "exercises/03.auth-info/02.problem.active"
+      "path": "exercises/03.auth-info/02.problem.error"
     },
     {
-      "path": "exercises/03.auth-info/02.solution.active"
+      "path": "exercises/03.auth-info/02.solution.error"
+    },
+    {
+      "path": "exercises/03.auth-info/03.problem.active"
+    },
+    {
+      "path": "exercises/03.auth-info/03.solution.active"
     },
     {
       "path": "exercises/04.user/01.problem.token"

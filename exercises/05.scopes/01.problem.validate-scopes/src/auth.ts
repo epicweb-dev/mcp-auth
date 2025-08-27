@@ -16,11 +16,9 @@ const introspectResponseSchema = z.discriminatedUnion('active', [
 	}),
 ])
 
-export async function getAuthInfo(
-	request: Request,
-): Promise<AuthInfo | undefined> {
+export async function getAuthInfo(request: Request): Promise<AuthInfo | null> {
 	const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
-	if (!token) return undefined
+	if (!token) return null
 
 	const validateUrl = new URL('/introspect', EPIC_ME_AUTH_SERVER_URL).toString()
 	const resp = await fetch(validateUrl, {
@@ -28,13 +26,13 @@ export async function getAuthInfo(
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: new URLSearchParams({ token }),
 	})
-	if (!resp.ok) return undefined
+	if (!resp.ok) return null
 
 	const rawData = await resp.json()
 
 	const data = introspectResponseSchema.parse(rawData)
 
-	if (!data.active) return undefined
+	if (!data.active) return null
 
 	const { sub, client_id, scope } = data
 
@@ -45,6 +43,20 @@ export async function getAuthInfo(
 		extra: { userId: sub },
 	}
 }
+
+// 🐨 create a requiredScopes variable that's an array of 'read' and 'write'
+
+// 🐨 create a validateScopes function that accepts authInfo and returns true if the authInfo includes all the requiredScopes
+
+// 🐨 create a handleInsufficientScope function which accpets a request and returns a 403 response
+//   🐨 construct the resource_metadata url using the request.url
+//   🐨 return a new Response('Forbidden') with:
+//   🐨 status of 403
+//   🐨 headers of:
+//     WWW-Authenticate with the following auth params:
+//       - Bearer realm="EpicMe"
+//       - error="insufficient_scope"
+//       - resource_metadata with the resource_metadata url you constructed
 
 export function handleUnauthorized(request: Request) {
 	const hasAuthHeader = request.headers.has('authorization')

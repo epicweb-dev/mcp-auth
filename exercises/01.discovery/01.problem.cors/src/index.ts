@@ -9,6 +9,8 @@ import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'
 import { initializeResources } from './resources.ts'
 import { initializeTools } from './tools.ts'
+// 💰 you'll need this:
+// import { withCors } from './utils.ts'
 
 type State = { loggingLevel: LoggingLevel }
 
@@ -55,6 +57,12 @@ You can also help users add tags to their entries and get all tags for an entry.
 }
 
 export default {
+	// 🐨 wrap the fetch handler as the "handler" option in a withCors function call
+	//   🐨 the getCorsHeaders function should accept the request
+	//   🐨 if the request url includes '/.well-known' then we want to return an object of headers with the following properties:
+	//     'Access-Control-Allow-Origin': '*' // <-- we don't know all origins that may want this metadata and we're fine with any origin requesting it
+	//     'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS' // <-- these methods are the only ones we support for this endpoint
+	//     'Access-Control-Allow-Headers': 'mcp-protocol-version' // <-- according to the spec, all requests made by clients should include this header, some clients may or may not include it, but it's harmless to allow so we'll do that
 	fetch: async (request, env, ctx) => {
 		const url = new URL(request.url)
 

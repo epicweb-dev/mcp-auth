@@ -1,20 +1,13 @@
 import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
 export function handleUnauthorized(request: Request) {
-	const hasAuthHeader = request.headers.has('authorization')
-
 	const url = new URL(request.url)
 	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
-			'WWW-Authenticate': [
-				`Bearer realm="EpicMe"`,
-				hasAuthHeader ? `error="invalid_token"` : null,
-				`resource_metadata=${url.toString()}`,
-			]
-				.filter(Boolean)
-				.join(', '),
+			'WWW-Authenticate': `Bearer realm="EpicMe", resource_metadata=${url.toString()}`,
 		},
 	})
 }

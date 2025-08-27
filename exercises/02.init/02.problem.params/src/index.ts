@@ -68,7 +68,6 @@ export default {
 					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
 					'Access-Control-Allow-Headers': 'mcp-protocol-version',
-					'Cross-Origin-Resource-Policy': 'cross-origin',
 				}
 			}
 		},
@@ -86,6 +85,7 @@ export default {
 
 			if (url.pathname === '/mcp') {
 				const hasAuthHeader = request.headers.has('authorization')
+				// 🐨 pass the request to handleUnauthorized
 				if (!hasAuthHeader) return handleUnauthorized()
 
 				const mcp = EpicMeMCP.serve('/mcp', {

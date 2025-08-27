@@ -1,5 +1,12 @@
 import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 
+// 🐨 export an async function called handleOAuthProtectedResourceRequest
+// 🐨 it should construct a URL pointing to `/mcp` on the current server
+// 💰 you can accept a request parameter and use request.url to get the URL of the current server
+// 🐨 then return a JSON response (💰 Response.json) with the following properties:
+//   🐨 resource: the URL you constructed above
+//   🐨 authorization_servers: an array with a single string value of the auth server URL
+
 /**
  * Handles requests for OAuth authorization server metadata.
  * Fetches the metadata from the auth server and forwards it to the client.

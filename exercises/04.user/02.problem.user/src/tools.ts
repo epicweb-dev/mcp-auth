@@ -11,6 +11,7 @@ import {
 	tagSchema,
 	updateEntryInputSchema,
 	updateTagInputSchema,
+	userSchema,
 } from '@epic-web/epicme-db-client/schema'
 import { invariant } from '@epic-web/invariant'
 import { type CallToolResult } from '@modelcontextprotocol/sdk/types.js'
@@ -19,6 +20,26 @@ import { type EpicMeMCP } from './index.ts'
 import { suggestTagsSampling } from './sampling.ts'
 
 export async function initializeTools(agent: EpicMeMCP) {
+	agent.server.registerTool(
+		'whoami',
+		{
+			title: 'Who Am I',
+			description: 'Get information about the currently logged in user',
+			annotations: {
+				readOnlyHint: true,
+				openWorldHint: false,
+			},
+			outputSchema: { user: userSchema },
+		},
+		async () => {
+			const user = 'TODO...' // 🐨 get the user from await agent.requireUser()
+			return {
+				structuredContent: { user },
+				content: [createText(user)],
+			}
+		},
+	)
+
 	agent.server.registerTool(
 		'create_entry',
 		{

@@ -62,6 +62,13 @@ You can also help users add tags to their entries and get all tags for an entry.
 		await initializeResources(this)
 		await initializePrompts(this)
 	}
+
+	// 🐨 create an async requireUser function
+	//   🐨 get the user from await this.db.getUserById(Number(this.props.authInfo.extra.userId))
+	//   🐨 the user should absolutely exist by this point,
+	//      but just in case (maybe they were deleted from the db?) throw an error if they don't
+	//   🐨 return the user
+	// 💯 use invariant instead of throwing a manual error
 }
 
 export default {
@@ -72,7 +79,6 @@ export default {
 					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
 					'Access-Control-Allow-Headers': 'mcp-protocol-version',
-					'Cross-Origin-Resource-Policy': 'cross-origin',
 				}
 			}
 		},

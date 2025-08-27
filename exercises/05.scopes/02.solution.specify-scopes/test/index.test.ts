@@ -11,12 +11,6 @@ interface AuthServerConfig {
 	[key: string]: unknown
 }
 
-interface ProtectedResourceConfig {
-	resource: string
-	scopes_supported: string[]
-	authorization_servers: string[]
-}
-
 interface ClientRegistration {
 	client_id: string
 	client_secret?: string
@@ -31,13 +25,6 @@ interface AuthResult {
 interface TokenResult {
 	access_token: string
 	token_type: string
-	[key: string]: unknown
-}
-
-interface OriginalParams {
-	client_id: string
-	redirect_uri: string
-	response_type: string
 	[key: string]: unknown
 }
 
