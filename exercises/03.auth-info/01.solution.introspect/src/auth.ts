@@ -8,7 +8,6 @@ const introspectResponseSchema = z.object({
 	client_id: z.string(),
 	scope: z.string(),
 	sub: z.string(),
-	exp: z.number(),
 })
 
 export async function getAuthInfo(
@@ -29,13 +28,12 @@ export async function getAuthInfo(
 
 	const data = introspectResponseSchema.parse(rawData)
 
-	const { sub, client_id, scope, exp } = data
+	const { sub, client_id, scope } = data
 
 	return {
 		token,
 		clientId: client_id,
 		scopes: scope.split(' '),
-		expiresAt: exp,
 		extra: { userId: sub },
 	}
 }

@@ -10,7 +10,6 @@ const introspectResponseSchema = z.discriminatedUnion('active', [
 		client_id: z.string(),
 		scope: z.string(),
 		sub: z.string(),
-		exp: z.number(),
 	}),
 	z.object({
 		active: z.literal(false),
@@ -37,13 +36,12 @@ export async function getAuthInfo(
 
 	if (!data.active) return undefined
 
-	const { sub, client_id, scope, exp } = data
+	const { sub, client_id, scope } = data
 
 	return {
 		token,
 		clientId: client_id,
 		scopes: scope.split(' '),
-		expiresAt: exp,
 		extra: { userId: sub },
 	}
 }
