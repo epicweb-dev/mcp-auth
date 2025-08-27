@@ -3,7 +3,7 @@ import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { type EpicMeMCP } from './index.ts'
 
 export async function initializeResources(agent: EpicMeMCP) {
-	agent.server.registerResource(
+	agent.mcp.registerResource(
 		'user',
 		'epicme://users/current',
 		{ description: 'The currently logged in user' },
@@ -21,7 +21,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 		},
 	)
 
-	agent.server.registerResource(
+	agent.mcp.registerResource(
 		'tags',
 		'epicme://tags',
 		{
@@ -42,7 +42,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 		},
 	)
 
-	agent.server.registerResource(
+	agent.mcp.registerResource(
 		'tag',
 		new ResourceTemplate('epicme://tags/{id}', {
 			complete: {
@@ -83,7 +83,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 		},
 	)
 
-	agent.server.registerResource(
+	agent.mcp.registerResource(
 		'entry',
 		new ResourceTemplate('epicme://entries/{id}', {
 			list: undefined,
