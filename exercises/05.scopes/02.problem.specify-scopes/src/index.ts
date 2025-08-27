@@ -27,7 +27,7 @@ type Props = { authInfo: AuthInfo }
 export class EpicMeMCP extends McpAgent<Env, State, Props> {
 	db!: DBClient
 	initialState: State = { loggingLevel: 'info' }
-	mcp = new McpServer(
+	server = new McpServer(
 		{
 			name: 'epicme',
 			title: 'EpicMe Journal',
@@ -54,7 +54,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 	async init() {
 		this.db = getClient(this.props.authInfo.token)
 
-		this.mcp.server.setRequestHandler(
+		this.server.server.setRequestHandler(
 			SetLevelRequestSchema,
 			async (request) => {
 				this.setState({ ...this.state, loggingLevel: request.params.level })

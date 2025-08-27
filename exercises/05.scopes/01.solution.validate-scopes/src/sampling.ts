@@ -10,7 +10,7 @@ const resultSchema = z.object({
 })
 
 export async function suggestTagsSampling(agent: EpicMeMCP, entryId: number) {
-	const clientCapabilities = agent.mcp.server.getClientCapabilities()
+	const clientCapabilities = agent.server.server.getClientCapabilities()
 	if (!clientCapabilities?.sampling) {
 		console.error('Client does not support sampling, skipping sampling request')
 		return
@@ -22,7 +22,7 @@ export async function suggestTagsSampling(agent: EpicMeMCP, entryId: number) {
 	const existingTags = await agent.db.getTags()
 	const currentTags = await agent.db.getEntryTags(entry.id)
 
-	const result = await agent.mcp.server.createMessage({
+	const result = await agent.server.server.createMessage({
 		systemPrompt: `
 You are a helpful assistant that suggests relevant tags for journal entries to make them easier to categorize and find later.
 You will be provided with a journal entry, it's current tags, and all existing tags.
@@ -60,7 +60,7 @@ If you have some suggestions, respond with an array of tag objects. Existing tag
 		currentTags,
 	}).catch((error) => {
 		console.error('Error parsing tag suggestions', error)
-		void agent.mcp.server.sendLoggingMessage({
+		void agent.server.server.sendLoggingMessage({
 			level: 'error',
 			data: {
 				message: 'Error parsing tag suggestions',
@@ -86,7 +86,7 @@ If you have some suggestions, respond with an array of tag objects. Existing tag
 		.filter(Boolean)
 
 	if (['debug', 'info'].includes(agent.state.loggingLevel)) {
-		void agent.mcp.server.sendLoggingMessage({
+		void agent.server.server.sendLoggingMessage({
 			level: 'info',
 			logger: 'tag-generator',
 			data: {
