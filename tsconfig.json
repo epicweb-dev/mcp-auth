@@ -23,7 +23,52 @@
       "path": "exercises/01.discovery/03.solution.pr"
     },
     {
-      "path": "exercises/99.finished/99.solution"
+      "path": "exercises/02.init/01.problem.authenticate"
+    },
+    {
+      "path": "exercises/02.init/01.solution.authenticate"
+    },
+    {
+      "path": "exercises/02.init/02.problem.params"
+    },
+    {
+      "path": "exercises/02.init/02.solution.params"
+    },
+    {
+      "path": "exercises/03.auth-info/01.problem.introspect"
+    },
+    {
+      "path": "exercises/03.auth-info/01.solution.introspect"
+    },
+    {
+      "path": "exercises/03.auth-info/02.problem.active"
+    },
+    {
+      "path": "exercises/03.auth-info/02.solution.active"
+    },
+    {
+      "path": "exercises/04.user/01.problem.token"
+    },
+    {
+      "path": "exercises/04.user/01.solution.token"
+    },
+    {
+      "path": "exercises/04.user/02.problem.user"
+    },
+    {
+      "path": "exercises/04.user/02.solution.user"
+    },
+    {
+      "path": "exercises/05.scopes/01.problem.validate-scopes"
+    },
+    {
+      "path": "exercises/05.scopes/01.solution.validate-scopes"
+    },
+    {
+      "path": "exercises/05.scopes/02.problem.specify-scopes"
+    },
+    {
+      "path": "exercises/05.scopes/02.solution.specify-scopes"
     }
   ]
 }
