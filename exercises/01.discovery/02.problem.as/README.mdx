@@ -1,8 +1,8 @@
 # Auth Server Metadata
 
-👨‍💼 Now that users can connect to our MCP server from any domain, they need to be able to discover how to authenticate with our system. When users want to access protected resources or perform actions that require authentication, they need to know where to go and what methods are available.
+👨‍💼 Now that clients can connect to our MCP server from any domain, they need to be able to discover how to authenticate with our system. When clients want to access protected resources or perform actions that require authentication, they need to know where to go and what methods are available.
 
-The problem is: how do we provide users with the information they need to authenticate with our OAuth server? Without this metadata, users' clients will be stuck because they can't figure out authentication endpoints and supported features.
+The problem is: how do we provide clients with the information they need to authenticate with our OAuth server? Without this metadata, clients will be stuck because they can't figure out authentication endpoints and supported features.
 
 ```ts
 // Example: A user trying to discover our OAuth server capabilities
@@ -17,7 +17,12 @@ const metadata = await response.json()
 // plus more things necessary for the client to set up the connection for the user
 ```
 
-This metadata endpoint is the gateway that tells users everything they need to know about our authentication system.
+<callout-info class="aside">
+	You can see what our Authorization Server metadata looks like by visiting
+	[`http://localhost:7788/.well-known/oauth-authorization-server`](http://localhost:7788/.well-known/oauth-authorization-server).
+</callout-info>
+
+This metadata endpoint is the gateway that tells clients everything they need to know about our authentication system.
 
 To do this, we need to implement the `/.well-known/oauth-authorization-server` endpoint that returns the OAuth server's metadata. This endpoint will fetch the metadata from our actual OAuth server and relay it to users, making our MCP server a complete authentication discovery hub.
 
