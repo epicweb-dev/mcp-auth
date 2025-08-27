@@ -1,6 +1,8 @@
-import { type AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js'
+import { type AuthInfo as SDKAuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js'
 import { z } from 'zod'
 import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
+
+export type AuthInfo = SDKAuthInfo & { extra: { userId: string } }
 
 const introspectResponseSchema = z.discriminatedUnion('active', [
 	z.object({
