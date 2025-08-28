@@ -16,8 +16,10 @@ const introspectResponseSchema = z.discriminatedUnion('active', [
 	}),
 ])
 
-export async function getAuthInfo(request: Request): Promise<AuthInfo | null> {
-	const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+export async function resolveAuthInfo(
+	authHeader: string | null,
+): Promise<AuthInfo | null> {
+	const token = authHeader?.replace(/^Bearer\s+/i, '')
 	if (!token) return null
 
 	const validateUrl = new URL(

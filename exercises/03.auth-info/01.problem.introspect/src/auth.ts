@@ -8,7 +8,7 @@ import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 // - scope: string (space-separated list of scopes)
 // - sub: string (the user id)
 
-// 🐨 export an async function called getAuthInfo that accepts the request
+// 🐨 export an async function called resolveAuthInfo that accepts the request
 //   🐨 if the request has an Authorization header, get the token from it
 //      if it doesn't, return null
 //   🐨 construct a URL pointing to `/oauth/introspection` on the auth server

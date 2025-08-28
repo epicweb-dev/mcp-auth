@@ -7,7 +7,7 @@ import {
 import { McpAgent } from 'agents/mcp'
 import {
 	type AuthInfo,
-	getAuthInfo,
+	resolveAuthInfo,
 	handleOAuthAuthorizationServerRequest,
 	handleOAuthProtectedResourceRequest,
 	handleUnauthorized,
@@ -95,7 +95,9 @@ export default {
 			}
 
 			if (url.pathname === '/mcp') {
-				const authInfo = await getAuthInfo(request)
+				const authInfo = await resolveAuthInfo(
+					request.headers.get('authorization'),
+				)
 				if (!authInfo) return handleUnauthorized(request)
 
 				const mcp = EpicMeMCP.serve('/mcp', {

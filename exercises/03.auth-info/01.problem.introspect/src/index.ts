@@ -7,7 +7,7 @@ import {
 import { McpAgent } from 'agents/mcp'
 import {
 	// 💰 you'll need this:
-	// getAuthInfo,
+	// resolveAuthInfo,
 	handleOAuthAuthorizationServerRequest,
 	handleOAuthProtectedResourceRequest,
 	handleUnauthorized,
