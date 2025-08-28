@@ -79,7 +79,7 @@ export default {
 				return handleOAuthAuthorizationServerRequest()
 			}
 
-			if (url.pathname === '/.well-known/oauth-protected-resource') {
+			if (url.pathname === '/.well-known/oauth-protected-resource/mcp') {
 				return handleOAuthProtectedResourceRequest(request)
 			}
 
