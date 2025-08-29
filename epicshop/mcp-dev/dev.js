@@ -112,9 +112,28 @@ async function waitForServerReady({ process: childProcess, textMatch, name }) {
 	if (!childProcess) return
 
 	return new Promise((resolve, reject) => {
+		const outputBuffer = []
+
+		function addToBuffer(channel, data) {
+			outputBuffer.push({ channel, data })
+		}
+
+		function printAndReject(reason) {
+			// Print all buffered output in sequence
+			for (const { channel, data } of outputBuffer) {
+				const str = data.toString()
+				if (channel === 'stdout') {
+					process.stdout.write(styleText('blue', `${name} `) + str)
+				} else if (channel === 'stderr') {
+					process.stderr.write(styleText('red', `${name} `) + str)
+				}
+			}
+			reject(reason)
+		}
+
 		const timeout = setTimeout(() => {
 			process.kill()
-			reject(new Error(`${name} failed to start within 10 seconds`))
+			printAndReject(new Error(`${name} failed to start within 10 seconds`))
 		}, 10_000)
 
 		function searchForMatch(data) {
@@ -124,21 +143,34 @@ async function waitForServerReady({ process: childProcess, textMatch, name }) {
 				// Remove the listeners after finding the match
 				childProcess.stdout.removeListener('data', searchForMatch)
 				childProcess.stderr.removeListener('data', searchForMatch)
+				childProcess.stdout.removeListener('data', bufferStdout)
+				childProcess.stderr.removeListener('data', bufferStderr)
 				resolve()
 			}
 		}
-		childProcess.stdout.on('data', searchForMatch)
-		childProcess.stderr.on('data', searchForMatch)
+
+		function bufferStdout(data) {
+			addToBuffer('stdout', data)
+			searchForMatch(data)
+		}
+
+		function bufferStderr(data) {
+			addToBuffer('stderr', data)
+			searchForMatch(data)
+		}
+
+		childProcess.stdout.on('data', bufferStdout)
+		childProcess.stderr.on('data', bufferStderr)
 
 		childProcess.on('error', (err) => {
 			clearTimeout(timeout)
-			reject(err)
+			printAndReject(err)
 		})
 
 		childProcess.on('exit', (code) => {
 			if (code !== 0) {
 				clearTimeout(timeout)
-				reject(new Error(`${name} exited with code ${code}`))
+				printAndReject(new Error(`${name} exited with code ${code}`))
 			}
 		})
 	})
