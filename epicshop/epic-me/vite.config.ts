@@ -5,10 +5,14 @@ import { defineConfig } from 'vite'
 import devtoolsJson from 'vite-plugin-devtools-json'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+const port = 7788
+if (!(globalThis as any).loggedPort) {
+	console.log(`EpicMeApp running at http://localhost:${port}`)
+	;(globalThis as any).loggedPort = true
+}
+
 export default defineConfig({
-	server: {
-		port: 7788,
-	},
+	server: { port },
 	plugins: [
 		{
 			name: 'strip-typegen-imports',
