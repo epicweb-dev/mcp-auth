@@ -15,7 +15,7 @@
   "dependencies": {
     "@epic-web/epicme-db-client": "*",
     "@epic-web/invariant": "^1.0.0",
-    "@modelcontextprotocol/sdk": "^1.17.4",
+    "@modelcontextprotocol/sdk": "^1.17.5",
     "agents": "^0.0.113",
     "zod": "^3.25.67"
   },
@@ -31,7 +31,7 @@
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
-    "wrangler": "^4.33.0"
+    "wrangler": "^4.33.2"
   },
   "prettier": "@epic-web/config/prettier",
   "license": "GPL-3.0-only"
