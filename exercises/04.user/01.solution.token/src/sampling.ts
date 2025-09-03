@@ -85,17 +85,15 @@ If you have some suggestions, respond with an array of tag objects. Existing tag
 		.map((id) => allTags.find((t) => t.id === id))
 		.filter(Boolean)
 
-	if (['debug', 'info'].includes(agent.state.loggingLevel)) {
-		void agent.server.server.sendLoggingMessage({
-			level: 'info',
-			logger: 'tag-generator',
-			data: {
-				message: 'Added tags to entry',
-				addedTags,
-				entry: updatedEntry,
-			},
-		})
-	}
+	void agent.server.server.sendLoggingMessage({
+		level: 'info',
+		logger: 'tag-generator',
+		data: {
+			message: 'Added tags to entry',
+			addedTags,
+			entry: updatedEntry,
+		},
+	})
 }
 
 const existingTagSchema = z.object({ id: z.number() })
