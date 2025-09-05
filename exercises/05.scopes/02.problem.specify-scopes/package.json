@@ -23,15 +23,15 @@
     "@epic-web/config": "^1.21.3",
     "@epic-web/mcp-dev": "*",
     "@faker-js/faker": "^10.0.0",
-    "@modelcontextprotocol/inspector": "0.16.5",
-    "@types/node": "^24.3.0",
+    "@modelcontextprotocol/inspector": "0.16.6",
+    "@types/node": "^24.3.1",
     "cross-env": "^10.0.0",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "execa": "^9.6.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
-    "wrangler": "^4.33.2"
+    "wrangler": "^4.34.0"
   },
   "prettier": "@epic-web/config/prettier",
   "license": "GPL-3.0-only"

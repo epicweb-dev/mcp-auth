@@ -5,7 +5,7 @@
     "title": "MCP Auth 🔐",
     "subtitle": "Build remote MCP servers with users",
     "sidecarProcesses": {
-      "EpicMeApp": "npm run dev --prefix ./epicshop/epic-me -- --clearScreen=false --logLevel=error --strictPort"
+      "EpicMeApp": "npm run dev --silent --prefix ./epicshop/epic-me -- --clearScreen=false --logLevel=error --strictPort"
     },
     "githubRepo": "https://github.com/epicweb-dev/mcp-auth",
     "instructor": {
@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@epic-web/config": "^1.21.3",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
   },
