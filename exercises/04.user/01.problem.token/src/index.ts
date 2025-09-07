@@ -4,10 +4,10 @@ import { McpAgent } from 'agents/mcp'
 import {
 	// 💰 you'll need this:
 	// type AuthInfo,
-	resolveAuthInfo,
 	handleOAuthAuthorizationServerRequest,
 	handleOAuthProtectedResourceRequest,
 	handleUnauthorized,
+	resolveAuthInfo,
 } from './auth.ts'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'

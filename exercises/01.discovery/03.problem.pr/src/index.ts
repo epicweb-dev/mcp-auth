@@ -4,7 +4,7 @@ import { McpAgent } from 'agents/mcp'
 import {
 	handleOAuthAuthorizationServerRequest,
 	// 💰 you'll need this:
-	// handleOAuthProtectedResourceRequest
+	// handleOAuthProtectedResourceRequest,
 } from './auth.ts'
 import { getClient } from './client.ts'
 import { initializePrompts } from './prompts.ts'

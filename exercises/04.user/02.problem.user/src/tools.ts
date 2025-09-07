@@ -35,7 +35,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 			const user = 'TODO...' // 🐨 get the user from await agent.requireUser()
 			return {
 				structuredContent: { user },
-				content: [createText(user)],
+				content: [createText(structuredContent)],
 			}
 		},
 	)

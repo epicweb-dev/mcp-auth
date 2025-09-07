@@ -65,16 +65,22 @@
       "path": "exercises/04.user/02.solution.user"
     },
     {
-      "path": "exercises/05.scopes/01.problem.validate-scopes"
+      "path": "exercises/05.scopes/01.problem.check-scopes"
     },
     {
-      "path": "exercises/05.scopes/01.solution.validate-scopes"
+      "path": "exercises/05.scopes/01.solution.check-scopes"
     },
     {
-      "path": "exercises/05.scopes/02.problem.specify-scopes"
+      "path": "exercises/05.scopes/02.problem.validate-sufficient-scope"
     },
     {
-      "path": "exercises/05.scopes/02.solution.specify-scopes"
+      "path": "exercises/05.scopes/02.solution.validate-sufficient-scope"
+    },
+    {
+      "path": "exercises/05.scopes/03.problem.scope-hints"
+    },
+    {
+      "path": "exercises/05.scopes/03.solution.scope-hints"
     }
   ]
 }

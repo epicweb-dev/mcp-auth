@@ -27,7 +27,7 @@ const oauthProvider = new OAuthProvider({
 	authorizeEndpoint: '/authorize',
 	tokenEndpoint: '/token',
 	clientRegistrationEndpoint: '/register',
-	scopesSupported: ['read', 'write'],
+	scopesSupported: ['read:entries', 'write:entries', 'read:tags', 'write:tags'],
 })
 
 export default {
