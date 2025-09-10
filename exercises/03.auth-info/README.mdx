@@ -1,1 +1,77 @@
 # Auth Info
+
+Authentication is the backbone of secure applications. In this exercise, you'll learn how to introspect tokens, handle invalid tokens, and determine if a token is active—all essential for building robust, user-friendly authentication flows in MCP servers.
+
+Why does this matter? Without proper token introspection and error handling, your app can't reliably know who the user is or what they're allowed to do. This can lead to security holes or a poor user experience.
+
+## What you'll learn
+
+- How to introspect an access token and extract useful information
+- How to handle invalid or expired tokens gracefully
+- How to check if a token is active and what that means for your app
+
+<callout-info>
+	Token introspection is a standard way for APIs to validate and extract claims
+	from access tokens. It helps you answer: Who is this user? What can they do?
+	Is their session still valid?
+</callout-info>
+
+### Example: Introspecting a Token
+
+```ts
+const result = await client.auth.introspect({
+	token: 'eyJhbGciOi...',
+})
+if (!result.active) {
+	throw new Error('Token is not active!')
+}
+console.log(result.sub) // user id
+```
+
+<callout-success>
+	Always check the `active` property in the introspection response. If it's
+	false, the token is invalid, expired, or revoked.
+</callout-success>
+
+### Error Handling
+
+If a token is invalid, your server should return a clear error response. This helps clients know when to prompt users to log in again.
+
+```json filename="response.json"
+{
+	"error": "invalid_token",
+	"error_description": "The access token is invalid or expired."
+}
+```
+
+<callout-warning>
+	Never leak sensitive details about why a token is invalid. Stick to generic
+	error messages for security.
+</callout-warning>
+
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant Server
+  participant DB
+  Client->>Server: /auth/introspect (token)
+  Server->>DB: Validate token
+  alt Token valid
+    DB-->>Server: Token info (active)
+    Server-->>Client: Token details (active: true)
+  else Token invalid
+    DB-->>Server: Not found/expired
+    Server-->>Client: Error (active: false)
+  end
+```
+
+## Recommended Practices
+
+- Always validate tokens before trusting any claims.
+- Handle invalid tokens gracefully—never crash or expose stack traces.
+- Use introspection to power user-specific features and permissions.
+
+- 📜 [OAuth 2.0 Token Introspection Spec](https://datatracker.ietf.org/doc/html/rfc7662)
+- 📜 [MCP Auth Spec](https://modelcontextprotocol.io/specification/2025-06-18/client/auth)

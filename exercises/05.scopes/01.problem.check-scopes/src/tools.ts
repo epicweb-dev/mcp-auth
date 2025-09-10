@@ -35,8 +35,6 @@ export async function initializeTools(agent: EpicMeMCP) {
 			const user = await agent.requireUser()
 			const structuredContent = {
 				user,
-				// When this is released, switch to authInfo
-				// https://github.com/cloudflare/agents/pull/426
 				scopes: agent.props.authInfo.scopes,
 			}
 			return {
