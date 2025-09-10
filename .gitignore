@@ -12,6 +12,8 @@ data.db
 # in a real app you'd want to not commit the .env
 # file as well, but since this is for a workshop
 # we're going to keep them around.
-# .env
+!**/.env
+
+/.env
 **/dist/**
 **/.wrangler/**

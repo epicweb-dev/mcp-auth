@@ -1,1 +1,18 @@
 # Auth Params
+
+👨‍💼 In EpicMe, when a user tries to access a protected journal entry, it's not enough to simply block them. We need to let them know why. If a request is missing the right credentials, the server should respond with a `WWW-Authenticate` header that includes extra details, called auth params, so the client understands what went wrong and how to fix it.
+
+For example, if a robot tries to fetch `/api/lemonade` without the right credentials, the response should include a realm and a resource_metadata parameter:
+
+```
+WWW-Authenticate: Bearer realm="EpicMe", resource_metadata="https://lemonade-stand.com/.well-known/oauth-protected-resource/mcp"
+```
+
+- **realm**: Identifies the protected area (like a journal or a lemonade stand) so clients know which resource needs credentials.
+- **resource_metadata**: A URL pointing to metadata about the protected resource, helping clients discover more about what they're trying to access.
+
+This helps clients know not just that they're blocked, but also where to look for more information about the protected resource.
+
+For more details, see the [MDN documentation on WWW-Authenticate](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate).
+
+Let's make sure our API gives helpful feedback when things go wrong!

@@ -1,1 +1,17 @@
 # Metadata Discovery
+
+Congratulations! You've completed the first step in making your MCP server discoverable and accessible to any standards-compliant client.
+
+In this exercise, you:
+
+- Implemented CORS support for your MCP server, ensuring that clients from any domain (including web apps and desktop tools like VS Code) can connect without running into CORS policy errors.
+- Used the provided `withCors` utility to handle the complexity of CORS headers, preflight requests, and response modification, so your business logic stays clean and focused.
+- Configured your server to expose the correct CORS headers for the `/.well-known` endpoints, which are essential for service discovery and integration.
+
+<callout-success>
+	By supporting CORS and the discovery endpoints, you've made it possible to use
+	OAuth to authorize your MCP server to access user data securely and
+	seamlessly.
+</callout-success>
+
+Let's keep building on this foundation to make your MCP server even more powerful and user-friendly!

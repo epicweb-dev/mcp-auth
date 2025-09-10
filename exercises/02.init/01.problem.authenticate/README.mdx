@@ -1,1 +1,31 @@
 # Authenticate Header
+
+👨‍💼 In EpicMe, the `Authorization` header is the gatekeeper for every journal entry. Its job is simple but critical: make sure that only requests with valid credentials can access or change journal data. If a request doesn't include this header, it shouldn't get through—no exceptions. Once the client has an auth token, it'll send that token in the `Authorization` header. If that header doesn't exist, then we know they don't have a token and shouldn't be able to access our server.
+
+But we can help them out by telling them what they need to do to get access. This is where the `WWW-Authenticate` header comes in. It tells the client what kind of authentication is required.
+
+For example, if someone tries to fetch `/api/secret-sandwich-recipes` without authenticating, the server should respond with a clear message and a `WWW-Authenticate` header:
+
+```ts
+const hasToken = request.headers.get('authorization')
+if (!hasToken) {
+	return new Response('Unauthorized', {
+		status: 401,
+		headers: {
+			'WWW-Authenticate': 'Bearer',
+		},
+	})
+}
+```
+
+This check is the first and most basic requirement for a secure journal app. The `WWW-Authenticate` header in the response tells the client what kind of credentials are needed to try again.
+
+<callout-info>
+	If a request is missing the `Authorization` header, always include the
+	`WWW-Authenticate` header in your 401 response. This helps clients know how to
+	try again.
+</callout-info>
+
+Without this check, nothing else about security matters. Make sure every request is challenged at the door.
+
+📜 For more details, see the [MDN documentation on WWW-Authenticate](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate).

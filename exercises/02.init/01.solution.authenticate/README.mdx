@@ -1,1 +1,3 @@
 # Authenticate Header
+
+👨‍💼 Fantastic progress! We've just ensured that every request to our journal app is properly challenged for credentials. Now, if a client tries to access protected resources without an Authorization header, the server responds with a `401 Unauthorized` and a clear `WWW-Authenticate` header. This makes it obvious to clients what they need to do next, improving both security and user experience (while keeping us complient with the OAuth and MCP Authorization spec). Only authenticated users can move forward, keeping journal data safe and access predictable for everyone.

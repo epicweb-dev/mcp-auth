@@ -1,1 +1,3 @@
 # Auth Params
+
+👨‍💼 Great job! We've just made our API much more helpful for clients by including detailed auth params in the `WWW-Authenticate` header when access is denied. Now, when a request is missing the right credentials, the response not only blocks access but also provides a `realm` and a `resource_metadata` URL. This gives clients clear guidance on what resource they're trying to access and where to find more information, making it easier for them to recover and try again. This improvement leads to a smoother integration experience and helps clients build smarter, more user-friendly apps.
