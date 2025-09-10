@@ -110,6 +110,9 @@ export function handleUnauthorized(request: Request) {
 			'WWW-Authenticate': [
 				`Bearer realm="EpicMe"`,
 				hasAuthHeader ? `error="invalid_token"` : null,
+				hasAuthHeader
+					? `error_description="The access token is invalid or expired"`
+					: null,
 				`resource_metadata=${url.toString()}`,
 				// 🐨 add a scope hint for the supported scopes (join the supported scopes with a space)
 			]

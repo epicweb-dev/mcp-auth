@@ -1,8 +1,8 @@
 # Auth Info
 
-Authentication is the backbone of secure applications. In this exercise, you'll learn how to introspect tokens, handle invalid tokens, and determine if a token is active—all essential for building robust, user-friendly authentication flows in MCP servers.
+So the client sends your resource server a token. Sometimes this is enough, but often you need to be able to know who that token represents and the scopes associated to that token. This is often referred to as "introspection".
 
-Why does this matter? Without proper token introspection and error handling, your app can't reliably know who the user is or what they're allowed to do. This can lead to security holes or a poor user experience.
+In this exercise, you'll learn how to introspect tokens, handle invalid tokens, and determine if a token is active—all essential for building robust, user-friendly authentication flows in MCP servers.
 
 ## What you'll learn
 
@@ -19,9 +19,13 @@ Why does this matter? Without proper token introspection and error handling, you
 ### Example: Introspecting a Token
 
 ```ts
-const result = await client.auth.introspect({
-	token: 'eyJhbGciOi...',
+const validateUrl = new URL('/oauth/introspection', 'https://auth.example.com')
+const resp = await fetch(validateUrl, {
+	method: 'POST',
+	headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	body: new URLSearchParams({ token }),
 })
+const result = await resp.json()
 if (!result.active) {
 	throw new Error('Token is not active!')
 }
@@ -53,24 +57,21 @@ If a token is invalid, your server should return a clear error response. This he
 
 ```mermaid
 sequenceDiagram
-  participant Client
-  participant Server
-  participant DB
-  Client->>Server: /auth/introspect (token)
-  Server->>DB: Validate token
+  participant Resource Server
+  participant Auth Server
+  Resource Server->>Auth Server: /auth/introspect (token)
+  Auth Server->>Auth Server: Validate token
   alt Token valid
-    DB-->>Server: Token info (active)
-    Server-->>Client: Token details (active: true)
+    Auth Server-->>Resource Server: Token details (active: true)
   else Token invalid
-    DB-->>Server: Not found/expired
-    Server-->>Client: Error (active: false)
+    Auth Server-->>Resource Server: Error (active: false)
   end
 ```
 
 ## Recommended Practices
 
 - Always validate tokens before trusting any claims.
-- Handle invalid tokens gracefully—never crash or expose stack traces.
+- Handle invalid tokens gracefully
 - Use introspection to power user-specific features and permissions.
 
 - 📜 [OAuth 2.0 Token Introspection Spec](https://datatracker.ietf.org/doc/html/rfc7662)
