@@ -18,6 +18,7 @@ import { withCors } from './utils.ts'
 // 🐨 create a type for the State object. It should be empty.
 // 🐨 create a type for the Props object. It should have a authToken property set to the AuthToken type
 
+// 🐨 add the State and Props types to the generic after Env here:
 export class EpicMeMCP extends McpAgent<Env> {
 	db!: DBClient
 	server = new McpServer(
@@ -46,7 +47,8 @@ You can also help users add tags to their entries and get all tags for an entry.
 
 	async init() {
 		// 🐨 pass this.props?.authToken.token to getClient
-		// 💯 note throw an error if there's no token (we shouldn't get to this point without one, you can use invariant)
+		// 💯 throw an error if there's no token (we shouldn't get to this point without one, you can use invariant)
+		// 💯 as an extra bonus, make a `requireAuthInfo` utility method and use that instead
 		this.db = getClient()
 		await initializeTools(this)
 		await initializeResources(this)
@@ -86,8 +88,8 @@ export default {
 				const mcp = EpicMeMCP.serve('/mcp', {
 					binding: 'EPIC_ME_MCP_OBJECT',
 				})
-				// 🐨 set ctx.props.authInfo to the authInfo object
 
+				// 🐨 set ctx.props.authInfo to the authInfo object
 				return mcp.fetch(request, env, ctx)
 			}
 

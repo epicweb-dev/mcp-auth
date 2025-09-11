@@ -49,21 +49,11 @@ You can also help users add tags to their entries and get all tags for an entry.
 	)
 
 	async init() {
-		this.db = getClient(this.requireToken())
+		this.db = getClient(this.requireAuthInfo().token)
 
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)
-	}
-
-	requireAuthInfo() {
-		const { authInfo } = this.props ?? {}
-		invariant(authInfo, 'Auth info not found')
-		return authInfo
-	}
-
-	requireToken() {
-		return this.requireAuthInfo().token
 	}
 
 	async requireUser() {
@@ -72,6 +62,12 @@ You can also help users add tags to their entries and get all tags for an entry.
 		)
 		invariant(user, 'User not found')
 		return user
+	}
+
+	requireAuthInfo() {
+		const { authInfo } = this.props ?? {}
+		invariant(authInfo, 'Auth info not found')
+		return authInfo
 	}
 
 	hasScope(...scopes: Array<SupportedScopes>) {
@@ -115,6 +111,7 @@ export default {
 				const mcp = EpicMeMCP.serve('/mcp', {
 					binding: 'EPIC_ME_MCP_OBJECT',
 				})
+
 				ctx.props.authInfo = authInfo
 				return mcp.fetch(request, env, ctx)
 			}
