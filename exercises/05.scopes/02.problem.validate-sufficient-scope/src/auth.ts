@@ -89,9 +89,8 @@ export function hasSufficientScope(authInfo: AuthInfo) {
 // 🐨 create a handleInsufficientScope function that returns a 403 response with
 // the appropriate WWW-Authenticate header.
 // The header should be similar to the handleUnauthorized one below. It needs
-// the following auth params: error, error_description, and error_uri
+// the following auth params: error and error_description
 // 💰 use the minimalValidScopeCombinations array to create the error_description to explain the valid combinations of scopes
-// 💰 use the url.toString() to create the error_uri (this is the same as the handleUnauthorized one below)
 
 export function handleUnauthorized(request: Request) {
 	const hasAuthHeader = request.headers.has('authorization')

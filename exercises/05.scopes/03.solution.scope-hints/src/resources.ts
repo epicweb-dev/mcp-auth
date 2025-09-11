@@ -14,10 +14,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 					contents: [
 						{
 							mimeType: 'application/json',
-							text: JSON.stringify({
-								user,
-								scopes: agent.requireAuthInfo().scopes,
-							}),
+							text: JSON.stringify(user),
 							uri: uri.toString(),
 						},
 					],

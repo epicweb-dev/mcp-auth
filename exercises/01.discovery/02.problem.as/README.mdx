@@ -7,7 +7,7 @@ The problem is: how do we provide clients with the information they need to auth
 ```ts
 // Example: A user trying to discover our OAuth server capabilities
 const response = await fetch(
-	'https://our-mcp-server.com/.well-known/oauth-authorization-server',
+	'https://our-mcp-server.example.com/.well-known/oauth-authorization-server',
 )
 const metadata = await response.json()
 // metadata includes things like:

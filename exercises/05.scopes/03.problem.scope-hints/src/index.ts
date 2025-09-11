@@ -56,18 +56,18 @@ You can also help users add tags to their entries and get all tags for an entry.
 		await initializePrompts(this)
 	}
 
+	requireAuthInfo() {
+		const { authInfo } = this.props ?? {}
+		invariant(authInfo, 'Auth info not found')
+		return authInfo
+	}
+
 	async requireUser() {
 		const user = await this.db.getUserById(
 			Number(this.requireAuthInfo().extra.userId),
 		)
 		invariant(user, 'User not found')
 		return user
-	}
-
-	requireAuthInfo() {
-		const { authInfo } = this.props ?? {}
-		invariant(authInfo, 'Auth info not found')
-		return authInfo
 	}
 
 	hasScope(...scopes: Array<SupportedScopes>) {
@@ -105,7 +105,7 @@ export default {
 				if (!authInfo) return handleUnauthorized(request)
 
 				if (!hasSufficientScope(authInfo)) {
-					return handleInsufficientScope(request)
+					return handleInsufficientScope()
 				}
 
 				const mcp = EpicMeMCP.serve('/mcp', {

@@ -1,1 +1,40 @@
 # Check Scopes
+
+👨‍💼 We're going to start adding more fine-grained control to what our MCP server can do by adding scopes. Our authorization server already supports scopes, and it makes no sense for the MCP server to show tools, resources, or prompts that the user doesn't have permission to use anyway.
+
+This is where OAuth scopes come in. They give us fine-grained control over what authenticated users can access.
+
+Let's look at an example of how this works in a music streaming app:
+
+```ts
+// Define what scopes are available in our app
+const musicScopes = [
+	'playlist:read', // View playlists
+	'playlist:write', // Create/edit playlists
+	'songs:read', // Search and play songs
+	'profile:read', // View user profile
+] as const
+
+// Check if user has permission to create playlists
+function hasScope(userScopes: Array<string>) {
+	return userScopes.includes('playlist:write')
+}
+
+// Only show "Create Playlist" if user has permission
+if (hasScope(authInfo.scopes)) {
+	// show create playlist functionality
+}
+```
+
+To make this work in our EpicMe journaling app, we need to create scope validation utilities. These will help us check what permissions users have and ensure they can only access the features they're authorized for.
+
+<callout-info>
+	🧝‍♀️ I added `scopes` to the `whoami` tool so you can easily see what
+	permissions are available when testing your implementation.
+</callout-info>
+
+Once you have the scope validation utilities in place, you'll also need to add a convenient `hasScope` method to the `EpicMeMCP` class that makes it easy to check permissions throughout your app:
+
+This approach means users will only see the tools and features they're actually authorized to use, creating a smooth and intuitive experience that matches their permission level.
+
+📜 For more details on OAuth scopes and how they work in MCP servers, see the [OAuth 2.0 Scopes RFC](https://tools.ietf.org/html/rfc6749#section-3.3) and the [MCP Authentication Specification](https://modelcontextprotocol.io/specification/2025-06-18/server/auth).

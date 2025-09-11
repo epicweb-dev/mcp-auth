@@ -5,7 +5,7 @@
 For example, if a robot tries to fetch `/api/lemonade` without the right credentials, the response should include a realm and a resource_metadata parameter:
 
 ```
-WWW-Authenticate: Bearer realm="EpicMe", resource_metadata="https://lemonade-stand.com/.well-known/oauth-protected-resource/mcp"
+WWW-Authenticate: Bearer realm="EpicMe", resource_metadata="https://lemonade-stand.example.com/.well-known/oauth-protected-resource/mcp"
 ```
 
 - **realm**: Identifies the protected area (like a journal or a lemonade stand) so clients know which resource needs credentials.

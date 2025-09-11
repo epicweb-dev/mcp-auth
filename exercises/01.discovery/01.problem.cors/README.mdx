@@ -6,7 +6,7 @@ If we can't handle cross-origin requests properly, users will encounter frustrat
 
 ```ts
 // Example: A user trying to access our MCP server from a different domain
-const response = await fetch('https://our-mcp-server.com/mcp', {
+const response = await fetch('https://our-mcp-server.example.com/mcp', {
 	method: 'POST',
 	headers: {
 		'Content-Type': 'application/json',

@@ -107,7 +107,7 @@ export default {
 				if (!authInfo) return handleUnauthorized(request)
 
 				// 🐨 check whether the authInfo includes all the required scopes
-				// 🐨 if it doesn't, call and return the result of handleInsufficientScope(request)
+				// 🐨 if it doesn't, call and return the result of handleInsufficientScope()
 
 				const mcp = EpicMeMCP.serve('/mcp', {
 					binding: 'EPIC_ME_MCP_OBJECT',

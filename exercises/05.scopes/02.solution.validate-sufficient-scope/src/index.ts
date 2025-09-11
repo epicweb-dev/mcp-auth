@@ -105,7 +105,7 @@ export default {
 				if (!authInfo) return handleUnauthorized(request)
 
 				if (!hasSufficientScope(authInfo)) {
-					return handleInsufficientScope(request)
+					return handleInsufficientScope()
 				}
 
 				const mcp = EpicMeMCP.serve('/mcp', {

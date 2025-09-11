@@ -41,7 +41,7 @@ sequenceDiagram
 ```ts
 // Discover resource server metadata
 const resourceMeta = await fetch(
-	'https://our-mcp-server.com/.well-known/oauth-protected-resource',
+	'https://our-mcp-server.example.com/.well-known/oauth-protected-resource',
 ).then((r) => r.json())
 
 // Find the authorization server URL

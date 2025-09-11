@@ -79,9 +79,7 @@ export function hasSufficientScope(authInfo: AuthInfo) {
 	)
 }
 
-export function handleInsufficientScope(request: Request) {
-	const url = new URL(request.url)
-	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+export function handleInsufficientScope() {
 	return new Response('Forbidden', {
 		status: 403,
 		headers: {
@@ -89,7 +87,6 @@ export function handleInsufficientScope(request: Request) {
 				`Bearer realm="EpicMe"`,
 				`error="insufficient_scope"`,
 				`error_description="Any of the following combinations of scopes is valid: ${minimalValidScopeCombinations.map((scopes) => scopes.join(' ')).join(', ')}"`,
-				`error_uri="${url.toString()}"`,
 				// normally you'd use the scopes auth param here as well to list the
 				// required scopes for this resource. However, providing any one of
 				// the required scopes will be enough for the client to use the resource

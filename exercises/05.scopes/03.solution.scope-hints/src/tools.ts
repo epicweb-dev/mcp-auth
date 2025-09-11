@@ -40,16 +40,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 				}
 				return {
 					structuredContent,
-					content: [
-						{
-							type: 'resource_link',
-							uri: 'epicme://users/current',
-							name: 'Current User',
-							description: 'Info on the currently logged in user',
-							mimeType: 'application/json',
-						},
-						createText(structuredContent),
-					],
+					content: [createText(structuredContent)],
 				}
 			},
 		)

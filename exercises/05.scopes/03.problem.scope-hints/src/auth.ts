@@ -58,14 +58,6 @@ const supportedScopes = [
 ] as const
 export type SupportedScopes = (typeof supportedScopes)[number]
 
-const validScopes: Array<SupportedScopes> = [
-	'user:read',
-	'read:entries',
-	'write:entries',
-	'read:tags',
-	'write:tags',
-]
-
 export function validateScopes(
 	authInfo: AuthInfo,
 	scopes: Array<SupportedScopes>,
@@ -73,21 +65,28 @@ export function validateScopes(
 	return scopes.every((scope) => authInfo.scopes.includes(scope))
 }
 
+const minimalValidScopeCombinations: Array<Array<SupportedScopes>> = [
+	['user:read'],
+	['read:entries'],
+	['write:entries'],
+	['read:tags'],
+	['write:tags'],
+]
+
 export function hasSufficientScope(authInfo: AuthInfo) {
-	return validScopes.some((scope) => authInfo.scopes.includes(scope))
+	return minimalValidScopeCombinations.some((scopes) =>
+		scopes.every((scope) => authInfo.scopes.includes(scope)),
+	)
 }
 
-export function handleInsufficientScope(request: Request) {
-	const url = new URL(request.url)
-	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+export function handleInsufficientScope() {
 	return new Response('Forbidden', {
 		status: 403,
 		headers: {
 			'WWW-Authenticate': [
 				`Bearer realm="EpicMe"`,
 				`error="insufficient_scope"`,
-				`error_description="At least one of: ${validScopes.join(' ')} is required."`,
-				`error_uri="${url.toString()}"`,
+				`error_description="Any of the following combinations of scopes is valid: ${minimalValidScopeCombinations.map((scopes) => scopes.join(' ')).join(', ')}"`,
 				// normally you'd use the scopes auth param here as well to list the
 				// required scopes for this resource. However, providing any one of
 				// the required scopes will be enough for the client to use the resource
