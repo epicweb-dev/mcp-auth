@@ -49,7 +49,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 	)
 
 	async init() {
-		this.db = getClient(this.props.authInfo.token)
+		this.db = getClient(this.requireToken())
 
 		await initializeTools(this)
 		await initializeResources(this)
@@ -58,14 +58,24 @@ You can also help users add tags to their entries and get all tags for an entry.
 
 	async requireUser() {
 		const user = await this.db.getUserById(
-			Number(this.props.authInfo.extra.userId),
+			Number(this.requireAuthInfo().extra.userId),
 		)
 		invariant(user, 'User not found')
 		return user
 	}
 
+	requireAuthInfo() {
+		const { authInfo } = this.props ?? {}
+		invariant(authInfo, 'Auth info not found')
+		return authInfo
+	}
+
+	requireToken() {
+		return this.requireAuthInfo().token
+	}
+
 	hasScope(...scopes: Array<SupportedScopes>) {
-		return validateScopes(this.props.authInfo, scopes)
+		return validateScopes(this.requireAuthInfo(), scopes)
 	}
 }
 

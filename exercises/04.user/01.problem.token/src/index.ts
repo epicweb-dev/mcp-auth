@@ -45,7 +45,8 @@ You can also help users add tags to their entries and get all tags for an entry.
 	)
 
 	async init() {
-		// 🐨 pass this.props.authToken.token to getClient
+		// 🐨 pass this.props?.authToken.token to getClient
+		// 💯 note throw an error if there's no token (we shouldn't get to this point without one, you can use invariant)
 		this.db = getClient()
 		await initializeTools(this)
 		await initializeResources(this)

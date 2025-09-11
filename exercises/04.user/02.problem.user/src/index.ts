@@ -1,4 +1,5 @@
 import { type DBClient } from '@epic-web/epicme-db-client'
+import { invariant } from '@epic-web/invariant'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import {
@@ -44,15 +45,25 @@ You can also help users add tags to their entries and get all tags for an entry.
 	)
 
 	async init() {
-		this.db = getClient(this.props.authInfo.token)
+		this.db = getClient(this.requireToken())
 
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)
 	}
 
+	requireAuthInfo() {
+		const { authInfo } = this.props ?? {}
+		invariant(authInfo, 'Auth info not found')
+		return authInfo
+	}
+
+	requireToken() {
+		return this.requireAuthInfo().token
+	}
+
 	// 🐨 create an async requireUser function
-	//   🐨 get the user from await this.db.getUserById(Number(this.props.authInfo.extra.userId))
+	//   🐨 get the user from await this.db.getUserById(Number(this.requireAuthInfo().extra.userId))
 	//   🐨 the user should absolutely exist by this point,
 	//      but just in case (maybe they were deleted from the db?) throw an error if they don't
 	//   🐨 return the user

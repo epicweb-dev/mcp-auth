@@ -36,7 +36,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 				const user = await agent.requireUser()
 				const structuredContent = {
 					user,
-					scopes: agent.props.authInfo.scopes,
+					scopes: agent.requireAuthInfo().scopes,
 				}
 				return {
 					structuredContent,

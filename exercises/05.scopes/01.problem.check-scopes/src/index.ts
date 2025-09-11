@@ -49,20 +49,31 @@ You can also help users add tags to their entries and get all tags for an entry.
 	)
 
 	async init() {
-		this.db = getClient(this.props.authInfo.token)
+		this.db = getClient(this.requireToken())
 
 		await initializeTools(this)
 		await initializeResources(this)
 		await initializePrompts(this)
 	}
 
+	requireAuthInfo() {
+		const { authInfo } = this.props ?? {}
+		invariant(authInfo, 'Auth info not found')
+		return authInfo
+	}
+
+	requireToken() {
+		return this.requireAuthInfo().token
+	}
+
 	async requireUser() {
 		const user = await this.db.getUserById(
-			Number(this.props.authInfo.extra.userId),
+			Number(this.requireAuthInfo().extra.userId),
 		)
 		invariant(user, 'User not found')
 		return user
 	}
+
 	// 🐨 create a hasScope utility method that takes any number of scopes and
 	// returns true if the authInfo includes all of them
 	// 💰 use the validateScopes util from auth.ts
