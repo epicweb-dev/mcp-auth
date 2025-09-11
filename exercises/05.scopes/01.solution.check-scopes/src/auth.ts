@@ -92,8 +92,7 @@ export function handleUnauthorized(request: Request) {
  * This is how the client knows where to request authorization from.
  */
 export async function handleOAuthProtectedResourceRequest(request: Request) {
-	const resourceServerUrl = new URL(request.url)
-	resourceServerUrl.pathname = '/mcp'
+	const resourceServerUrl = new URL('/mcp', request.url)
 
 	return Response.json({
 		resource: resourceServerUrl.toString(),
