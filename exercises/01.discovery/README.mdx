@@ -31,7 +31,12 @@ sequenceDiagram
 	MCP Server-->>Client: Resource metadata (includes authorization_servers)
 	Client->>Authorization Server: GET /.well-known/oauth-authorization-server
 	Authorization Server-->>Client: Authorization server metadata
-	Client->>Authorization Server: OAuth flow (get token)
+	Client->>Authorization Server: POST /oauth/register (dynamic client registration)
+	Authorization Server-->>Client: Client credentials (client_id, client_secret)
+	Client->>Authorization Server: Redirect to /oauth/authorize (with client_id)
+	Authorization Server-->>Client: Authorization code
+	Client->>Authorization Server: POST /oauth/token (exchange code for token)
+	Authorization Server-->>Client: Access token
 	Client->>MCP Server: Authenticated request with token
 	MCP Server-->>Client: Protected resource
 ```
