@@ -23,7 +23,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('read:tags')) {
+	if (agent.hasScope('tags:read')) {
 		agent.server.registerResource(
 			'tags',
 			'epicme://tags',
@@ -46,7 +46,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('read:tags')) {
+	if (agent.hasScope('tags:read')) {
 		agent.server.registerResource(
 			'tag',
 			new ResourceTemplate('epicme://tags/{id}', {
@@ -89,7 +89,7 @@ export async function initializeResources(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('read:entries')) {
+	if (agent.hasScope('entries:read')) {
 		agent.server.registerResource(
 			'entry',
 			new ResourceTemplate('epicme://entries/{id}', {

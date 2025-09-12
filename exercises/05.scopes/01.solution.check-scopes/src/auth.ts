@@ -51,10 +51,10 @@ export async function resolveAuthInfo(
 
 const supportedScopes = [
 	'user:read',
-	'read:entries',
-	'write:entries',
-	'read:tags',
-	'write:tags',
+	'entries:read',
+	'entries:write',
+	'tags:read',
+	'tags:write',
 ] as const
 export type SupportedScopes = (typeof supportedScopes)[number]
 

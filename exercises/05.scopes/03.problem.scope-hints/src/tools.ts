@@ -46,7 +46,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('write:entries')) {
+	if (agent.hasScope('entries:write')) {
 		agent.server.registerTool(
 			'create_entry',
 			{
@@ -87,7 +87,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('read:entries')) {
+	if (agent.hasScope('entries:read')) {
 		agent.server.registerTool(
 			'get_entry',
 			{
@@ -141,7 +141,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('write:entries')) {
+	if (agent.hasScope('entries:write')) {
 		agent.server.registerTool(
 			'update_entry',
 			{
@@ -226,7 +226,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('write:tags')) {
+	if (agent.hasScope('tags:write')) {
 		agent.server.registerTool(
 			'create_tag',
 			{
@@ -256,7 +256,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('read:tags')) {
+	if (agent.hasScope('tags:read')) {
 		agent.server.registerTool(
 			'get_tag',
 			{
@@ -307,7 +307,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('write:tags')) {
+	if (agent.hasScope('tags:write')) {
 		agent.server.registerTool(
 			'update_tag',
 			{
@@ -387,7 +387,7 @@ export async function initializeTools(agent: EpicMeMCP) {
 		)
 	}
 
-	if (agent.hasScope('write:entries')) {
+	if (agent.hasScope('entries:write')) {
 		agent.server.registerTool(
 			'add_tag_to_entry',
 			{

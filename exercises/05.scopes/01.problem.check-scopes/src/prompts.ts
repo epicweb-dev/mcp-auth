@@ -5,7 +5,7 @@ import { type EpicMeMCP } from './index.ts'
 
 export async function initializePrompts(agent: EpicMeMCP) {
 	// 🐨 wrap this prompt in an if statement so we only register the prompt if
-	// the user has 'read:entries' and 'read:tags' scopes
+	// the user has 'entries:read' and 'tags:read' scopes
 	agent.server.registerPrompt(
 		'suggest_tags',
 		{

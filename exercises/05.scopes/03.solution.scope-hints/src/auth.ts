@@ -51,10 +51,10 @@ export async function resolveAuthInfo(
 
 const supportedScopes = [
 	'user:read',
-	'read:entries',
-	'write:entries',
-	'read:tags',
-	'write:tags',
+	'entries:read',
+	'entries:write',
+	'tags:read',
+	'tags:write',
 ] as const
 export type SupportedScopes = (typeof supportedScopes)[number]
 
@@ -67,10 +67,10 @@ export function validateScopes(
 
 const minimalValidScopeCombinations: Array<Array<SupportedScopes>> = [
 	['user:read'],
-	['read:entries'],
-	['write:entries'],
-	['read:tags'],
-	['write:tags'],
+	['entries:read'],
+	['entries:write'],
+	['tags:read'],
+	['tags:write'],
 ]
 
 export function hasSufficientScope(authInfo: AuthInfo) {

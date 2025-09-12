@@ -10,7 +10,7 @@ const resultSchema = z.object({
 })
 
 export async function suggestTagsSampling(agent: EpicMeMCP, entryId: number) {
-	// 🐨 exit early if the client does not have the required scopes of 'read:entries', 'read:tags', 'write:entries', 'write:tags'
+	// 🐨 exit early if the client does not have the required scopes of 'entries:read', 'tags:read', 'entries:write', 'tags:write'
 
 	const clientCapabilities = agent.server.server.getClientCapabilities()
 	if (!clientCapabilities?.sampling) {

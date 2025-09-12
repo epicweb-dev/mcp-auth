@@ -49,7 +49,7 @@ export async function resolveAuthInfo(
 	}
 }
 
-// 🐨 create a supportedScopes array with 'user:read', 'read:entries', 'write:entries', 'read:tags', 'write:tags'
+// 🐨 create a supportedScopes array with 'user:read', 'entries:read', 'entries:write', 'tags:read', 'tags:write'
 // 🐨 export a type representing those scopes
 // 💰 Here's the solution for that: export type SupportedScopes = (typeof supportedScopes)[number]
 

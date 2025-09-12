@@ -51,10 +51,10 @@ export async function resolveAuthInfo(
 
 const supportedScopes = [
 	'user:read',
-	'read:entries',
-	'write:entries',
-	'read:tags',
-	'write:tags',
+	'entries:read',
+	'entries:write',
+	'tags:read',
+	'tags:write',
 ] as const
 export type SupportedScopes = (typeof supportedScopes)[number]
 
@@ -72,10 +72,10 @@ export function validateScopes(
 // cases you may need more than one scope.
 const minimalValidScopeCombinations: Array<Array<SupportedScopes>> = [
 	['user:read'],
-	['read:entries'],
-	['write:entries'],
-	['read:tags'],
-	['write:tags'],
+	['entries:read'],
+	['entries:write'],
+	['tags:read'],
+	['tags:write'],
 ]
 
 // 🧝‍♀️ I gave this one too you as well. Basically it just returns true if the

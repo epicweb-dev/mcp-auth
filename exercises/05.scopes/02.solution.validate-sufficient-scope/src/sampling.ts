@@ -11,7 +11,7 @@ const resultSchema = z.object({
 
 export async function suggestTagsSampling(agent: EpicMeMCP, entryId: number) {
 	if (
-		!agent.hasScope('read:entries', 'read:tags', 'write:entries', 'write:tags')
+		!agent.hasScope('entries:read', 'tags:read', 'entries:write', 'tags:write')
 	) {
 		console.error(
 			'Client does not sufficient scopes to suggest tags, skipping sampling request',

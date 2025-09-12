@@ -104,18 +104,18 @@ const AVAILABLE_SCOPES = [
 		description: 'Modify your user profile information',
 	},
 	{
-		value: 'read:entries',
+		value: 'entries:read',
 		label: 'Read Entries',
 		description: 'View your journal entries',
 	},
 	{
-		value: 'write:entries',
+		value: 'entries:write',
 		label: 'Write Entries',
 		description: 'Create and modify journal entries',
 	},
-	{ value: 'read:tags', label: 'Read Tags', description: 'View your tags' },
+	{ value: 'tags:read', label: 'Read Tags', description: 'View your tags' },
 	{
-		value: 'write:tags',
+		value: 'tags:write',
 		label: 'Write Tags',
 		description: 'Create and modify tags',
 	},

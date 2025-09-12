@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { type EpicMeMCP } from './index.ts'
 
 export async function initializePrompts(agent: EpicMeMCP) {
-	if (agent.hasScope('read:entries', 'read:tags')) {
+	if (agent.hasScope('entries:read', 'tags:read')) {
 		agent.server.registerPrompt(
 			'suggest_tags',
 			{
