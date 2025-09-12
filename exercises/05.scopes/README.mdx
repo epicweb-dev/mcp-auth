@@ -45,20 +45,20 @@ Here's a sequence diagram showing how scope validation works in an MCP server:
 ```mermaid
 sequenceDiagram
     participant Client
-    participant MCP_Server
-    participant Auth_Server
+    participant MCP Server
+    participant Auth Server
     participant Database
 
-    Client->>MCP_Server: Request with access token
-    MCP_Server->>Auth_Server: Introspect token
-    Auth_Server-->>MCP_Server: Token info + scopes
-    MCP_Server->>MCP_Server: Validate required scopes
+    Client->>MCP Server: Request with access token
+    MCP Server->>Auth Server: Introspect token
+    Auth Server-->>MCP Server: Token info + scopes
+    MCP Server->>MCP Server: Validate required scopes
     alt Sufficient scopes
-        MCP_Server->>Database: Execute requested operation
-        Database-->>MCP_Server: Return data
-        MCP_Server-->>Client: Success response
+        MCP Server->>Database: Execute requested operation
+        Database-->>MCP Server: Return data
+        MCP Server-->>Client: Success response
     else Insufficient scopes
-        MCP_Server-->>Client: 403 Forbidden with scope hints
+        MCP Server-->>Client: 403 Forbidden with scope hints
     end
 ```
 

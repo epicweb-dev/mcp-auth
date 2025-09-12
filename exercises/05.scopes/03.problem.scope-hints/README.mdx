@@ -2,25 +2,11 @@
 
 👨‍💼 When users try to access our EpicMe journaling app without proper permissions, they need clear guidance on what scopes are available and required. Without this information, clients can't know what to request during the OAuth authorization flow, leading to failed authentication attempts and frustrated users.
 
-The solution is to provide **scope hints** in our OAuth responses. These hints tell clients exactly what scopes are supported and help them understand what permissions they need to request from the authorization server.
+The solution is to provide a **scope hint** (called `scopes_supported`) in our OAuth protected resource metadata. This metadata tells clients exactly what scopes are supported and help them understand what permissions they could request from the authorization server.
 
 Here's how this works in practice. Imagine a smart home app that controls different devices:
 
-```ts lines=8,20-25
-// When a client gets a 401 Unauthorized response, we include scope hints
-function handleUnauthorized(request: Request) {
-	return new Response('Unauthorized', {
-		status: 401,
-		headers: {
-			'WWW-Authenticate': [
-				'Bearer realm="SmartHome"',
-				'scope="lights:read lights:write thermostat:read security:admin"',
-				'resource_metadata=https://smarthome.example.com/.well-known/oauth-protected-resource',
-			].join(', '),
-		},
-	})
-}
-
+```ts lines=6-11
 // The protected resource metadata also lists supported scopes
 function handleOAuthProtectedResourceRequest(request: Request) {
 	return Response.json({
@@ -36,25 +22,8 @@ function handleOAuthProtectedResourceRequest(request: Request) {
 }
 ```
 
-The `scope` parameter in the `WWW-Authenticate` header tells the client what scopes are available for this specific resource. The `scopes_supported` in the protected resource metadata provides a complete list of all supported scopes across the entire system.
-
-<callout-info>
-	The `scope` parameter in OAuth error responses helps clients understand what
-	permissions they can request, while `scopes_supported` in the metadata
-	endpoint gives them the complete picture of available scopes.
-</callout-info>
-
-<callout-warning>
-	Note the difference between 401 and 403 responses: In a **401 Unauthorized**
-	response, the `scope` parameter lists **all available scopes** for discovery
-	("here's what you can request"). In a **403 Forbidden** response, the `scopes`
-	parameter would list **required scopes** for that specific request ("here's
-	what you need"). We can't use `scopes` in our 403 response because we have
-	multiple valid scope combinations rather than a single required set.
-</callout-warning>
-
-This approach ensures that when users encounter permission issues, their client apps can automatically request the right scopes and guide users through a smooth authorization flow.
+The `scopes_supported` in the protected resource metadata provides a complete list of all supported scopes across the entire system.
 
 📜 For more details on OAuth scope parameters, see the [OAuth 2.0 Authorization Framework RFC](https://tools.ietf.org/html/rfc6749#section-3.3).
 
-Now, add the missing scope hints to help clients understand what permissions are available for our EpicMe journaling app.
+Now, add the missing `scopes_supported` to help clients understand what permissions are available for our EpicMe journaling app.

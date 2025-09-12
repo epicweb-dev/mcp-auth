@@ -112,7 +112,7 @@ export function handleUnauthorized(request: Request) {
 					? `error_description="The access token is invalid or expired"`
 					: null,
 				`resource_metadata=${url.toString()}`,
-				// 🐨 add a scope hint for the supported scopes (join the supported scopes with a space)
+				// No scope hint here for the same reason as above
 			]
 				.filter(Boolean)
 				.join(', '),
