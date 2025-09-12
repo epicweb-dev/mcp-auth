@@ -41,11 +41,8 @@ console.log(result.sub) // user id
 
 If a token is invalid, your server should return a clear error response. This helps clients know when to prompt users to log in again.
 
-```json filename="response.json"
-{
-	"error": "invalid_token",
-	"error_description": "The access token is invalid or expired."
-}
+```txt filename="response.txt"
+WWW-Authenticate: Bearer realm="EpicMe", error="invalid_token", error_description="The access token is invalid or expired.", resource_metadata=https://example.com/.well-known/oauth-protected-resource/mcp
 ```
 
 <callout-warning>
