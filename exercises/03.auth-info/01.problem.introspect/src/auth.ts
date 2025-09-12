@@ -25,8 +25,7 @@ import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 //   🐨 return the AuthInfo (💰 the sub is the userId)
 
 export function handleUnauthorized(request: Request) {
-	const url = new URL(request.url)
-	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+	const url = new URL('/.well-known/oauth-protected-resource/mcp', request.url)
 
 	return new Response('Unauthorized', {
 		status: 401,

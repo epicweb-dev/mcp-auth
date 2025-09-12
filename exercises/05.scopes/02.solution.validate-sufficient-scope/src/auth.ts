@@ -101,8 +101,7 @@ export function handleInsufficientScope() {
 export function handleUnauthorized(request: Request) {
 	const hasAuthHeader = request.headers.has('authorization')
 
-	const url = new URL(request.url)
-	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+	const url = new URL('/.well-known/oauth-protected-resource/mcp', request.url)
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {

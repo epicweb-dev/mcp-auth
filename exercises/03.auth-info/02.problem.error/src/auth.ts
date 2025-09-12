@@ -44,8 +44,7 @@ export async function resolveAuthInfo(
 export function handleUnauthorized(request: Request) {
 	// 🐨 make a "hasAuthHeader" variable that's true if the request has an Authorization header
 
-	const url = new URL(request.url)
-	url.pathname = '/.well-known/oauth-protected-resource/mcp'
+	const url = new URL('/.well-known/oauth-protected-resource/mcp', request.url)
 
 	return new Response('Unauthorized', {
 		status: 401,
