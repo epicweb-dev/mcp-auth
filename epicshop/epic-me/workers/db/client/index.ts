@@ -121,8 +121,8 @@ export class DBClient {
 	}
 
 	// User Methods
-	async getUserById(id: number): Promise<User | null> {
-		return this.makeRequest<User | null>('getUserById', { id })
+	async getUser(): Promise<User | null> {
+		return this.makeRequest<User | null>('getUser')
 	}
 }
 

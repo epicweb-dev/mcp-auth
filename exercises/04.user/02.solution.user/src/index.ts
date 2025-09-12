@@ -59,9 +59,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 	}
 
 	async requireUser() {
-		const user = await this.db.getUserById(
-			Number(this.requireAuthInfo().extra.userId),
-		)
+		const user = await this.db.getUser()
 		invariant(user, 'User not found')
 		return user
 	}

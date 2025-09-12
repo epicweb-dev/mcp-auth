@@ -27,6 +27,6 @@ export declare class DBClient {
     deleteTag(id: number): Promise<boolean>;
     addTagToEntry(entryTag: NewEntryTag): Promise<EntryTag>;
     getEntryTags(entryId: number): Promise<Tag[]>;
-    getUserById(id: number): Promise<User | null>;
+    getUser(): Promise<User | null>;
 }
 export type { Entry, NewEntry, Tag, NewTag, EntryTag, NewEntryTag, EntryWithTags, User, };

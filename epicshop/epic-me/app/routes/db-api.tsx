@@ -64,6 +64,8 @@ const methodSchemas = {
 		id: z.number(),
 	}),
 
+	getUser: z.object({}),
+
 	// Entry tag methods
 	addTagToEntry: z.object({
 		entryId: z.number(),
@@ -169,6 +171,12 @@ export async function action({ request, context }: Route.ActionArgs) {
 			case 'getUserById': {
 				const userParams = methodSchemas.getUserById.parse(params)
 				result = await context.db.getUserById(userParams.id)
+				break
+			}
+
+			case 'getUser': {
+				methodSchemas.getUser.parse(params) // Validate but no params needed
+				result = await context.db.getUserById(Number(userId))
 				break
 			}
 

@@ -184,10 +184,10 @@ var DBClient = /** @class */ (function () {
         });
     };
     // User Methods
-    DBClient.prototype.getUserById = function (id) {
+    DBClient.prototype.getUser = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.makeRequest('getUserById', { id: id })];
+                return [2 /*return*/, this.makeRequest('getUser')];
             });
         });
     };
