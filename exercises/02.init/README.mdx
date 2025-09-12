@@ -22,7 +22,7 @@ Without this check, anyone could access protected endpoints on resource servers 
 ```ts
 const authHeader = request.headers.get('authorization')
 if (!authHeader) {
-	return new Response('Missing Authorization header', {
+	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
 			'WWW-Authenticate': 'Bearer',
@@ -36,6 +36,19 @@ if (!authHeader) {
 	clients what kind of authentication is required.
 </callout-warning>
 
+## MCP Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant MCPClient as MCP Client
+    participant MCPServer as MCP Server
+
+    MCPClient->>MCPServer: Request to /mcp (no Authorization header)
+    MCPServer->>MCPClient: 401 Unauthorized<br/>WWW-Authenticate...
+    MCPClient->>MCPServer: GET https://api.example.com/metadata
+    MCPServer->>MCPClient: Resource metadata response
+```
+
 ## About the WWW-Authenticate Header
 
 The `WWW-Authenticate` header tells the client what authentication scheme is required and can include additional parameters (called "auth params") that provide more details about how to authenticate.
@@ -46,15 +59,16 @@ The simplest value is just the scheme:
 WWW-Authenticate: Bearer
 ```
 
-But you can also include auth params, such as `realm`, `error`, or `error_description`:
+But you can also include auth params, such as `realm`, `error`, `error_description`, or `resource_metadata`:
 
 ```
-WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token expired"
+WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token expired", resource_metadata="https://example.com/.well-known/oauth-protected-resource/mcp"
 ```
 
 - **realm**: A string identifying the protected area (useful for clients to display to users)
 - **error**: A short error code (like `invalid_token` or `insufficient_scope`)
 - **error_description**: A human-readable explanation of the error
+- **resource_metadata**: A URL pointing to metadata about the resource server (helps clients understand what they're accessing)
 
 These parameters help clients understand why authentication failed and what to do next. You can include as many or as few as make sense for your use case.
 
