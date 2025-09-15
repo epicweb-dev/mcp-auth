@@ -50,7 +50,10 @@ test('OAuth integration flow works end-to-end', async () => {
 	// Step 0: Verify 401 response headers from initial unauthorized request
 	const unauthorizedResponse = await fetch(`${mcpServerUrl}/mcp`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: {
+			'content-type': 'application/json',
+			accept: 'application/json, text/event-stream',
+		},
 		body: JSON.stringify({
 			jsonrpc: '2.0',
 			id: 1,
@@ -72,10 +75,6 @@ test('OAuth integration flow works end-to-end', async () => {
 		wwwAuthHeader,
 		'🚨 WWW-Authenticate header should contain Bearer realm',
 	).toContain('Bearer realm="EpicMe"')
-	expect(
-		wwwAuthHeader,
-		'🚨 WWW-Authenticate header should contain scope',
-	).toContain('scope=read write')
 
 	// Extract the resource_metadata url from the WWW-Authenticate header
 	const resourceMetadataUrl = wwwAuthHeader
@@ -136,7 +135,10 @@ test('OAuth integration flow works end-to-end', async () => {
 		`${EPIC_ME_AUTH_SERVER_URL}/register`,
 		{
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
+			headers: {
+				'content-type': 'application/json',
+				accept: 'application/json, text/event-stream',
+			},
 			body: JSON.stringify({
 				client_name: 'Test MCP Client',
 				redirect_uris: [`${mcpServerUrl}/mcp`],

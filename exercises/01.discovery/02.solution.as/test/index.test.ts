@@ -1,36 +1,29 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
 import { test, expect, inject } from 'vitest'
+import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
+const mcpServerUrl = `http://localhost:${mcpServerPort}`
 
-async function setupClient() {
-	const client = new Client(
-		{
-			name: 'EpicMeTester',
-			version: '1.0.0',
-		},
-		{ capabilities: {} },
+test(`The MCP server correctly proxies to the OAuth server for authorization server metadata`, async () => {
+	const resourceMetadataResponse = await fetch(
+		`${mcpServerUrl}/.well-known/oauth-authorization-server`,
 	)
+	expect(
+		resourceMetadataResponse.ok,
+		'🚨 fetching authorization server metadata should succeed',
+	).toBe(true)
 
-	const transport = new StreamableHTTPClientTransport(
-		new URL(`http://localhost:${mcpServerPort}/mcp`),
-	)
-
-	await client.connect(transport)
-
-	return {
-		client,
-		async [Symbol.asyncDispose]() {
-			await client.transport?.close()
-		},
+	const resourceMetadataResult = z
+		.object({
+			registration_endpoint: z.string(),
+			authorization_endpoint: z.string(),
+			token_endpoint: z.string(),
+		})
+		.safeParse(await resourceMetadataResponse.json())
+	if (!resourceMetadataResult.success) {
+		throw new Error(
+			'🚨 Invalid authorization server metadata: ' +
+				resourceMetadataResult.error.message,
+		)
 	}
-}
-
-test('listing tools works', async () => {
-	await using setup = await setupClient()
-	const { client } = setup
-
-	const result = await client.listTools()
-	expect(result.tools.length).toBeGreaterThan(0)
 })

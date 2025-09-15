@@ -1,36 +1,27 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
 import { test, expect, inject } from 'vitest'
+import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
+const mcpServerUrl = `http://localhost:${mcpServerPort}`
 
-async function setupClient() {
-	const client = new Client(
-		{
-			name: 'EpicMeTester',
-			version: '1.0.0',
-		},
-		{ capabilities: {} },
+test(`Protected resource metadata is discoverable`, async () => {
+	const resourceMetadataResponse = await fetch(
+		`${mcpServerUrl}/.well-known/oauth-protected-resource/mcp`,
 	)
+	expect(
+		resourceMetadataResponse.ok,
+		'🚨 fetching resource metadata should succeed',
+	).toBe(true)
 
-	const transport = new StreamableHTTPClientTransport(
-		new URL(`http://localhost:${mcpServerPort}/mcp`),
-	)
-
-	await client.connect(transport)
-
-	return {
-		client,
-		async [Symbol.asyncDispose]() {
-			await client.transport?.close()
-		},
+	const resourceMetadataResult = z
+		.object({
+			resource: z.string(),
+			authorization_servers: z.array(z.string()).length(1),
+		})
+		.safeParse(await resourceMetadataResponse.json())
+	if (!resourceMetadataResult.success) {
+		throw new Error(
+			'🚨 Invalid resource metadata: ' + resourceMetadataResult.error.message,
+		)
 	}
-}
-
-test('listing tools works', async () => {
-	await using setup = await setupClient()
-	const { client } = setup
-
-	const result = await client.listTools()
-	expect(result.tools.length).toBeGreaterThan(0)
 })

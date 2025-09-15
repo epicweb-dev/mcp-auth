@@ -13,9 +13,11 @@ export default async function setup(project: TestProject) {
 
 	project.provide('mcpServerPort', mcpServerPort)
 
+	let appServerProcess: ReturnType<typeof execa> | null = null
 	let mcpServerProcess: ReturnType<typeof execa> | null = null
 
 	// Buffers to store output for potential error display
+	const appServerOutput: Array<string> = []
 	const mcpServerOutput: Array<string> = []
 
 	/**
@@ -72,6 +74,12 @@ export default async function setup(project: TestProject) {
 	 * Display buffered output when there's a failure
 	 */
 	function displayBufferedOutput() {
+		if (appServerOutput.length > 0) {
+			console.log('=== App Server Output ===')
+			for (const line of appServerOutput) {
+				process.stdout.write(line)
+			}
+		}
 		if (mcpServerOutput.length > 0) {
 			console.log('=== MCP Server Output ===')
 			for (const line of mcpServerOutput) {
@@ -80,8 +88,41 @@ export default async function setup(project: TestProject) {
 		}
 	}
 
+	async function startAppServerIfNecessary() {
+		const isAppRunning = await fetch('http://localhost:7788/healthcheck').catch(
+			() => ({ ok: false }),
+		)
+		if (isAppRunning.ok) {
+			return
+		}
+
+		const rootDir = process.cwd().replace(/exercises\/.*$/, '')
+
+		// Start the app server from the root directory
+		console.log(`Starting app server on port 7788...`)
+		appServerProcess = execa(
+			'npm',
+			[
+				'run',
+				'dev',
+				'--prefix',
+				'./epicshop/epic-me',
+				'--',
+				'--clearScreen=false',
+				'--strictPort',
+			],
+			{
+				cwd: rootDir,
+				stdio: ['ignore', 'pipe', 'pipe'],
+			},
+		)
+	}
+
 	async function startServers() {
 		console.log('Starting servers...')
+
+		// Start app server if necessary
+		await startAppServerIfNecessary()
 
 		// Start the MCP server from the exercise directory
 		console.log(`Starting MCP server on port ${mcpServerPort}...`)
@@ -99,13 +140,23 @@ export default async function setup(project: TestProject) {
 		)
 
 		try {
-			// Wait for MCP server to be ready
-			await waitForServerReady({
-				process: mcpServerProcess,
-				textMatch: mcpServerPort.toString(),
-				name: '[MCP-SERVER]',
-				outputBuffer: mcpServerOutput,
-			})
+			// Wait for both servers to be ready simultaneously
+			await Promise.all([
+				appServerProcess
+					? waitForServerReady({
+							process: appServerProcess,
+							textMatch: '7788',
+							name: '[APP-SERVER]',
+							outputBuffer: appServerOutput,
+						})
+					: Promise.resolve(),
+				waitForServerReady({
+					process: mcpServerProcess,
+					textMatch: mcpServerPort.toString(),
+					name: '[MCP-SERVER]',
+					outputBuffer: mcpServerOutput,
+				}),
+			])
 
 			console.log('Servers started successfully')
 		} catch (error) {
@@ -142,6 +193,28 @@ export default async function setup(project: TestProject) {
 			)
 		}
 
+		if (appServerProcess && !appServerProcess.killed) {
+			cleanupPromises.push(
+				(async () => {
+					appServerProcess.kill('SIGTERM')
+					// Give it 2 seconds to gracefully shutdown, then force kill
+					const timeout = setTimeout(() => {
+						if (appServerProcess && !appServerProcess.killed) {
+							appServerProcess.kill('SIGKILL')
+						}
+					}, 2000)
+
+					try {
+						await appServerProcess
+					} catch {
+						// Process was killed, which is expected
+					} finally {
+						clearTimeout(timeout)
+					}
+				})(),
+			)
+		}
+
 		// Wait for all cleanup to complete, but with an overall timeout
 		try {
 			await Promise.race([
@@ -158,6 +231,9 @@ export default async function setup(project: TestProject) {
 			// Force kill any remaining processes
 			if (mcpServerProcess && !mcpServerProcess.killed) {
 				mcpServerProcess.kill('SIGKILL')
+			}
+			if (appServerProcess && !appServerProcess.killed) {
+				appServerProcess.kill('SIGKILL')
 			}
 		}
 

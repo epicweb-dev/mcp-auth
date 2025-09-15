@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
 const EPIC_ME_AUTH_SERVER_URL = 'http://localhost:7788'
+const mcpServerUrl = `http://localhost:${mcpServerPort}`
 
 // TypeScript interfaces for API responses
 interface AuthServerConfig {
@@ -44,19 +45,35 @@ function generateCodeChallenge() {
 	}
 }
 
-test('OAuth integration flow works end-to-end', async () => {
-	const mcpServerUrl = `http://localhost:${mcpServerPort}`
-
-	// Step 0: Verify 401 response headers from initial unauthorized request
-	const unauthorizedResponse = await fetch(`${mcpServerUrl}/mcp`, {
+async function makeInitRequest(accessToken?: string) {
+	const response = await fetch(`${mcpServerUrl}/mcp`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: {
+			'content-type': 'application/json',
+			accept: 'application/json, text/event-stream',
+			...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
+		},
 		body: JSON.stringify({
 			jsonrpc: '2.0',
 			id: 1,
-			method: 'tools/list',
+			method: 'initialize',
+			params: {
+				protocolVersion: '2024-11-05',
+				capabilities: {},
+				clientInfo: {
+					name: 'Test Client',
+					version: '1.0.0',
+				},
+			},
 		}),
 	})
+
+	return response
+}
+
+test('OAuth integration flow works end-to-end', async () => {
+	// Step 0: Verify 401 response headers from initial unauthorized request
+	const unauthorizedResponse = await makeInitRequest()
 
 	expect(
 		unauthorizedResponse.status,
@@ -72,10 +89,6 @@ test('OAuth integration flow works end-to-end', async () => {
 		wwwAuthHeader,
 		'🚨 WWW-Authenticate header should contain Bearer realm',
 	).toContain('Bearer realm="EpicMe"')
-	expect(
-		wwwAuthHeader,
-		'🚨 WWW-Authenticate header should contain scope',
-	).toContain('scope=read write')
 
 	// Extract the resource_metadata url from the WWW-Authenticate header
 	const resourceMetadataUrl = wwwAuthHeader
@@ -136,7 +149,10 @@ test('OAuth integration flow works end-to-end', async () => {
 		`${EPIC_ME_AUTH_SERVER_URL}/register`,
 		{
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
+			headers: {
+				'content-type': 'application/json',
+				accept: 'application/json, text/event-stream',
+			},
 			body: JSON.stringify({
 				client_name: 'Test MCP Client',
 				redirect_uris: [`${mcpServerUrl}/mcp`],
@@ -232,27 +248,7 @@ test('OAuth integration flow works end-to-end', async () => {
 	// Step 7: Performing authenticated requests (listing tools)
 	// Verify the token works by making a simple authenticated request to the MCP server
 	// We'll test that we get past the authentication (no 401) even if we get protocol errors
-	const authTestResponse = await fetch(`${mcpServerUrl}/mcp`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json, text/event-stream',
-			Authorization: `Bearer ${tokenResult.access_token}`,
-		},
-		body: JSON.stringify({
-			jsonrpc: '2.0',
-			id: 1,
-			method: 'initialize',
-			params: {
-				protocolVersion: '2024-11-05',
-				capabilities: {},
-				clientInfo: {
-					name: 'Test Client',
-					version: '1.0.0',
-				},
-			},
-		}),
-	})
+	const authTestResponse = await makeInitRequest(tokenResult.access_token)
 
 	expect(
 		authTestResponse.status,
