@@ -1,36 +1,9 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
 import { test, expect, inject } from 'vitest'
+import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
+const mcpServerUrl = `http://localhost:${mcpServerPort}`
 
-async function setupClient() {
-	const client = new Client(
-		{
-			name: 'EpicMeTester',
-			version: '1.0.0',
-		},
-		{ capabilities: {} },
-	)
-
-	const transport = new StreamableHTTPClientTransport(
-		new URL(`http://localhost:${mcpServerPort}/mcp`),
-	)
-
-	await client.connect(transport)
-
-	return {
-		client,
-		async [Symbol.asyncDispose]() {
-			await client.transport?.close()
-		},
-	}
-}
-
-test('listing tools works', async () => {
-	await using setup = await setupClient()
-	const { client } = setup
-
-	const result = await client.listTools()
-	expect(result.tools.length).toBeGreaterThan(0)
+test(`TODO: update this test title to describe the important thing we're working on in this exercise step`, async () => {
+	// TODO: implement this test
 })

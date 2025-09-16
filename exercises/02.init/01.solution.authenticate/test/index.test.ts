@@ -1,36 +1,25 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
 import { test, expect, inject } from 'vitest'
+import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
+const mcpServerUrl = `http://localhost:${mcpServerPort}`
 
-async function setupClient() {
-	const client = new Client(
-		{
-			name: 'EpicMeTester',
-			version: '1.0.0',
-		},
-		{ capabilities: {} },
-	)
+test(`Missing Authorization header returns 401 with WWW-Authenticate`, async () => {
+	const response = await fetch(`${mcpServerUrl}/mcp`)
 
-	const transport = new StreamableHTTPClientTransport(
-		new URL(`http://localhost:${mcpServerPort}/mcp`),
-	)
+	expect(
+		response.status,
+		'🚨 Request without Authorization header should return 401 Unauthorized',
+	).toBe(401)
 
-	await client.connect(transport)
+	const wwwAuthenticate = response.headers.get('WWW-Authenticate')
+	expect(
+		wwwAuthenticate,
+		'🚨 401 response should include WWW-Authenticate header',
+	).toBeTruthy()
 
-	return {
-		client,
-		async [Symbol.asyncDispose]() {
-			await client.transport?.close()
-		},
-	}
-}
-
-test('listing tools works', async () => {
-	await using setup = await setupClient()
-	const { client } = setup
-
-	const result = await client.listTools()
-	expect(result.tools.length).toBeGreaterThan(0)
+	expect(
+		wwwAuthenticate,
+		'🚨 WWW-Authenticate header should specify Bearer realm="EpicMe"',
+	).toBe('Bearer realm="EpicMe"')
 })
