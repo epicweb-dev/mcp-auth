@@ -1,5 +1,4 @@
 import { test, expect, inject } from 'vitest'
-import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
 const mcpServerUrl = `http://localhost:${mcpServerPort}`
