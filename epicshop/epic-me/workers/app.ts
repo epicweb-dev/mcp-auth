@@ -24,9 +24,9 @@ const oauthProvider = new OAuthProvider({
 	apiHandler: defaultHandler,
 	// @ts-expect-error these types are wrong...
 	defaultHandler,
-	authorizeEndpoint: '/authorize',
-	tokenEndpoint: '/token',
-	clientRegistrationEndpoint: '/register',
+	authorizeEndpoint: '/oauth/authorize',
+	tokenEndpoint: '/oauth/token',
+	clientRegistrationEndpoint: '/oauth/register',
 	scopesSupported: [
 		'user:read',
 		'entries:read',

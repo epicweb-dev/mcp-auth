@@ -82,3 +82,11 @@ sequenceDiagram
 The goal is to ensure that only active, valid tokens can access our MCP server resources, maintaining security and providing a reliable user experience.
 
 Now, let's implement proper token validation by checking the `active` property!
+
+<callout-warning>
+	🚨 Note: this is a difficult one to test because you need a token that's
+	expired. As a result the tests will just make sure you didn't regress
+	behavior, but they won't validate you got the `active` check right. Luckily
+	it's pretty simple to know you got it right because it's really only one line
+	of code you need.
+</callout-warning>

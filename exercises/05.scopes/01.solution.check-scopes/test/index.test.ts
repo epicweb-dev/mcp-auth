@@ -131,7 +131,7 @@ test(`{test title that describes the important thing we're working on in this ex
 
 	// Step 2: Dynamic client registration
 	const clientRegistrationResponse = await fetch(
-		`${EPIC_ME_AUTH_SERVER_URL}/register`,
+		`${EPIC_ME_AUTH_SERVER_URL}/oauth/register`,
 		{
 			method: 'POST',
 			headers: {
@@ -208,7 +208,7 @@ test(`{test title that describes the important thing we're working on in this ex
 		tokenParams.set('client_secret', clientRegistration.client_secret)
 	}
 
-	const tokenResponse = await fetch(`${EPIC_ME_AUTH_SERVER_URL}/token`, {
+	const tokenResponse = await fetch(`${EPIC_ME_AUTH_SERVER_URL}/oauth/token`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: tokenParams,

@@ -146,7 +146,7 @@ test('OAuth integration flow works end-to-end', async () => {
 
 	// Step 2: Dynamic client registration
 	const clientRegistrationResponse = await fetch(
-		`${EPIC_ME_AUTH_SERVER_URL}/register`,
+		`${EPIC_ME_AUTH_SERVER_URL}/oauth/register`,
 		{
 			method: 'POST',
 			headers: {
@@ -223,7 +223,7 @@ test('OAuth integration flow works end-to-end', async () => {
 		tokenParams.set('client_secret', clientRegistration.client_secret)
 	}
 
-	const tokenResponse = await fetch(`${EPIC_ME_AUTH_SERVER_URL}/token`, {
+	const tokenResponse = await fetch(`${EPIC_ME_AUTH_SERVER_URL}/oauth/token`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: tokenParams,
