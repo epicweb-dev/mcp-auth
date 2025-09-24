@@ -1,5 +1,7 @@
 # Token Active
 
+<EpicVideo url="https://www.epicai.pro/workshops/day-7-8-mcp-auth/token-active-zbbw4" />
+
 👨‍💼 When we introspect an auth token, the introspection endpoint will return whether the token is currently active (because tokens can be revoked or expired) and we need to check for that in our resolution callback.
 
 The solution is to always verify that a token is active before trusting any of its claims. OAuth 2.0 introspection responses include an `active` property that tells us exactly this.

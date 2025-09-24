@@ -21,6 +21,7 @@
     },
     "product": {
       "host": "www.epicai.pro",
+      "slug": "day-7-8-mcp-auth",
       "displayName": "EpicAI.pro",
       "displayNameShort": "Epic AI",
       "discordChannelId": "1409600723716411494",

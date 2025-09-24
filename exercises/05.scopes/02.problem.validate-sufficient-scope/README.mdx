@@ -1,5 +1,7 @@
 # Validate Sufficient Scope
 
+<EpicVideo url="https://www.epicai.pro/workshops/day-7-8-mcp-auth/validate-sufficient-scope-wwivw" />
+
 👨‍💼 Some users are authenticating with no scopes which results in having a valid token, but not enough permissions to actually do anything useful with the MCP server. It would be better if we could let them know up front that they don't have enough permissions and need a new token with the appropriate scopes.
 
 To do this, you return a `403 Forbidden` response with the appropriate `WWW-Authenticate` header:

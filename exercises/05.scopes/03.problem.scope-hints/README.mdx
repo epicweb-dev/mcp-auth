@@ -1,5 +1,7 @@
 # Scope Hints
 
+<EpicVideo url="https://www.epicai.pro/workshops/day-7-8-mcp-auth/scope-hints-p0c97" />
+
 👨‍💼 When users try to access our EpicMe journaling app without proper permissions, they need clear guidance on what scopes are available and required. Without this information, clients can't know what to request during the OAuth authorization flow, leading to failed authentication attempts and frustrated users.
 
 The solution is to provide a **scope hint** (called `scopes_supported`) in our OAuth protected resource metadata. This metadata tells clients exactly what scopes are supported and help them understand what permissions they could request from the authorization server.
