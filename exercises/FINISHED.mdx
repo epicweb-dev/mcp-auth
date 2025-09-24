@@ -1,3 +1,33 @@
 # MCP Auth 🔐
 
 Hooray! You're all done! 👏👏
+
+## What you've learned
+
+### 1. Introspection & Error Handling
+
+- **Introspection Endpoint:** Implemented an OAuth2-compliant introspection endpoint to validate access tokens and inspect token metadata.
+- **Error Handling:** Learned to surface clear, standardized error responses for invalid, expired, or malformed tokens.
+
+### 2. Active Token Management
+
+- **Token Status:** Built logic to verify token revocation and active status in real time.
+- **Revocation Support:** Ensured your server could handle on-demand token invalidation (revoking access when necessary).
+
+### 3. User Info & Profile Endpoint
+
+- **User Info Endpoint:** Created a secure endpoint that returns user profile data based on a validated token.
+- **Authorization Checks:** Enforced token-based authorization to protect sensitive user information.
+
+### 4. Scopes & Permission Enforcement
+
+- **Scope Validation:** Validated scope claims embedded in tokens to restrict endpoint access appropriately.
+- **Permission Checks:** Designed fine-grained permission enforcement using scope values to control resource operations.
+
+---
+
+**In summary:**
+
+You've built a fully standards-compliant resource server for MCP handling introspection, token activation checks, secure user info retrieval, and scope enforcement. You've learned to design robust, secure, and extensible auth flows. Empowering clients to authenticate and authorize users with confidence.
+
+Amazing work! 🎉
