@@ -22,7 +22,12 @@
     "product": {
       "host": "www.epicai.pro",
       "displayName": "EpicAI.pro",
-      "displayNameShort": "Epic AI"
+      "displayNameShort": "Epic AI",
+      "discordChannelId": "1409600723716411494",
+      "discordTags": [
+        "1409601169801871410",
+        "1409601460185989231"
+      ]
     }
   },
   "type": "module",
