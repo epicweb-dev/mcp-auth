@@ -8,6 +8,8 @@ declare module 'vitest' {
 	}
 }
 
+type OutputBuffer = Array<{ channel: 'stdout' | 'stderr'; data: Buffer }>
+
 export default async function setup(project: TestProject) {
 	const mcpServerPort = await getPort()
 
@@ -17,8 +19,8 @@ export default async function setup(project: TestProject) {
 	let mcpServerProcess: ReturnType<typeof execa> | null = null
 
 	// Buffers to store output for potential error display
-	const appServerOutput: Array<string> = []
-	const mcpServerOutput: Array<string> = []
+	const appServerOutput: OutputBuffer = []
+	const mcpServerOutput: OutputBuffer = []
 
 	/**
 	 * Wait for a server to be ready by monitoring its output for a specific text pattern
@@ -32,7 +34,7 @@ export default async function setup(project: TestProject) {
 		process: ReturnType<typeof execa> | null
 		textMatch: string
 		name: string
-		outputBuffer: Array<string>
+		outputBuffer: OutputBuffer
 	}) {
 		if (!childProcess) return
 
@@ -42,9 +44,12 @@ export default async function setup(project: TestProject) {
 				reject(new Error(`${name} failed to start within 10 seconds`))
 			}, 10_000)
 
-			function searchForMatch(data: Buffer) {
+			function searchForMatch(
+				channel: OutputBuffer[number]['channel'],
+				data: Buffer,
+			) {
+				outputBuffer.push({ channel, data })
 				const str = data.toString()
-				outputBuffer.push(str)
 				if (str.includes(textMatch)) {
 					clearTimeout(timeout)
 					// Remove the listeners after finding the match
@@ -53,8 +58,9 @@ export default async function setup(project: TestProject) {
 					resolve()
 				}
 			}
-			childProcess?.stdout?.on('data', searchForMatch)
-			childProcess?.stderr?.on('data', searchForMatch)
+
+			childProcess?.stdout?.on('data', searchForMatch.bind(null, 'stdout'))
+			childProcess?.stderr?.on('data', searchForMatch.bind(null, 'stderr'))
 
 			childProcess?.on('error', (err) => {
 				clearTimeout(timeout)
@@ -76,14 +82,14 @@ export default async function setup(project: TestProject) {
 	function displayBufferedOutput() {
 		if (appServerOutput.length > 0) {
 			console.log('=== App Server Output ===')
-			for (const line of appServerOutput) {
-				process.stdout.write(line)
+			for (const { channel, data } of appServerOutput) {
+				process[channel].write(data)
 			}
 		}
 		if (mcpServerOutput.length > 0) {
 			console.log('=== MCP Server Output ===')
-			for (const line of mcpServerOutput) {
-				process.stdout.write(line)
+			for (const { channel, data } of mcpServerOutput) {
+				process[channel].write(data)
 			}
 		}
 	}
@@ -100,22 +106,20 @@ export default async function setup(project: TestProject) {
 
 		// Start the app server from the root directory
 		console.log(`Starting app server on port 7788...`)
-		appServerProcess = execa(
-			'npm',
-			[
-				'run',
-				'dev',
-				'--prefix',
-				'./epicshop/epic-me',
-				'--',
-				'--clearScreen=false',
-				'--strictPort',
-			],
-			{
-				cwd: rootDir,
-				stdio: ['ignore', 'pipe', 'pipe'],
-			},
-		)
+		const command = 'npm'
+		// prettier-ignore
+		const args = [
+			'run', 'dev',
+			'--prefix', './epicshop/epic-me',
+			'--',
+			'--clearScreen=false',
+			'--strictPort',
+		]
+
+		appServerProcess = execa(command, args, {
+			cwd: rootDir,
+			stdio: ['ignore', 'pipe', 'pipe'],
+		})
 	}
 
 	async function startServers() {
@@ -148,7 +152,9 @@ export default async function setup(project: TestProject) {
 							textMatch: '7788',
 							name: '[APP-SERVER]',
 							outputBuffer: appServerOutput,
-						})
+						}).then(() =>
+							waitForResourceReady('http://localhost:7788/healthcheck'),
+						)
 					: Promise.resolve(),
 				waitForServerReady({
 					process: mcpServerProcess,
@@ -175,12 +181,12 @@ export default async function setup(project: TestProject) {
 			cleanupPromises.push(
 				(async () => {
 					mcpServerProcess.kill('SIGTERM')
-					// Give it 2 seconds to gracefully shutdown, then force kill
+					// Give it time to gracefully shutdown, then force kill
 					const timeout = setTimeout(() => {
 						if (mcpServerProcess && !mcpServerProcess.killed) {
 							mcpServerProcess.kill('SIGKILL')
 						}
-					}, 2000)
+					}, 500)
 
 					try {
 						await mcpServerProcess
@@ -197,12 +203,12 @@ export default async function setup(project: TestProject) {
 			cleanupPromises.push(
 				(async () => {
 					appServerProcess.kill('SIGTERM')
-					// Give it 2 seconds to gracefully shutdown, then force kill
+					// Give time to gracefully shutdown, then force kill
 					const timeout = setTimeout(() => {
 						if (appServerProcess && !appServerProcess.killed) {
 							appServerProcess.kill('SIGKILL')
 						}
-					}, 2000)
+					}, 500)
 
 					try {
 						await appServerProcess
@@ -245,4 +251,42 @@ export default async function setup(project: TestProject) {
 
 	// Return cleanup function
 	return cleanup
+}
+
+function waitForResourceReady(resourceUrl: string) {
+	const timeoutSignal = AbortSignal.timeout(10_000)
+	let lastError: Error | null = null
+	return new Promise<void>((resolve, reject) => {
+		timeoutSignal.addEventListener('abort', () => {
+			const error = lastError ?? new Error('No other errors detected')
+			error.message = `Timed out waiting for ${resourceUrl}:\n Last Error:${error.message}`
+			reject(error)
+		})
+		async function checkResource() {
+			try {
+				const response = await fetch(resourceUrl)
+				if (response.ok) return resolve()
+			} catch (error) {
+				lastError = error instanceof Error ? error : new Error(String(error))
+			}
+			await sleep(100, timeoutSignal)
+			await checkResource()
+		}
+		return checkResource()
+	})
+}
+
+function sleep(ms: number, signal?: AbortSignal) {
+	return new Promise<void>((resolve, reject) => {
+		const timeout = setTimeout(() => {
+			signal?.removeEventListener('abort', onAbort)
+			resolve()
+		}, ms)
+
+		function onAbort() {
+			clearTimeout(timeout)
+			reject(new Error('Sleep aborted'))
+		}
+		signal?.addEventListener('abort', onAbort)
+	})
 }
