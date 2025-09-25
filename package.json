@@ -19,6 +19,7 @@
       "hidedevtools": "1",
       "hideNavigation": "1"
     },
+    "onboardingVideo": "https://www.epicai.pro/get-started-with-epic-ai-workshops",
     "product": {
       "host": "www.epicai.pro",
       "slug": "day-7-8-mcp-auth",
