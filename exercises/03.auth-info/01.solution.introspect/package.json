@@ -23,7 +23,7 @@
     "@epic-web/config": "^1.21.3",
     "@epic-web/mcp-dev": "*",
     "@faker-js/faker": "^10.0.0",
-    "@modelcontextprotocol/inspector": "npm:@kentcdodds/tmp-modelcontextprotocol_inspector@0.16.9-alpha.0",
+    "@modelcontextprotocol/inspector": "^0.17.0",
     "@types/node": "^24.5.2",
     "cross-env": "^10.0.0",
     "eslint": "^9.36.0",

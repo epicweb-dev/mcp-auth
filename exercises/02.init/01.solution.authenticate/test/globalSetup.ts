@@ -11,7 +11,9 @@ declare module 'vitest' {
 type OutputBuffer = Array<{ channel: 'stdout' | 'stderr'; data: Buffer }>
 
 export default async function setup(project: TestProject) {
-	const mcpServerPort = await getPort()
+	const mcpServerPort = process.env.PORT
+		? Number(process.env.PORT)
+		: await getPort()
 
 	project.provide('mcpServerPort', mcpServerPort)
 
@@ -122,13 +124,15 @@ export default async function setup(project: TestProject) {
 		})
 	}
 
-	async function startServers() {
-		console.log('Starting servers...')
+	async function startMcpServerIfNecessary() {
+		const isMcpRunning = await fetch(
+			`http://localhost:${mcpServerPort}/healthcheck`,
+		).catch(() => ({ ok: false }))
+		if (isMcpRunning.ok) {
+			return
+		}
 
-		// Start app server if necessary
-		await startAppServerIfNecessary()
-
-		// Start the MCP server from the exercise directory
+		// Start the MCP server if necessary
 		console.log(`Starting MCP server on port ${mcpServerPort}...`)
 		mcpServerProcess = execa(
 			'npx',
@@ -142,6 +146,16 @@ export default async function setup(project: TestProject) {
 				},
 			},
 		)
+	}
+
+	async function startServers() {
+		console.log('Starting servers...')
+
+		// Start app server if necessary
+		await startAppServerIfNecessary()
+
+		// Start MCP server if necessary
+		await startMcpServerIfNecessary()
 
 		try {
 			// Wait for both servers to be ready simultaneously
@@ -161,7 +175,9 @@ export default async function setup(project: TestProject) {
 					textMatch: mcpServerPort.toString(),
 					name: '[MCP-SERVER]',
 					outputBuffer: mcpServerOutput,
-				}),
+				}).then(() =>
+					waitForResourceReady(`http://localhost:${mcpServerPort}/healthcheck`),
+				),
 			])
 
 			console.log('Servers started successfully')

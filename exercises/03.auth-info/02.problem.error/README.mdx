@@ -44,3 +44,11 @@ sequenceDiagram
 The goal is to make authentication errors more actionable for users, helping them understand exactly what they need to do to fix the problem.
 
 Now, let's enhance the error handling to provide better feedback when tokens are invalid!
+
+<callout-warning>
+	🚨 This is only part of the complete solution, we'll also need to handle what
+	the introspection response looks like when the token is invalid. So the tests
+	in this exercise step won't be any different from the last exercise step and
+	won't actually test whether you're returning the correct `WWW-Authenticate`
+	header. We'll do that in the next exercise step.
+</callout-warning>
