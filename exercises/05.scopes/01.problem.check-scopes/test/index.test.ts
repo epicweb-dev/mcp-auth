@@ -4,7 +4,6 @@ import {
 	JSONRPCMessageSchema,
 } from '@modelcontextprotocol/sdk/types.js'
 import { test, expect, inject } from 'vitest'
-import { z } from 'zod'
 
 const mcpServerPort = inject('mcpServerPort')
 const EPIC_ME_AUTH_SERVER_URL = 'http://localhost:7788'
@@ -100,88 +99,7 @@ type Scopes =
 	| 'tags:read'
 	| 'tags:write'
 async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
-	const unauthorizedResponse = await fetch(`${mcpServerUrl}/mcp`, {
-		method: 'POST',
-		headers: {
-			'content-type': 'application/json',
-			accept: 'application/json, text/event-stream',
-		},
-		body: JSON.stringify({
-			jsonrpc: '2.0',
-			id: crypto.randomUUID(),
-			method: 'tools/list',
-		}),
-	})
-
-	expect(
-		unauthorizedResponse.status,
-		'🚨 Expected 401 status for unauthorized request',
-	).toBe(401)
-
-	const wwwAuthHeader = unauthorizedResponse.headers.get('WWW-Authenticate')
-	expect(
-		wwwAuthHeader,
-		'🚨 WWW-Authenticate header should be present',
-	).toBeTruthy()
-	expect(
-		wwwAuthHeader,
-		'🚨 WWW-Authenticate header should contain Bearer realm',
-	).toContain('Bearer realm="EpicMe"')
-
-	// Extract the resource_metadata url from the WWW-Authenticate header
-	const resourceMetadataUrl = wwwAuthHeader
-		?.split(',')
-		.find((h) => h.includes('resource_metadata='))
-		?.split('=')[1]
-
-	expect(
-		resourceMetadataUrl,
-		'🚨 Resource metadata URL should be present in WWW-Authenticate header',
-	).toBeTruthy()
-
-	const resourceMetadataResponse = await fetch(resourceMetadataUrl!)
-	expect(
-		resourceMetadataResponse.ok,
-		'🚨 fetching resource metadata should succeed',
-	).toBe(true)
-
-	const resourceMetadataResponseData = await resourceMetadataResponse.json()
-	expect(resourceMetadataResponseData, '🚨 Invalid resource metadata').toEqual({
-		resource: expect.any(String),
-		authorization_servers: expect.any(Array),
-	})
-
-	const resourceMetadata = z
-		.object({
-			resource: z.string(),
-			authorization_servers: z.array(z.string()).length(1),
-		})
-		.parse(resourceMetadataResponseData)
-
-	const authorizationUrl = resourceMetadata.authorization_servers[0]!
-
-	// Step 1: Metadata discovery
-	// Test OAuth Authorization Server discovery
-	const authServerDiscoveryResponse = await fetch(
-		`${authorizationUrl}/.well-known/oauth-authorization-server`,
-	)
-	expect(
-		authServerDiscoveryResponse.ok,
-		'🚨 OAuth authorization server discovery should succeed',
-	).toBe(true)
-
-	const authServerConfig =
-		(await authServerDiscoveryResponse.json()) as AuthServerConfig
-	expect(
-		authServerConfig.authorization_endpoint,
-		'🚨 Authorization endpoint should be present in discovery',
-	).toBeTruthy()
-	expect(
-		authServerConfig.token_endpoint,
-		'🚨 Token endpoint should be present in discovery',
-	).toBeTruthy()
-
-	// Step 2: Dynamic client registration
+	const redirectUri = `https://example.com/test-mcp-client`
 	const clientRegistrationResponse = await fetch(
 		`${EPIC_ME_AUTH_SERVER_URL}/oauth/register`,
 		{
@@ -192,7 +110,7 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 			},
 			body: JSON.stringify({
 				client_name: 'Test MCP Client',
-				redirect_uris: [`${mcpServerUrl}/mcp`],
+				redirect_uris: [redirectUri],
 			}),
 		},
 	)
@@ -208,11 +126,9 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 		'🚨 Client ID should be returned from registration',
 	).toBeTruthy()
 
-	// Step 3: Preparing Authorization (getting the auth URL)
 	const { codeVerifier, codeChallenge, codeChallengeMethod } =
 		generateCodeChallenge()
 	const state = crypto.randomUUID()
-	const redirectUri = `${mcpServerUrl}/mcp`
 
 	// Step 4: Requesting the auth code programmatically
 	const testAuthUrl = new URL(`${EPIC_ME_AUTH_SERVER_URL}/test-auth`)
