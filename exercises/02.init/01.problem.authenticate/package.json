@@ -16,7 +16,7 @@
     "@epic-web/epicme-db-client": "*",
     "@epic-web/invariant": "^1.0.0",
     "@modelcontextprotocol/sdk": "1.18.2",
-    "agents": "0.1.1",
+    "agents": "0.2.7",
     "zod": "^3.25.67"
   },
   "devDependencies": {
