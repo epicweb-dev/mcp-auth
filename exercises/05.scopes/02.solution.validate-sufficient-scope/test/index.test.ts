@@ -147,9 +147,6 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 }
 
 async function initialize(accessToken: string) {
-	// Step 7: Performing authenticated requests (listing tools)
-	// Verify the token works by making a simple authenticated request to the MCP server
-	// We'll test that we get past the authentication (no 401) even if we get protocol errors
 	const authTestResponse = await fetch(`${mcpServerUrl}/mcp`, {
 		method: 'POST',
 		headers: {

@@ -130,7 +130,6 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 		generateCodeChallenge()
 	const state = crypto.randomUUID()
 
-	// Step 4: Requesting the auth code programmatically
 	const testAuthUrl = new URL(`${EPIC_ME_AUTH_SERVER_URL}/test-auth`)
 	// Use the registered client ID instead of the one from the auth URL
 	testAuthUrl.searchParams.set('client_id', clientRegistration.client_id)
@@ -150,7 +149,6 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 		'🚨 Redirect URL should be returned',
 	).toBeTruthy()
 
-	// Step 5: Supplying the auth code (extract from redirect URL)
 	const redirectUrl = new URL(authResult.redirectTo)
 	const authCode = redirectUrl.searchParams.get('code')
 	const returnedState = redirectUrl.searchParams.get('state')
@@ -161,7 +159,6 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 	).toBeTruthy()
 	expect(returnedState, '🚨 State should be returned').toBe(state)
 
-	// Step 6: Requesting the token
 	const tokenParams = new URLSearchParams({
 		grant_type: 'authorization_code',
 		code: authCode!,
@@ -201,9 +198,6 @@ async function getAuthToken({ scopes }: { scopes: Array<Scopes> }) {
 }
 
 async function initialize(accessToken: string) {
-	// Step 7: Performing authenticated requests (listing tools)
-	// Verify the token works by making a simple authenticated request to the MCP server
-	// We'll test that we get past the authentication (no 401) even if we get protocol errors
 	const authTestResponse = await fetch(`${mcpServerUrl}/mcp`, {
 		method: 'POST',
 		headers: {
