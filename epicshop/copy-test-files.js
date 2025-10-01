@@ -2,9 +2,13 @@
 
 import { existsSync } from 'fs'
 import { readdir, stat, copyFile, mkdir } from 'fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'path'
 
-const EXERCISES_DIR = join(process.cwd(), '..', 'exercises')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const here = (...p) => path.join(__dirname, ...p)
+const EXERCISES_DIR = here('..', 'exercises')
 
 /**
  * Copy test files from solution directories to their corresponding problem directories

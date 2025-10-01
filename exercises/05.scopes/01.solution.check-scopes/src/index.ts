@@ -98,6 +98,7 @@ export default {
 				const authInfo = await resolveAuthInfo(
 					request.headers.get('authorization'),
 				)
+				console.log(authInfo)
 				if (!authInfo) return handleUnauthorized(request)
 
 				const mcp = EpicMeMCP.serve('/mcp', {

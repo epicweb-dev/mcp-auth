@@ -156,7 +156,6 @@ test('OAuth integration flow works end-to-end', async () => {
 			body: JSON.stringify({
 				client_name: 'Test MCP Client',
 				redirect_uris: [`${mcpServerUrl}/mcp`],
-				scope: 'read write',
 			}),
 		},
 	)
@@ -186,7 +185,10 @@ test('OAuth integration flow works end-to-end', async () => {
 	testAuthUrl.searchParams.set('response_type', 'code')
 	testAuthUrl.searchParams.set('code_challenge', codeChallenge)
 	testAuthUrl.searchParams.set('code_challenge_method', codeChallengeMethod)
-	testAuthUrl.searchParams.set('scope', 'read write')
+	testAuthUrl.searchParams.set(
+		'scope',
+		'user:read entries:read entries:write tags:read tags:write',
+	)
 	testAuthUrl.searchParams.set('state', state)
 
 	const authCodeResponse = await fetch(testAuthUrl.toString())
