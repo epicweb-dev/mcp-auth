@@ -1,6 +1,6 @@
 import OAuthProvider from '@cloudflare/workers-oauth-provider'
 import { createRequestHandler } from 'react-router'
-import { type Env } from '#types/helpers'
+import { type Env, type EpicExecutionContext } from '#types/helpers'
 import { DB } from './db/index.ts'
 import { withCors } from './utils.ts'
 
@@ -10,13 +10,13 @@ const requestHandler = createRequestHandler(
 )
 
 const defaultHandler = {
-	async fetch(request, env, ctx) {
+	async fetch(request: Request, env: Env, ctx: EpicExecutionContext) {
 		return requestHandler(request, {
 			db: await DB.getInstance(env),
 			cloudflare: { env, ctx },
 		})
 	},
-} satisfies ExportedHandler<Env>
+}
 
 const oauthProvider = new OAuthProvider({
 	apiRoute: ['/whoami', '/db-api'],
@@ -47,7 +47,7 @@ export default {
 				}
 			}
 		},
-		handler: (request, env, ctx) => {
+		handler: (request: Request, env: Env, ctx: ExecutionContext) => {
 			return oauthProvider.fetch(request, env, ctx)
 		},
 	}),

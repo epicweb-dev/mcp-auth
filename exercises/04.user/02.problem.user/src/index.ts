@@ -67,7 +67,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 }
 
 export default {
-	fetch: withCors({
+	fetch: withCors<Props>({
 		getCorsHeaders: (request) => {
 			if (request.url.includes('/.well-known')) {
 				return {
@@ -110,4 +110,4 @@ export default {
 			return new Response('Not found', { status: 404 })
 		},
 	}),
-} satisfies ExportedHandler<Env>
+} satisfies EpicMeExportedHandler<Props>

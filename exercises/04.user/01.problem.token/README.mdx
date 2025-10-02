@@ -53,7 +53,7 @@ export default {
 		ctx.props.greeting = 'Hello, world!'
 		return mcp.fetch(request, env, ctx)
 	},
-} satisfies ExportedHandler<Env>
+} satisfies EpicMeExportedHandler<Props>
 ```
 
 Note, out of an abundance of caution, the types for `this.props` is `Props | undefined`. This means you need to check if it's undefined before using it. I recommend using the `invariant` function to throw an error if it's `undefined` because that should really never happen.

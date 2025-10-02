@@ -1,12 +1,12 @@
-export function withCors({
+export function withCors<Props>({
 	getCorsHeaders,
 	handler,
 }: {
 	getCorsHeaders(
 		request: Request,
 	): Record<string, string> | Headers | null | undefined
-	handler: ExportedHandlerFetchHandler<Env>
-}): ExportedHandlerFetchHandler<Env> {
+	handler: EpicMeExportedHandler<Props>['fetch']
+}): EpicMeExportedHandler<Props>['fetch'] {
 	return async (request, env, ctx) => {
 		const corsHeaders = getCorsHeaders(request)
 		if (!corsHeaders) {

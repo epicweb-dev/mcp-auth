@@ -15,7 +15,7 @@
   "dependencies": {
     "@epic-web/epicme-db-client": "*",
     "@epic-web/invariant": "^1.0.0",
-    "@modelcontextprotocol/sdk": "1.18.2",
+    "@modelcontextprotocol/sdk": "1.19.1",
     "agents": "0.2.7",
     "zod": "^3.25.67"
   },
@@ -24,7 +24,7 @@
     "@epic-web/mcp-dev": "*",
     "@faker-js/faker": "^10.0.0",
     "@modelcontextprotocol/inspector": "^0.17.0",
-    "@types/node": "^24.6.1",
+    "@types/node": "^24.6.2",
     "cross-env": "^10.1.0",
     "eslint": "^9.36.0",
     "execa": "^9.6.0",
@@ -32,7 +32,7 @@
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
-    "wrangler": "^4.40.3"
+    "wrangler": "^4.41.0"
   },
   "prettier": "@epic-web/config/prettier",
   "license": "GPL-3.0-only"

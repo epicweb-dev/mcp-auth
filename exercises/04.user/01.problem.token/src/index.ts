@@ -15,8 +15,9 @@ import { initializeResources } from './resources.ts'
 import { initializeTools } from './tools.ts'
 import { withCors } from './utils.ts'
 
-// 🐨 create a type for the State object. It should be empty.
-// 🐨 create a type for the Props object. It should have a authToken property set to the AuthToken type
+type State = {}
+// 🐨 add an authToken property set to the AuthToken type to the Props object
+type Props = {}
 
 // 🐨 add the State and Props types to the generic after Env here:
 export class EpicMeMCP extends McpAgent<Env> {
@@ -57,7 +58,7 @@ You can also help users add tags to their entries and get all tags for an entry.
 }
 
 export default {
-	fetch: withCors({
+	fetch: withCors<Props>({
 		getCorsHeaders: (request) => {
 			if (request.url.includes('/.well-known')) {
 				return {
@@ -100,4 +101,4 @@ export default {
 			return new Response('Not found', { status: 404 })
 		},
 	}),
-} satisfies ExportedHandler<Env>
+} satisfies EpicMeExportedHandler<Props>
