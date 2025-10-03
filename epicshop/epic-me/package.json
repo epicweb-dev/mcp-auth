@@ -10,14 +10,15 @@
   },
   "scripts": {
     "build": "react-router build",
-    "cf-typegen": "wrangler types ./types/worker-configuration.d.ts",
     "deploy": "npm run build && wrangler deploy",
     "dev": "react-router dev",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "postinstall": "npm run cf-typegen",
+    "postinstall": "npm run typegen || exit 0",
     "preview": "npm run build && vite preview",
-    "typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
+    "typegen": "wrangler types ./types/worker-configuration.d.ts && react-router typegen",
+    "pretypecheck": "npm run typegen",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.0.11",
