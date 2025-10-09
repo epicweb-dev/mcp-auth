@@ -2,7 +2,7 @@
 
 <EpicVideo url="https://www.epicai.pro/workshops/day-7-8-mcp-auth/auth-params-vilat" />
 
-👨‍💼 In EpicMe, when a user tries to access a protected journal entry, it's not enough to simply block them. We need to let them what to do about it. If a request is missing the right credentials, the server should respond with a `WWW-Authenticate` header that includes extra details, called auth params, so the client understands what went wrong and how to fix it.
+👨‍💼 In EpicMe, when a user tries to access a protected journal entry, it's not enough to simply block them. We need to let them know what to do about it. If a request is missing the right credentials, the server should respond with a `WWW-Authenticate` header that includes extra details, called auth params, so the client understands what went wrong and how to fix it.
 
 For example, if a robot tries to fetch `/api/lemonade` without the right credentials, the response should include a realm and a resource_metadata parameter:
 
