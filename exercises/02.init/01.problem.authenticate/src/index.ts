@@ -72,7 +72,7 @@ export default {
 
 			if (url.pathname === '/mcp') {
 				// 🐨 check if the request has an Authorization header
-				// 🐨 if it does, call and return the result of handleUnauthorized
+				// 🐨 if it does not, call and return the result of handleUnauthorized
 
 				const mcp = EpicMeMCP.serve('/mcp', {
 					binding: 'EPIC_ME_MCP_OBJECT',
