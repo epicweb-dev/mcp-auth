@@ -3,3 +3,12 @@
 <EpicVideo url="https://www.epicai.pro/workshops/mcp-auth-ddk2h/introspect-pjgp6/solution" />
 
 👨‍💼 Super! You've successfully implemented token introspection, which transforms anonymous tokens into rich user context. Now our MCP server can identify who each user is and understand their permissions, enabling personalized experiences and proper access control.
+
+<callout-success>
+	Since the creation of this exercise, Cloudflare has added [Token
+	introspection](https://github.com/cloudflare/workers-oauth-provider/pull/114)
+	to their OAuth provider which makes that side of things a lot easier. But the
+	principle on the resource server side of things is the same. You still need to
+	make a request to the auth server to get information about the user of the
+	token.
+</callout-success>
