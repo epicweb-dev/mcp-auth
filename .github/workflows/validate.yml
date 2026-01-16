@@ -33,11 +33,11 @@ jobs:
 
       - name: ʦ TypeScript
         run: npm run typecheck
-        working-directory: ./workshop/${{ github.event.repository.name }}
+        working-directory: ./workshop
 
       - name: ⬣ ESLint
         run: echo "Linting is not working in CI 🤷‍♂️"
-        working-directory: ./workshop/${{ github.event.repository.name }}
+        working-directory: ./workshop
 
   tests:
     name: 🧪 Test
