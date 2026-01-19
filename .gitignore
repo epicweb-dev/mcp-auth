@@ -17,3 +17,5 @@ data.db
 /.env
 **/dist/**
 **/.wrangler/**
+
+saved-playgrounds
