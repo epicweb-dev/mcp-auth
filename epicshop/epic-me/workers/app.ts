@@ -36,6 +36,28 @@ const oauthProvider = new OAuthProvider({
 	],
 })
 
+/**
+ * Local dev compatibility:
+ * MCP clients may include `resource` in token requests, which can produce
+ * audience-bound tokens that fail DB API checks in this workshop setup.
+ */
+async function stripResourceFromTokenRequest(request: Request): Promise<Request> {
+	const url = new URL(request.url)
+	const isTokenEndpoint =
+		url.pathname === '/oauth/token' && request.method === 'POST'
+	if (!isTokenEndpoint) return request
+
+	const contentType = request.headers.get('content-type') ?? ''
+	if (!contentType.includes('application/x-www-form-urlencoded')) return request
+
+	const body = await request.text()
+	const params = new URLSearchParams(body)
+	if (!params.has('resource')) return request
+
+	params.delete('resource')
+	return new Request(request, { body: params.toString() })
+}
+
 export default {
 	fetch: withCors({
 		getCorsHeaders: (request) => {
@@ -47,8 +69,9 @@ export default {
 				}
 			}
 		},
-		handler: (request: Request, env: Env, ctx: ExecutionContext) => {
-			return oauthProvider.fetch(request, env, ctx)
+		handler: async (request: Request, env: Env, ctx: ExecutionContext) => {
+			const cleanRequest = await stripResourceFromTokenRequest(request)
+			return oauthProvider.fetch(cleanRequest, env, ctx)
 		},
 	}),
 } satisfies ExportedHandler<Env>
