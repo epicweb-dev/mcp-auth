@@ -67,9 +67,17 @@ export async function action({ request, context }: Route.ActionArgs) {
 			Object.fromEntries(url.searchParams),
 		)
 
+		// Strip `resource` from the request — the MCP client sends its own URL
+		// (e.g. http://localhost:56000/mcp) as the resource, but API calls go to
+		// a different host (the Worker). Storing that as the token audience would
+		// cause a permanent mismatch on every /db-api call. With no audience set,
+		// the library skips audience validation entirely.
+		const { resource: _ignored, ...requestWithoutResource } = requestParams as
+			typeof requestParams & { resource?: string }
+
 		const { redirectTo } =
 			await context.cloudflare.env.OAUTH_PROVIDER.completeAuthorization({
-				request: requestParams,
+				request: requestWithoutResource,
 				userId: String(user.id),
 				metadata: {
 					label: user.email,
