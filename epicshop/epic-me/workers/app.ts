@@ -50,7 +50,8 @@ async function stripResourceFromTokenRequest(request: Request): Promise<Request>
 	const contentType = request.headers.get('content-type') ?? ''
 	if (!contentType.includes('application/x-www-form-urlencoded')) return request
 
-	const body = await request.text()
+	// Read from a clone so the original stream remains available downstream.
+	const body = await request.clone().text()
 	const params = new URLSearchParams(body)
 	if (!params.has('resource')) return request
 
