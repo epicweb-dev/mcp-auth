@@ -276,6 +276,66 @@ Source reviewed: current `draft` changelog and `2025-11-25` vs `draft` docs comp
 
 ---
 
+## BREAKING CHANGES (video re-record required)
+
+Definition used here: **if exercise solution code changes, an exercise is removed, or a new exercise is added, it is a breaking change and requires re-recording**.  
+Instruction/prose-only edits are not counted.
+
+## BC-1) Remove legacy auth-server metadata proxy from core path
+
+- **Type:** Removed/repurposed exercise + multi-step solution code changes
+- **Current code pattern being removed:** `handleOAuthAuthorizationServerRequest()` and route handling for `/.well-known/oauth-authorization-server`
+- **Impacted exercises/videos:**
+  - `01.discovery/02.*` (currently centered on auth-server proxy behavior)
+  - All downstream solution snapshots that still include that endpoint helper and route checks
+- **Why this is breaking:** existing recordings demonstrate implementing and relying on this compatibility-oriented behavior.
+
+## BC-2) 401 `WWW-Authenticate` challenge semantics update
+
+- **Type:** Solution code change
+- **Required code shift:** `handleUnauthorized` challenge output must align with current scope-challenge strategy (including actionable scope guidance where applicable).
+- **First explicit touchpoint:** `02.init/02.solution.params/src/auth.ts`
+- **Cascading impact:** the same auth helper pattern is copied through later solution snapshots (`03.auth-info`, `04.user`, `05.scopes`), so those solution files also change.
+- **Why this is breaking:** header format and behavior shown in current videos/tests changes.
+
+## BC-3) 403 `insufficient_scope` response format update
+
+- **Type:** Solution code change
+- **Required code shift:** update `handleInsufficientScope` to emit step-up friendly challenge semantics (including a `scope` auth-param strategy), rather than relying only on `error_description`.
+- **Impacted exercises/videos:**
+  - `05.scopes/02.solution.validate-sufficient-scope`
+  - `05.scopes/03.solution.scope-hints` (inherits prior auth helper behavior)
+- **Why this is breaking:** current step narrative and solution intentionally teach the opposite.
+
+## BC-4) Discovery/registration exercise flow rework (code path, not just docs)
+
+- **Type:** Exercise step behavior + solution/test changes
+- **Required change:** move core flow away from DCR-first assumptions and toward current registration priority; this affects exercise code expectations and associated tests.
+- **Impacted area:** `01.discovery` step flow and tests (not just readme prose).
+- **Why this is breaking:** recorded guided flow outputs and exercise completion criteria change.
+
+## BC-5) Add new extension implementation exercises
+
+- **Type:** Added exercises (new code + new tests + new solution snapshots)
+- **Additions:**
+  1. OAuth Client Credentials extension (resource-server handling)
+  2. Enterprise-Managed Authorization (claims-to-permissions mapping)
+- **Why this is breaking:** these are net-new hands-on segments that require new recorded videos.
+
+## BC-6) (Draft-sensitive) Extension capability negotiation examples in code
+
+- **Type:** New/changed code in extension-focused steps
+- **Draft trigger:** draft adds `capabilities.extensions` as first-class negotiation shape in lifecycle capabilities.
+- **Practical impact:** extension exercises should show this capability shape so content does not go stale immediately if draft ships.
+- **Why this is breaking:** implementation snippets and expected outputs for extension steps change.
+
+## Not counted as breaking by this definition
+
+- Updating spec links (`2025-06-18` -> `2025-11-25`) without changing solution code.
+- Narration/prose clarifications that do not alter exercise behavior.
+
+---
+
 ## What should stay in this workshop vs move to other workshops
 
 ## Keep in `mcp-auth` (must-have)
