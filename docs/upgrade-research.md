@@ -6,6 +6,12 @@ Date: 2026-02-27
 
 Build a planning-ready list of what changed in MCP (spec + TypeScript SDK) since October/November 2025, and what should be updated in the `mcp-auth` workshop with a **resource-server-first** focus.
 
+## Planning assumptions for this update
+
+1. We do **not** optimize for backwards compatibility with pre-`2025-11-25` behavior.
+2. We teach the spec as it exists **now** (latest stable first, draft-aware where useful).
+3. Legacy/fallback paths may be mentioned briefly, but they are not core learning objectives.
+
 ---
 
 ## What I reviewed
@@ -34,7 +40,7 @@ Build a planning-ready list of what changed in MCP (spec + TypeScript SDK) since
 
 1. Discovery endpoints + CORS:
    - `/.well-known/oauth-protected-resource/mcp`
-   - `/.well-known/oauth-authorization-server` proxy behavior
+   - `/.well-known/oauth-authorization-server` proxy behavior (currently taught as practical compatibility behavior)
 2. `WWW-Authenticate` handling for 401 and invalid tokens
 3. Token introspection + active check
 4. User context propagation into MCP agent
@@ -46,6 +52,12 @@ Notable current assumptions that are now dated:
 - Discovery framing still leans heavily on dynamic client registration.
 - Scope challenge guidance intentionally avoids `scope` auth-param in 403.
 - Messaging implies implementing both metadata endpoints as default recommendation.
+
+## Direction change for this refresh (explicitly no backwards compatibility focus)
+
+- Remove or downgrade content that exists only to support older clients.
+- Teach canonical 2025-11-25 behavior as the default and only required path.
+- Keep legacy alternatives in short callouts/appendix, not core exercises.
 
 ---
 
@@ -69,7 +81,7 @@ This section is intentionally limited to changes that touch `mcp-auth` concerns.
 - **Why it matters here:** Current lessons/tests strongly assume the header path.
 - **Workshop update needed:**
   - Teach both mechanisms.
-  - Keep header guidance as recommended for compatibility, but not as strict single-path requirement.
+  - Treat both as normative discovery options per spec, not as compatibility hacks.
   - Add tests for fallback discovery behavior.
 
 ## 3) Step-up authorization and scope challenge behavior got explicit guidance
@@ -91,7 +103,7 @@ This section is intentionally limited to changes that touch `mcp-auth` concerns.
   - Dynamic Client Registration is now a fallback (`MAY`), not the expected default path.
 - **Why it matters here:** Current discovery flow and examples still center DCR.
 - **Workshop update needed:**
-  - Reframe DCR as compatibility fallback.
+  - Reframe DCR as optional fallback only (not core flow).
   - Add explicit coverage of pre-registration and client metadata docs at the “what resource-server owners need to understand” level.
 
 ## 5) Core spec now formalizes auth extensions as part of the auth landscape
@@ -110,6 +122,13 @@ This section is intentionally limited to changes that touch `mcp-auth` concerns.
 - **Why it matters here:** Remote auth-enabled servers should include origin/threat guidance.
 - **Workshop update needed:**
   - Add a short security hardening segment (resource server checks, token audience/resource binding, origin handling, least-privilege scopes).
+
+## 7) What we should stop teaching in core `mcp-auth` (because we do not care about backwards compatibility)
+
+- Stop treating resource server `/.well-known/oauth-authorization-server` proxying as a default requirement.
+- Stop presenting Dynamic Client Registration as the normal path; keep it as optional fallback context.
+- Stop teaching “skip the `scope` auth-param” as the primary insufficient-scope strategy.
+- Stop carrying older protocol/date caveats in the core learning path unless directly needed for debugging legacy deployments.
 
 ---
 
@@ -180,7 +199,7 @@ Reviewed all releases from `1.19.0` to `v1.27.1`; filtered to changes that mater
 
 - `1.23.0`: URL-based client metadata registration (SEP-991).
 
-**Material implication:** update discovery/registration lessons to reflect client metadata document path, with DCR as fallback.
+**Material implication:** update discovery/registration lessons to reflect client metadata document path, with DCR treated as optional appendix material.
 
 ## Client credentials (M2M) extension support
 
@@ -196,12 +215,45 @@ Reviewed all releases from `1.19.0` to `v1.27.1`; filtered to changes that mater
 
 **Material implication:** stale protocol/date assumptions in examples can create learner confusion quickly.
 
-## Transport/back-compat (lower priority for this workshop)
+## Transport stability notes (de-prioritized for this workshop)
 
-- `1.23.1`, `1.24.3`: SSE priming/backward compatibility fixes.
+- `1.23.1`, `1.24.3`: SSE priming behavior fixes.
 - `1.24.1`: streamable HTTP retry fix.
 
 **Material implication:** worth a note in troubleshooting docs; deeper transport mechanics fit better in advanced workshop content.
+
+---
+
+## Draft spec watch: what could impact us if draft becomes release next week
+
+Source reviewed: current `draft` changelog and `2025-11-25` vs `draft` docs comparison.
+
+## Draft item A) `extensions` capability field added to lifecycle capabilities
+
+- Draft changelog indicates new `extensions` in `ClientCapabilities` and `ServerCapabilities`.
+- Impact on this workshop:
+  - Auth extensions are now better represented as first-class capability negotiation.
+  - Our extension lessons should include concrete `capabilities.extensions` examples to avoid immediate staleness.
+
+## Draft item B) OpenTelemetry trace context `_meta` conventions
+
+- Draft adds reserved `_meta` keys: `traceparent`, `tracestate`, `baggage`.
+- Impact on this workshop:
+  - Low-to-medium for core auth exercises.
+  - If we include middleware/proxy/request-forwarding examples, we should explicitly preserve/forward trace context metadata and avoid clobbering `_meta`.
+
+## Draft item C) Auth-specific normative churn risk appears low right now
+
+- Current draft `basic/authorization` is materially aligned with `2025-11-25` on auth mechanics (no major new auth flow changes found).
+- Practical risk:
+  - Low for auth flow semantics.
+  - Medium for docs/examples around extension negotiation and lifecycle capability shapes.
+
+## Draft-safe guidance for this update
+
+1. Teach to latest stable (`2025-11-25`) now.
+2. Add capability negotiation patterns that already match draft (`extensions`) so content survives a near-term draft promotion.
+3. Avoid deep-linking draft-only anchors in learner materials where possible; prefer stable links or neutral wording.
 
 ---
 
@@ -210,15 +262,17 @@ Reviewed all releases from `1.19.0` to `v1.27.1`; filtered to changes that mater
 | Topic | Current state in workshop | Target state |
 | --- | --- | --- |
 | Spec baseline | Hardcoded to `2025-06-18` links | Move to `2025-11-25` references everywhere |
-| Discovery sequence | OAuth metadata + DCR-centric | Add OIDC discovery permutations + modern registration priority |
-| Protected metadata discovery | Header-centric framing | Teach header + well-known fallback equivalently |
-| Registration approach | DCR framed as standard flow | Pre-reg / client-metadata-doc first, DCR fallback |
+| Discovery sequence | OAuth metadata + DCR-centric | Add OIDC discovery permutations + modern registration priority; remove legacy-first framing |
+| Protected metadata discovery | Header-centric framing | Teach header + well-known fallback as normative spec behavior |
+| Registration approach | DCR framed as standard flow | Pre-reg / client-metadata-doc first; DCR optional appendix only |
 | 401 challenge | Includes `resource_metadata` and invalid token error | Add/update scope challenge guidance and fallback behavior |
-| 403 insufficient scope | Avoids `scope` param due combinations | Teach spec-aligned step-up strategy with practical scope sets |
+| 403 insufficient scope | Avoids `scope` param due combinations | Teach spec-aligned step-up strategy using `scope` guidance |
 | Scope selection strategy | Implicit/custom | Explicit strategy from 2025-11-25 auth section |
 | Extensions awareness | Not represented | Add ext-auth overview + resource-server responsibilities |
 | Client credentials M2M | Not represented | Add at least one focused exercise/story |
 | Enterprise-managed auth | Not represented | Add conceptual section + claim-to-scope mapping pattern |
+| Backwards compatibility posture | Compatibility behavior appears in core path | Make no-back-compat policy explicit in core teaching sequence |
+| Draft resilience | Not addressed | Add draft-safe `extensions` capability examples and trace-context note |
 
 ---
 
@@ -262,9 +316,10 @@ Reviewed all releases from `1.19.0` to `v1.27.1`; filtered to changes that mater
 2. Redo discovery lessons:
    - protected resource discovery mechanisms,
    - OAuth + OIDC metadata discovery order,
-   - registration strategy priority (pre-reg/client-metadata-doc/DCR fallback).
+   - registration strategy priority (pre-reg/client-metadata-doc first; DCR as optional appendix).
 3. Redo scope lessons to align with modern challenge/step-up behavior.
 4. Add one concise extension module introducing both official auth extensions from resource-server perspective.
+5. Remove legacy-first compatibility narrative from the main lesson path (including resource-server-as-auth-server proxy framing).
 
 ## Phase 2: Resource-server extension implementation additions
 
@@ -281,17 +336,31 @@ Reviewed all releases from `1.19.0` to `v1.27.1`; filtered to changes that mater
 
 ---
 
-## Concrete TODO list for this repo’s update cycle
+## Recommended actions to take (clear and prioritized)
 
-1. Replace all stale spec links (`2025-06-18`) in workshop readmes.
-2. Update discovery diagrams and narration to include:
-   - OIDC discovery attempts,
-   - revised registration priority,
-   - fallback discovery behavior.
-3. Update `handleUnauthorized`/scope challenge narratives and associated tests.
-4. Add at least one new exercise for OAuth Client Credentials extension support in the resource server.
-5. Add one “enterprise mode” exercise segment focused on token validation + claims mapping.
-6. Refresh troubleshooting sections to reflect SDK transport/discovery improvements since 1.24+.
+## Do now (required for this refresh)
+
+1. Replace all workshop spec links with `2025-11-25` references.
+2. Rewrite discovery modules to:
+   - include OIDC discovery permutations,
+   - present pre-registration/client-metadata-doc as primary registration strategy,
+   - move DCR to optional fallback context.
+3. Remove resource-server auth-server-proxy behavior from core exercises (keep as optional note only if desired).
+4. Update scope/403 guidance to a step-up pattern aligned with current spec (`insufficient_scope` + actionable `scope` guidance).
+5. Add a concise module introducing both official auth extensions from the resource-server perspective.
+
+## Do next (strongly recommended for near-term durability)
+
+1. Add `capabilities.extensions` examples in extension-related lessons so content remains current if draft is promoted soon.
+2. Add an observability note on preserving OpenTelemetry trace context in `_meta` for middleware/proxy patterns.
+3. Add one concrete client-credentials exercise (M2M token handling + scope enforcement).
+4. Add one concise enterprise-managed exercise (claims-to-permissions mapping).
+
+## Keep optional / appendix only
+
+1. Dynamic Client Registration implementation details.
+2. Legacy compatibility workarounds for older MCP clients.
+3. Deep transport compatibility edge-cases (SSE priming, older protocol behavior).
 
 ---
 
