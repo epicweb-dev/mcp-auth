@@ -1,3 +1,4 @@
+// oxlint-disable-next-line typescript-eslint/triple-slash-reference -- Cloudflare generated Env types are global.
 /// <reference path="../../types/worker-configuration.d.ts" />
 
 import { z } from 'zod'

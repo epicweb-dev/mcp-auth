@@ -1,3 +1,4 @@
+// oxlint-disable-next-line typescript-eslint/triple-slash-reference -- Cloudflare generated Env types are global.
 /// <reference path="./worker-configuration.d.ts" />
 
 // https://github.com/cloudflare/workers-sdk/issues/10254

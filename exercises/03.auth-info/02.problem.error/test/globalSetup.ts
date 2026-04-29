@@ -109,7 +109,7 @@ export default async function setup(project: TestProject) {
 		// Start the app server from the root directory
 		console.log(`Starting app server on port 7788...`)
 		const command = 'npm'
-		// prettier-ignore
+		// oxfmt-ignore
 		const args = [
 			'run', 'dev',
 			'--prefix', './epicshop/epic-me',

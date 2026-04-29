@@ -1,3 +1,4 @@
+// oxlint-disable eslint-plugin-unicorn/no-empty-file -- Exercise placeholder file.
 // 💰 you'll need this:
 // import { EPIC_ME_AUTH_SERVER_URL } from './client.ts'
 

@@ -58,7 +58,7 @@ async function stripResourceFromTokenRequest(
 	if (!params.has('resource')) return request
 
 	params.delete('resource')
-	return new Request(request, { body: params.toString() })
+	return new Request(request, { method: 'POST', body: params.toString() })
 }
 
 export default {

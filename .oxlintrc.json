@@ -1,5 +1,7 @@
 {
-	"extends": ["./node_modules/@epic-web/config/oxlint-config.json"],
+	"extends": [
+		"./node_modules/@epic-web/config/oxlint-config.json"
+	],
 	"rules": {
 		"eslint/no-unused-vars": "off",
 		"typescript/no-floating-promises": "off",
@@ -10,7 +12,9 @@
 	},
 	"overrides": [
 		{
-			"files": ["**/*"],
+			"files": [
+				"**/*"
+			],
 			"rules": {
 				"eslint/no-unused-vars": "off",
 				"typescript/no-floating-promises": "off",
@@ -20,5 +24,8 @@
 				"jest/expect-expect": "off"
 			}
 		}
+	],
+	"ignorePatterns": [
+		"**/types/worker-configuration.d.ts"
 	]
 }

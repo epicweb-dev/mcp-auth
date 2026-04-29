@@ -3,7 +3,7 @@ import { migrate } from '#workers/db/migrations'
 import { sql } from '#workers/db/utils'
 import { type Route } from './+types/index'
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
 	return [
 		{ title: 'Epic Me' },
 		{ name: 'description', content: 'The Epic Me Journaling App' },

@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { type EpicExecutionContext } from '#types/helpers'
 import { type Route } from './+types/authorize'
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
 	return [
 		{ title: 'OAuth Authorization - Epic Me' },
 		{ name: 'description', content: 'Authorize OAuth access to Epic Me' },
