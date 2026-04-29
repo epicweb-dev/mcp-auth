@@ -6,9 +6,9 @@
     "mcp-dev": "./dev.js"
   },
   "dependencies": {
-    "close-with-grace": "^2.3.0",
+    "close-with-grace": "^2.5.0",
     "execa": "^9.6.1",
-    "get-port": "^7.1.0",
+    "get-port": "^7.2.0",
     "http-proxy": "^1.18.1"
   }
 }
