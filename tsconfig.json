@@ -82,5 +82,14 @@
     {
       "path": "exercises/05.scopes/03.solution.scope-hints"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "node"
+    ]
+  }
 }
