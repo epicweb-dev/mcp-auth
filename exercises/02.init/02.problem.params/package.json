@@ -29,11 +29,9 @@
     "eslint": "^10.2.1",
     "execa": "^9.6.1",
     "get-port": "^7.2.0",
-    "prettier": "^3.8.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5",
     "wrangler": "^4.86.0"
   },
-  "prettier": "@epic-web/config/prettier",
   "license": "GPL-3.0-only"
 }

@@ -12,13 +12,14 @@
     "build": "react-router build",
     "deploy": "npm run build && wrangler deploy",
     "dev": "react-router dev",
-    "format": "prettier --write .",
+    "format": "oxfmt -c ./oxfmt.config.mjs",
     "lint": "eslint .",
     "postinstall": "npm run typegen || exit 0",
     "preview": "npm run build && vite preview",
     "typegen": "wrangler types ./types/worker-configuration.d.ts && react-router typegen",
     "pretypecheck": "npm run typegen",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "format:check": "oxfmt -c ./oxfmt.config.mjs --check"
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.4.0",
@@ -38,14 +39,12 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "eslint": "^10.2.1",
-    "prettier": "^3.8.3",
-    "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
     "vite": "8.0.10",
     "vite-plugin-devtools-json": "^1.0.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "wrangler": "^4.86.0"
-  },
-  "prettier": "@epic-web/config/prettier"
+    "wrangler": "^4.86.0",
+    "oxfmt": "^0.45.0"
+  }
 }
