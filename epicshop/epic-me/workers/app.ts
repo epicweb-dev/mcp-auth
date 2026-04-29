@@ -41,7 +41,9 @@ const oauthProvider = new OAuthProvider({
  * MCP clients may include `resource` in token requests, which can produce
  * audience-bound tokens that fail DB API checks in this workshop setup.
  */
-async function stripResourceFromTokenRequest(request: Request): Promise<Request> {
+async function stripResourceFromTokenRequest(
+	request: Request,
+): Promise<Request> {
 	const url = new URL(request.url)
 	const isTokenEndpoint =
 		url.pathname === '/oauth/token' && request.method === 'POST'

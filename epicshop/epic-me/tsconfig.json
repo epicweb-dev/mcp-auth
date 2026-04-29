@@ -1,26 +1,22 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.cloudflare.json"
-    }
-  ],
-  "extends": "@epic-web/config/typescript",
-  "compilerOptions": {
-    "checkJs": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "types": [
-      "./types/worker-configuration.d.ts"
-    ],
-    "ignoreDeprecations": "6.0",
-    "lib": [
-      "ESNext"
-    ]
-  }
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.node.json"
+		},
+		{
+			"path": "./tsconfig.cloudflare.json"
+		}
+	],
+	"extends": "@epic-web/config/typescript",
+	"compilerOptions": {
+		"checkJs": true,
+		"verbatimModuleSyntax": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"types": ["./types/worker-configuration.d.ts"],
+		"ignoreDeprecations": "6.0",
+		"lib": ["ESNext"]
+	}
 }

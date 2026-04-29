@@ -72,8 +72,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 		// a different host (the Worker). Storing that as the token audience would
 		// cause a permanent mismatch on every /db-api call. With no audience set,
 		// the library skips audience validation entirely.
-		const { resource: _ignored, ...requestWithoutResource } = requestParams as
-			typeof requestParams & { resource?: string }
+		const { resource: _ignored, ...requestWithoutResource } =
+			requestParams as typeof requestParams & { resource?: string }
 
 		const { redirectTo } =
 			await context.cloudflare.env.OAUTH_PROVIDER.completeAuthorization({
