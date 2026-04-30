@@ -76,9 +76,9 @@ export function handleUnauthorized(request: Request) {
 				`Bearer realm="EpicMe"`,
 				hasAuthHeader ? `error="invalid_token"` : null,
 				hasAuthHeader
-					? `error_description="The access token is invalid or expired"`
+					? `error_description="The access token is invalid"`
 					: null,
-				`resource_metadata=${url.toString()}`,
+				`resource_metadata="${url.toString()}"`,
 			]
 				.filter(Boolean)
 				.join(', '),

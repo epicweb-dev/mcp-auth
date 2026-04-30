@@ -56,7 +56,7 @@ test(`MCP server provides specific error messages for invalid tokens`, async () 
 	const headerWithAuth = responseWithAuth.headers.get('WWW-Authenticate')
 	expect(headerWithAuth).toContain('error="invalid_token"')
 	expect(headerWithAuth).toContain(
-		'error_description="The access token is invalid or expired"',
+		'error_description="The access token is invalid"',
 	)
 })
 

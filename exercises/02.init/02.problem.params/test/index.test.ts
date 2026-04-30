@@ -34,7 +34,7 @@ test(`WWW-Authenticate header includes auth params when authorization is missing
 
 	// Extract the resource_metadata URL from the header
 	const resourceMetadataMatch = wwwAuthenticateHeader?.match(
-		/resource_metadata=([^,]+)/,
+		/resource_metadata="([^"]+)"/,
 	)
 	expect(
 		resourceMetadataMatch,

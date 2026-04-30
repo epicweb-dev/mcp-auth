@@ -47,7 +47,7 @@ export function handleUnauthorized(request: Request) {
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
-			'WWW-Authenticate': `Bearer realm="EpicMe", resource_metadata=${url.toString()}`,
+			'WWW-Authenticate': `Bearer realm="EpicMe", resource_metadata="${url.toString()}"`,
 		},
 	})
 }

@@ -22,6 +22,11 @@ export class EpicMeMCP extends McpAgent<Env, State, Props> {
 
 This approach ensures that every database operation is authenticated with the user's OAuth token, and every tool and resource can access the current user's information.
 
+User identity must come from validated token claims or trusted introspection
+results. Do not derive the authenticated user from elicitation responses,
+tool arguments, headers supplied by the client, or other user-controlled request
+fields.
+
 <callout-info>
 	The `ctx.props` mechanism is Cloudflare Workers-specific. It allows you to
 	pass data from the request handler into your `McpAgent` instance, making
@@ -63,6 +68,13 @@ const entries = await db.getEntries() // Only gets THIS user's entries
 	If there's no authentication token, we shouldn't even try to create a database
 	connection. The user needs to be properly authenticated first!
 </callout-warning>
+
+<callout-info>
+	If you later use URL mode elicitation for connecting a third-party account,
+	bind that out-of-band authorization flow to the already-authenticated MCP
+	user/session and verify the same user completes it before storing credentials
+	or linking accounts.
+</callout-info>
 
 In this exercise, you'll learn how to:
 

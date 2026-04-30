@@ -21,7 +21,7 @@ Clients first discover the resource server’s metadata, which points them to th
 
 <callout-info>
 	📜 See the [MCP Authorization
-	Spec](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization)
+	Spec](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)
 	for details on discovery and metadata.
 </callout-info>
 
@@ -60,6 +60,48 @@ const authMeta = await fetch(authServerUrl).then((r) => r.json())
 // Now the client knows how to authenticate!
 ```
 
+If the authorization server supports
+`client_id_metadata_document_supported: true`, open-ecosystem public clients can
+use an HTTPS `client_id` that points to their OAuth Client ID Metadata Document
+instead of immediately performing Dynamic Client Registration:
+
+```json filename="authorization-server-metadata.json"
+{
+	"issuer": "https://auth.example.com",
+	"authorization_endpoint": "https://auth.example.com/oauth/authorize",
+	"token_endpoint": "https://auth.example.com/oauth/token",
+	"client_id_metadata_document_supported": true
+}
+```
+
+```json filename="client-id-metadata-document.json"
+{
+	"client_id": "https://client.example.com/oauth/client-metadata.json",
+	"client_name": "Example MCP Client",
+	"redirect_uris": ["https://client.example.com/oauth/callback"],
+	"grant_types": ["authorization_code"],
+	"response_types": ["code"],
+	"token_endpoint_auth_method": "none"
+}
+```
+
+Dynamic Client Registration is still useful as a fallback when the authorization
+server supports it and client metadata documents are unavailable. Closed
+ecosystems may also choose pre-registration instead.
+
+<callout-warning>
+	Authorization servers that fetch client metadata documents must treat the
+	document URL as untrusted input: require HTTPS, reject private IP ranges,
+	limit response size, use short timeouts, and respect cache headers with a
+	conservative maximum TTL.
+</callout-warning>
+
+<callout-info>
+	If the authorization server is OpenID Connect-compatible, clients can also
+	check `/.well-known/openid-configuration` for OIDC discovery metadata before
+	falling back to generic OAuth authorization server metadata.
+</callout-info>
+
 <callout-success>
 	By implementing these endpoints, you make your MCP server discoverable and
 	easy to integrate with any standards-compliant client.
@@ -70,6 +112,9 @@ const authMeta = await fetch(authServerUrl).then((r) => r.json())
 - Always implement both resource and authorization server metadata endpoints.
 - Use CORS headers to allow cross-origin discovery.
 - Validate and document your endpoints for client developers.
+- Keep `WWW-Authenticate: Bearer ... resource_metadata="..."` in challenges
+  where possible. The `.well-known` protected resource metadata endpoint can be
+  discovered without it, but the auth param improves client recovery and UX.
 
 <callout-muted>
 	📜 For more, see [RFC 8414: OAuth 2.0 Authorization Server

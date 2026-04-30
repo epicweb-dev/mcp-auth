@@ -52,8 +52,8 @@ export function handleUnauthorized(request: Request) {
 			// 🐨 if the request has an Authorization header, add an error auth param
 			// 💰 `error="invalid_token"`
 			// 🐨 also, if we have an Authorization header, add an error_description auth param
-			// explaining that the token is invalid or expired
-			'WWW-Authenticate': `Bearer realm="EpicMe", resource_metadata=${url.toString()}`,
+			// explaining that the token is invalid
+			'WWW-Authenticate': `Bearer realm="EpicMe", resource_metadata="${url.toString()}"`,
 		},
 	})
 }

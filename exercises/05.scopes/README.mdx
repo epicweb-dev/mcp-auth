@@ -84,7 +84,7 @@ Most applications follow similar patterns when defining scopes:
 When a client lacks sufficient scopes, your server should return a clear error response that helps the client understand what permissions are needed:
 
 ```txt filename="403-response-header.txt"
-WWW-Authenticate: Bearer realm="EpicMe", error="insufficient_scope", error_description="At least one of: photos:read photos:write albums:read is required."
+WWW-Authenticate: Bearer realm="EpicMe", error="insufficient_scope", error_description="At least one of: photos:read photos:write albums:read is required.", scope="photos:read photos:write albums:read"
 ```
 
 This error response includes auth params for the `WWW-Authenticate` header:
@@ -92,8 +92,14 @@ This error response includes auth params for the `WWW-Authenticate` header:
 - The realm or domain of interest (`EpicMe`)
 - The specific error type (`insufficient_scope`)
 - A human-readable description of what scopes are needed
+- Optional safe scope hints using the standard `scope` auth param
 
 There are more properties you can include, some of which we'll discuss later in this exercise.
+
+Use `401 Unauthorized` for missing or invalid tokens. Use `403 Forbidden` when
+the token is valid but lacks sufficient resource-specific scopes. That lets the
+client request incremental consent for the missing permissions without forcing a
+full restart of the authentication flow.
 
 ## Scope Discovery
 
@@ -113,6 +119,32 @@ Clients need to know what scopes are available before requesting authorization. 
 }
 ```
 
+Keep these scopes specific to your MCP resource. Do not include
+`offline_access` here or in protected-resource `WWW-Authenticate` challenges;
+refresh-token policy is controlled by the authorization server and client.
+
+<callout-info>
+	Enterprise identity providers may enforce their own policies for cross-app
+	access, consent, and scope grants. That ecosystem policy layer matters in
+	production, but this workshop keeps the implementation focused on the MCP
+	resource server's scope validation and safe hints.
+</callout-info>
+
+## Optional: Third-Party Account Connections
+
+Sometimes an MCP server needs to connect to another service on behalf of the
+authenticated user. Keep that separate from the MCP client's authorization to
+your MCP server:
+
+- The MCP client authorizes to your MCP server with resource-specific scopes.
+- Your MCP server runs its own OAuth integration with the third-party service.
+- Sensitive third-party credentials should not be collected through ordinary
+  form elicitation or passed through the MCP client.
+
+For a small conceptual extension, use URL mode elicitation to send the user to a
+trusted out-of-band account connection page, then bind the completed flow back to
+the authenticated MCP user/session.
+
 In this exercise, you'll learn how to:
 
 - Create scope validation utilities that check user permissions
@@ -123,4 +155,4 @@ In this exercise, you'll learn how to:
 You'll also explore how to structure your scope validation logic for maintainability and how to provide clear error messages that help both developers and end users understand permission requirements.
 
 - 📜 [OAuth 2.0 Scopes RFC](https://tools.ietf.org/html/rfc6749#section-3.3)
-- 📜 [MCP Authentication Specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization)
+- 📜 [MCP Authentication Specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)

@@ -30,9 +30,9 @@ Sources to re-check before recording:
 
 ## Recommended Strategy
 
-This workshop needs a real auth refresh, but the scope can stay manageable.
-Keep the "MCP server as OAuth protected resource" framing. The biggest change is
-that Dynamic Client Registration should no longer be the default story. The new
+This workshop needs a real auth refresh, but the scope can stay manageable. Keep
+the "MCP server as OAuth protected resource" framing. The biggest change is that
+Dynamic Client Registration should no longer be the default story. The new
 default should be OAuth Client ID Metadata Documents, with DCR as a fallback.
 
 Do not add general MCP Tasks, sampling, or MCP Apps here except where auth
@@ -40,120 +40,139 @@ interacts with URL mode elicitation or tool/app authorization boundaries.
 
 ## Global Updates
 
-- [ ] [content-only] Update all spec links from `2025-06-18` to the current released spec once
-  the June 2026 release lands. Until then, use `2025-11-25` for stable auth
-  docs and link draft/SEP pages only for pending June work.
-- [ ] [content-only] Update terminology to consistently describe the MCP server as the OAuth
-  Protected Resource / Resource Server.
-- [ ] [content-only] Re-check every `WWW-Authenticate` example against the current spec:
-  include `resource_metadata` where helpful, use correct quoted auth params,
-  and distinguish 401 invalid/missing token from 403 insufficient scope.
-- [ ] [content-only] Ensure invalid Origin handling for Streamable HTTP returns HTTP 403
-  Forbidden, not a generic 400/401.
-- [ ] [content-only] Add a short warning against token passthrough. MCP clients should not pass
-  third-party tokens through to MCP servers; use URL mode elicitation or a proper
-  server-side OAuth integration for third-party services.
+- [x] [content-only] Update all spec links from `2025-06-18` to the current
+      released spec once the June 2026 release lands. Until then, use
+      `2025-11-25` for stable auth docs and link draft/SEP pages only for
+      pending June work.
+- [x] [content-only] Update terminology to consistently describe the MCP server
+      as the OAuth Protected Resource / Resource Server.
+- [x] [content-only] Re-check every `WWW-Authenticate` example against the
+      current spec: include `resource_metadata` where helpful, use correct
+      quoted auth params, and distinguish 401 invalid/missing token from 403
+      insufficient scope.
+- [x] [content-only] Ensure invalid Origin handling for Streamable HTTP returns
+      HTTP 403 Forbidden, not a generic 400/401.
+- [x] [content-only] Add a short warning against token passthrough. MCP clients
+      should not pass third-party tokens through to MCP servers; use URL mode
+      elicitation or a proper server-side OAuth integration for third-party
+      services.
 
 ## Exercise 01: Metadata Discovery
 
-- [ ] [verify transcript] Update the discovery flow to include OpenID Connect Discovery 1.0 support
-  when the authorization server is OIDC-compatible. Transcript evidence says the
-  video mentions OpenID configuration but does not go that far; if this becomes
-  a coded exercise, rerecord or patch that segment.
-- [ ] [content-only] Update Protected Resource Metadata language to align with RFC 9728.
-- [ ] [content-only] Make `WWW-Authenticate` with `resource_metadata` optional where the spec
-  now allows `.well-known` fallback, but keep it in examples because it improves
-  client UX.
-- [ ] [video required] Replace the "DCR-first" sequence diagram with this preferred order:
+- [ ] [verify transcript] Update the discovery flow to include OpenID Connect
+      Discovery 1.0 support when the authorization server is OIDC-compatible.
+      Transcript evidence says the video mentions OpenID configuration but does
+      not go that far; if this becomes a coded exercise, rerecord or patch that
+      segment.
+- [x] [content-only] Update Protected Resource Metadata language to align with
+      RFC 9728.
+- [x] [content-only] Make `WWW-Authenticate` with `resource_metadata` optional
+      where the spec now allows `.well-known` fallback, but keep it in examples
+      because it improves client UX.
+- [ ] [video required] Replace the "DCR-first" sequence diagram with this
+      preferred order:
   1. discover protected resource metadata
   2. discover authorization server metadata
   3. use OAuth Client ID Metadata Documents if supported
   4. fall back to Dynamic Client Registration only if needed
-  5. fall back to pre-registration for closed ecosystems
-  Transcript evidence: the current intro teaches DCR as MCP's expected/default
-  auth mechanism and says services need DCR to work with MCP authorization.
-- [ ] [content-only] Add `client_id_metadata_document_supported: true` to authorization server
-  metadata examples if this workshop owns the mock auth server.
-- [ ] [content-only] Add a client metadata document example with:
+  5. fall back to pre-registration for closed ecosystems Transcript evidence:
+     the current intro teaches DCR as MCP's expected/default auth mechanism and
+     says services need DCR to work with MCP authorization.
+- [x] [content-only] Add `client_id_metadata_document_supported: true` to
+      authorization server metadata examples if this workshop owns the mock auth
+      server. Added as a README example because this workshop relays, rather
+      than owns, the mock auth server metadata.
+- [x] [content-only] Add a client metadata document example with:
   - HTTPS `client_id`
   - `client_name`
   - `redirect_uris`
   - `grant_types`
   - `response_types`
   - `token_endpoint_auth_method: "none"` for public clients
-- [ ] [content-only] Add SSRF and cache guidance for auth servers that fetch client metadata:
-  validate URLs, avoid private IP ranges, limit response size, timeout fetches,
-  and respect cache headers with a conservative maximum.
+- [x] [content-only] Add SSRF and cache guidance for auth servers that fetch
+      client metadata: validate URLs, avoid private IP ranges, limit response
+      size, timeout fetches, and respect cache headers with a conservative
+      maximum.
 
 ## Exercise 02: Initialize OAuth Flow
 
-- [ ] [content-only] Update auth challenge examples to include the resource metadata URL in
-  `WWW-Authenticate` where useful.
-- [ ] [content-only] Update prose so clients are not expected to always perform DCR. Client ID
-  Metadata Documents should be presented as the recommended open-ecosystem path.
-- [ ] [verify transcript] If the code currently implements DCR, decide whether to:
+- [x] [content-only] Update auth challenge examples to include the resource
+      metadata URL in `WWW-Authenticate` where useful.
+- [x] [content-only] Update prose so clients are not expected to always perform
+      DCR. Client ID Metadata Documents should be presented as the recommended
+      open-ecosystem path.
+- [ ] [verify transcript] If the code currently implements DCR, decide whether
+      to:
   - replace it with Client ID Metadata Documents, or
-  - keep DCR as an optional fallback exercise.
-  The lower-work option is to leave DCR code in place but rewrite the README to
-  call it a fallback. If code behavior visibly changes from the video's
-  inspector flow, verify affected solution videos before marking content-only.
-- [ ] [content-only] Add a note that public clients should not require a client secret unless
-  they use a confidential client pattern.
-- [ ] [verify transcript] If June stateless MCP changes land, verify whether initialization and auth
-  examples need per-request capability/version metadata updates.
+  - keep DCR as an optional fallback exercise. The lower-work option is to leave
+    DCR code in place but rewrite the README to call it a fallback. If code
+    behavior visibly changes from the video's inspector flow, verify affected
+    solution videos before marking content-only.
+- [x] [content-only] Add a note that public clients should not require a client
+      secret unless they use a confidential client pattern.
+- [ ] [verify transcript] If June stateless MCP changes land, verify whether
+      initialization and auth examples need per-request capability/version
+      metadata updates.
 
 ## Exercise 03: Auth Info
 
-- [ ] [content-only] Keep token introspection. It remains a useful resource-server pattern.
-- [ ] [content-only] Add OIDC discovery guidance for authorization servers that expose
-  `/.well-known/openid-configuration`.
-- [ ] [content-only] Add OIDC refresh-token guidance:
+- [x] [content-only] Keep token introspection. It remains a useful
+      resource-server pattern.
+- [x] [content-only] Add OIDC discovery guidance for authorization servers that
+      expose `/.well-known/openid-configuration`.
+- [x] [content-only] Add OIDC refresh-token guidance:
   - MCP resource servers should not advertise `offline_access` as a required
     resource scope.
   - Do not include `offline_access` in `WWW-Authenticate` `scope`.
-  - Do not include `offline_access` in protected resource
-    `scopes_supported`.
-  - Clients that can securely store refresh tokens may request
-    `offline_access` from the authorization server if AS metadata supports it.
-- [ ] [content-only] Keep invalid-token responses generic. Do not leak whether a token is
-  expired, revoked, unknown, or malformed unless the auth server policy permits
-  that detail.
+  - Do not include `offline_access` in protected resource `scopes_supported`.
+  - Clients that can securely store refresh tokens may request `offline_access`
+    from the authorization server if AS metadata supports it.
+- [x] [content-only] Keep invalid-token responses generic. Do not leak whether a
+      token is expired, revoked, unknown, or malformed unless the auth server
+      policy permits that detail.
 
 ## Exercise 04: User Context
 
-- [ ] [content-only] Keep the user-context exercise. It is not materially changed by the spec.
-- [ ] [content-only] Add a note that user identity must be derived from validated token claims
-  or introspection results, not from elicitation responses or user-supplied
-  request fields.
-- [ ] [content-only] If URL mode elicitation is used later for third-party authorization, bind
-  the out-of-band flow to the authenticated user/session and verify the same
-  user completes it.
+- [x] [content-only] Keep the user-context exercise. It is not materially
+      changed by the spec.
+- [x] [content-only] Add a note that user identity must be derived from
+      validated token claims or introspection results, not from elicitation
+      responses or user-supplied request fields.
+- [x] [content-only] If URL mode elicitation is used later for third-party
+      authorization, bind the out-of-band flow to the authenticated user/session
+      and verify the same user completes it.
 
 ## Exercise 05: Scopes
 
-- [ ] [content-only] Update incremental scope consent material to use `WWW-Authenticate`
-  challenges for insufficient scope. Make clear that servers can ask for the
-  missing resource-specific scopes without forcing a full restart of auth.
-- [ ] [content-only] Verify every 403 insufficient-scope example includes useful but safe scope
-  hints.
-- [ ] [content-only] Keep scope names resource-specific. Do not mix in `offline_access`.
-- [ ] [content-only] Add a small note about enterprise IdP policy controls/cross-app access as
-  an ecosystem concern, not an implementation requirement for this workshop.
+- [x] [content-only] Update incremental scope consent material to use
+      `WWW-Authenticate` challenges for insufficient scope. Make clear that
+      servers can ask for the missing resource-specific scopes without forcing a
+      full restart of auth.
+- [x] [content-only] Verify every 403 insufficient-scope example includes useful
+      but safe scope hints.
+- [x] [content-only] Keep scope names resource-specific. Do not mix in
+      `offline_access`.
+- [x] [content-only] Add a small note about enterprise IdP policy
+      controls/cross-app access as an ecosystem concern, not an implementation
+      requirement for this workshop.
 
 ## New Optional Exercise: Third-Party Account Connection
 
-- [ ] [content-only if conceptual; video required if full exercise] Consider adding a short optional exercise after scopes that uses URL mode
-  elicitation to connect a third-party service to the MCP server. This would
-  teach the distinction between:
+- [x] [content-only if conceptual; video required if full exercise] Consider
+      adding a short optional exercise after scopes that uses URL mode
+      elicitation to connect a third-party service to the MCP server. This would
+      teach the distinction between:
   - MCP client authorizing to the MCP server, and
   - MCP server authorizing to a third-party API on behalf of the user.
-- [ ] [content-only] Only add this exercise if it can stay small. If it requires a lot of UI or
-  auth server plumbing, make it a README-only conceptual section instead.
+- [x] [content-only] Only add this exercise if it can stay small. If it requires
+      a lot of UI or auth server plumbing, make it a README-only conceptual
+      section instead.
 
 ## Things To Remove Or Downplay
 
-- [ ] [video required for Exercise 01 intro; content-only elsewhere] Downplay Dynamic Client Registration as the primary happy path.
-- [ ] [verify transcript] Remove any implication that clients should handle third-party credentials
-  or API keys in form elicitation.
-- [ ] [content-only] Remove any examples that put refresh-token concerns in protected resource
-  scope metadata.
+- [ ] [video required for Exercise 01 intro; content-only elsewhere] Downplay
+      Dynamic Client Registration as the primary happy path.
+- [ ] [verify transcript] Remove any implication that clients should handle
+      third-party credentials or API keys in form elicitation.
+- [x] [content-only] Remove any examples that put refresh-token concerns in
+      protected resource scope metadata.

@@ -9,7 +9,7 @@ export function handleUnauthorized() {
 		headers: {
 			// 🐨 the value should be comma-separated string of auth params:
 			//   - Bearer realm="EpicMe"
-			//   - resource_metadata=<the URL you constructed above>
+			//   - resource_metadata="<the URL you constructed above>"
 			'WWW-Authenticate': `Bearer realm="EpicMe"`,
 		},
 	})

@@ -6,7 +6,7 @@
 oriented and to give you your assignments for the workshop!
 
 Welcome to **MCP Auth**! In this workshop, you'll master authentication and authorization for
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io/specification/2025-06-18) servers—the essential skills for building secure, production-ready MCP applications that handle real user data.
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io/specification/2025-11-25) servers—the essential skills for building secure, production-ready MCP applications that handle real user data.
 
 The Model Context Protocol is powerful, but without proper authentication, your MCP servers can only provide public data. To build truly useful applications—journaling apps, document managers, personal assistants—you need to securely identify users and control access to their private resources.
 
@@ -30,6 +30,27 @@ We're focused on the Resource Server in this workshop. That's the MCP server
 that you're building and will be the most valuable information for you as a
 developer of MCP servers.
 
+<callout-info>
+	In OAuth terms, an authenticated MCP server is the OAuth **Protected
+	Resource** (or Resource Server). It accepts access tokens, validates them, and
+	enforces resource-specific authorization. The Authorization Server handles
+	user login, consent, token issuance, and token metadata.
+</callout-info>
+
+<callout-warning>
+	Do not pass third-party access tokens, API keys, or other service credentials
+	through the MCP client to your MCP server. Use a proper server-side OAuth
+	integration, or URL mode elicitation for out-of-band account connection flows
+	where the user interacts directly with the trusted service.
+</callout-warning>
+
+<callout-info>
+	For Streamable HTTP deployments that validate the `Origin` header, reject
+	invalid origins with `403 Forbidden`. Keep that distinct from authentication
+	failures, where missing or invalid bearer tokens should produce `401
+	Unauthorized` challenges.
+</callout-info>
+
 Throughout this workshop, you'll learn:
 
 - **Service Discovery**: Implement OAuth metadata endpoints that let clients automatically discover how to authenticate with your MCP server
@@ -47,7 +68,7 @@ We'll be building a secure version of **EpicMe**, a personal journaling applicat
 
 This workshop uses the
 [OAuth 2.0 standard](https://tools.ietf.org/html/rfc6749) and follows the
-[MCP Authentication specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization),
+[MCP Authentication specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization),
 ensuring your skills transfer to any OAuth-compatible system.
 
 We'll be using:

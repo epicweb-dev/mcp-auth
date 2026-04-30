@@ -8,6 +8,8 @@ In this exercise, you'll:
 
 - Check for the presence of the `Authorization` header
 - Respond with a `401 Unauthorized` and a `WWW-Authenticate` header if it's missing
+- Include enough auth challenge metadata for clients to discover the protected
+  resource metadata and recover gracefully
 
 <callout-info>
 	The `Authorization` header is how clients prove their identity. If it's
@@ -27,7 +29,8 @@ if (!authHeader) {
 	return new Response('Unauthorized', {
 		status: 401,
 		headers: {
-			'WWW-Authenticate': 'Bearer',
+			'WWW-Authenticate':
+				'Bearer realm="EpicMe", resource_metadata="https://example.com/.well-known/oauth-protected-resource/mcp"',
 		},
 	})
 }
@@ -64,7 +67,7 @@ WWW-Authenticate: Bearer
 But you can also include auth params, such as `realm`, `error`, `error_description`, or `resource_metadata`:
 
 ```
-WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token expired", resource_metadata="https://example.com/.well-known/oauth-protected-resource/mcp"
+WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token is invalid", resource_metadata="https://example.com/.well-known/oauth-protected-resource/mcp"
 ```
 
 - **realm**: A string identifying the protected area (useful for clients to display to users)
@@ -74,6 +77,19 @@ WWW-Authenticate: Bearer realm="example", error="invalid_token", error_descripti
 
 These parameters help clients understand why authentication failed and what to do next. You can include as many or as few as make sense for your use case.
 
+`resource_metadata` is optional when clients can discover your
+`/.well-known/oauth-protected-resource/...` endpoint themselves, but including it
+in the challenge points clients directly at the right metadata. Missing or
+invalid tokens should use `401 Unauthorized`; valid tokens with insufficient
+resource-specific scopes should use `403 Forbidden` with
+`error="insufficient_scope"`.
+
+Clients should not always perform Dynamic Client Registration. In open
+ecosystems, OAuth Client ID Metadata Documents are the preferred path when the
+authorization server advertises support. Treat DCR as a fallback, and remember
+that public clients normally use `token_endpoint_auth_method: "none"` rather
+than a client secret.
+
 For more details and a full list of possible parameters, see the [OAuth 2.0 RFC, section 5.2](https://datatracker.ietf.org/doc/html/rfc6749#section-5.2) and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate).
 
 ## Recommended Practices
@@ -81,6 +97,7 @@ For more details and a full list of possible parameters, see the [OAuth 2.0 RFC,
 - Always check for the `Authorization` header on protected endpoints
 - Use the `WWW-Authenticate` header in 401 responses
 - Return clear, actionable error messages
+- Keep auth params quoted, including `resource_metadata="..."`
 
 ## References
 
