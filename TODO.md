@@ -59,11 +59,13 @@ interacts with URL mode elicitation or tool/app authorization boundaries.
 
 ## Exercise 01: Metadata Discovery
 
-- [ ] [verify transcript] Update the discovery flow to include OpenID Connect
+- [x] [verify transcript] Update the discovery flow to include OpenID Connect
       Discovery 1.0 support when the authorization server is OIDC-compatible.
       Transcript evidence says the video mentions OpenID configuration but does
       not go that far; if this becomes a coded exercise, rerecord or patch that
-      segment.
+      segment. Verified with Epicshop MCP: the Exercise 01 intro says the client
+      tries OpenID configuration but "we're not going to go quite that far." The
+      written OIDC note is enough unless OIDC becomes a coded exercise.
 - [x] [content-only] Update Protected Resource Metadata language to align with
       RFC 9728.
 - [x] [content-only] Make `WWW-Authenticate` with `resource_metadata` optional
@@ -101,18 +103,23 @@ interacts with URL mode elicitation or tool/app authorization boundaries.
 - [x] [content-only] Update prose so clients are not expected to always perform
       DCR. Client ID Metadata Documents should be presented as the recommended
       open-ecosystem path.
-- [ ] [verify transcript] If the code currently implements DCR, decide whether
+- [x] [verify transcript] If the code currently implements DCR, decide whether
       to:
   - replace it with Client ID Metadata Documents, or
   - keep DCR as an optional fallback exercise. The lower-work option is to leave
     DCR code in place but rewrite the README to call it a fallback. If code
     behavior visibly changes from the video's inspector flow, verify affected
-    solution videos before marking content-only.
+    solution videos before marking content-only. Verified with Epicshop MCP:
+    Exercise 02 only implements the `WWW-Authenticate` challenge and
+    `resource_metadata` auth param. It does not implement DCR, so no Exercise 02
+    code replacement is needed.
 - [x] [content-only] Add a note that public clients should not require a client
       secret unless they use a confidential client pattern.
-- [ ] [verify transcript] If June stateless MCP changes land, verify whether
+- [x] [verify transcript] If June stateless MCP changes land, verify whether
       initialization and auth examples need per-request capability/version
-      metadata updates.
+      metadata updates. Verified with Epicshop MCP: current Exercise 02
+      transcripts do not teach per-request capability/version metadata. Revisit
+      only if the June transport/auth spec requires auth-specific changes.
 
 ## Exercise 03: Auth Info
 
@@ -172,7 +179,9 @@ interacts with URL mode elicitation or tool/app authorization boundaries.
 
 - [ ] [video required for Exercise 01 intro; content-only elsewhere] Downplay
       Dynamic Client Registration as the primary happy path.
-- [ ] [verify transcript] Remove any implication that clients should handle
-      third-party credentials or API keys in form elicitation.
+- [x] [verify transcript] Remove any implication that clients should handle
+      third-party credentials or API keys in form elicitation. Verified with
+      Epicshop MCP: auth workshop transcripts do not teach form elicitation,
+      third-party credentials, or API key collection.
 - [x] [content-only] Remove any examples that put refresh-token concerns in
       protected resource scope metadata.
